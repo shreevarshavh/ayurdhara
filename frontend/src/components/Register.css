@@ -1,0 +1,884 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+.patient-register-page {
+    --forest: #004b31;
+    --deep: #003c29;
+    --leaf: #75a93d;
+    --pale: #eaf3ce;
+    --ink: #071f18;
+    --muted: #59665f;
+    display: grid;
+    grid-template-columns: 22.1% minmax(0, 1fr);
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 650px;
+    overflow: hidden;
+    background: #f7f8f0;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif
+}
+
+.patient-register-page * {
+    box-sizing: border-box
+}
+
+.reg-brand-panel {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 30px clamp(22px, 2.7vw, 48px);
+    color: #fff;
+    background: radial-gradient(ellipse at 45% 100%, #086443 0%, #034c34 42%, transparent 76%), linear-gradient(150deg, #00432d 0%, #003b28 65%, #002e20 100%)
+}
+
+.reg-brand-panel:before,
+.reg-brand-panel:after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    border: 1px solid rgba(181, 211, 104, .32);
+    border-radius: 50%;
+    width: 390px;
+    height: 390px;
+    left: -240px;
+    bottom: -180px
+}
+
+.reg-brand-panel:after {
+    width: 470px;
+    height: 470px;
+    left: -275px;
+    bottom: -215px
+}
+
+.reg-brand {
+    display: flex;
+    align-items: center;
+    gap: 13px
+}
+
+.reg-brand-mark {
+    width: 52px;
+    height: 52px;
+    border: 2px solid #d6e7a0;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: #e4f2ad;
+    font-size: 35px
+}
+
+.reg-brand strong {
+    display: block;
+    font: 700 clamp(20px, 1.7vw, 30px) 'Cormorant Garamond', serif;
+    letter-spacing: 2px
+}
+
+.reg-brand small {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    margin-top: 1px
+}
+
+.reg-brand-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #9ac64c;
+    margin: 20px 0 24px
+}
+
+.reg-brand-divider i {
+    height: 1px;
+    background: #a5c56e;
+    flex: 1
+}
+
+.reg-brand-copy {
+    position: relative;
+    z-index: 2
+}
+
+.reg-kicker {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #e0edbf
+}
+
+.reg-brand-copy h1 {
+    font: 700 clamp(36px, 3vw, 55px)/.96 'Cormorant Garamond', serif;
+    letter-spacing: -.5px;
+    margin: 22px 0 16px;
+    color: #fff
+}
+
+.reg-sparkle {
+    color: #d6ec76;
+    font: 32px sans-serif;
+    margin-left: 12px
+}
+
+.reg-brand-copy p {
+    font-size: clamp(13px, 1vw, 17px);
+    line-height: 1.55;
+    color: #edf5e9;
+    max-width: 390px;
+    margin: 0
+}
+
+.reg-benefits {
+    display: grid;
+    gap: 13px;
+    margin-top: 26px;
+    position: relative;
+    z-index: 2
+}
+
+.reg-benefits>div {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    font-size: 14px;
+    line-height: 1.35
+}
+
+.reg-benefits>div span {
+    width: 43px;
+    height: 43px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #4e9b31, #236d32);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 5px 14px #001f173b
+}
+
+.reg-benefits svg {
+    width: 25px;
+    height: 25px
+}
+
+/* Ayurvedic artwork: blend its top edge into the forest-green panel */
+.reg-hero-art {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    bottom: 0;
+    display: block;
+    width: 100%;
+    height: 29%;
+    object-fit: cover;
+    object-position: center bottom;
+    opacity: 0.96;
+    mix-blend-mode: normal;
+
+    /* Fade the top edge so the image does not look like a separate strip. */
+    -webkit-mask-image: linear-gradient(to bottom,
+            transparent 0%,
+            rgba(0, 0, 0, 0.08) 18%,
+            rgba(0, 0, 0, 0.45) 38%,
+            #000 62%);
+    mask-image: linear-gradient(to bottom,
+            transparent 0%,
+            rgba(0, 0, 0, 0.08) 18%,
+            rgba(0, 0, 0, 0.45) 38%,
+            #000 62%);
+    pointer-events: none;
+}
+
+.reg-panel-glow {
+    position: absolute;
+    z-index: -1;
+    bottom: -90px;
+    right: -80px;
+    width: 320px;
+    height: 320px;
+    border: 1px solid #7aa64d55;
+    border-radius: 50%
+}
+
+
+.reg-topbar {
+    height: 58px;
+    flex-shrink: 0;
+    background: #fffefa;
+    border-bottom: 1px solid #e8ebdf;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(22px, 3vw, 54px);
+    font-size: 14px
+}
+
+/* RIGHT SIDE MAIN CONTAINER */
+.reg-main {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+
+    overflow: hidden;
+    background: #f7f8f0;
+}
+
+/* FIXED TOP NAVIGATION */
+.reg-topbar {
+    flex-shrink: 0;
+    height: 58px;
+}
+
+/* INDEPENDENT RIGHT SIDE SCROLLING */
+.reg-form-scroll {
+    flex: 1 1 0;
+    min-height: 0;
+
+    overflow-y: auto !important;
+    overflow-x: hidden;
+
+    padding: 12px clamp(20px, 2.6vw, 46px) 30px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #a9bd91 #f4f5ed;
+
+    overscroll-behavior: contain;
+}
+
+/* REGISTRATION CARD */
+.reg-card {
+    position: relative;
+    max-width: 1120px;
+    min-height: 100%;
+    height: auto;
+
+    margin: 0 auto;
+    padding: 20px clamp(22px, 2.5vw, 42px) 25px;
+
+    background: #fffefa;
+    border: 1px solid #edf0e6;
+    border-radius: 26px;
+
+    box-shadow: 0 10px 30px #24452b12;
+
+    overflow: visible;
+}
+
+.reg-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    color: var(--forest)
+}
+
+.reg-breadcrumb b {
+    color: #8b948a
+}
+
+.reg-breadcrumb strong {
+    color: #18211e;
+    font-weight: 700
+}
+
+.reg-signin-top {
+    color: #17231d
+}
+
+.reg-signin-top button,
+.reg-bottom-signin button {
+    border: 0;
+    background: none;
+    color: #005333;
+    font-weight: 700;
+    font-size: inherit;
+    margin-left: 10px;
+    padding: 5px
+}
+
+.reg-form-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 12px clamp(20px, 2.6vw, 46px) 14px;
+    scrollbar-width: thin;
+    scrollbar-color: #c6d4b4 transparent
+}
+
+.reg-card {
+    position: relative;
+    max-width: 1120px;
+    min-height: 100%;
+    margin: 0 auto;
+    padding: 20px clamp(22px, 2.5vw, 42px) 16px;
+    background: #fffefa;
+    border: 1px solid #edf0e6;
+    border-radius: 26px;
+    box-shadow: 0 10px 30px #24452b12;
+    overflow: hidden
+}
+
+.reg-card-heading {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    position: relative;
+    margin-bottom: 14px
+}
+
+.reg-heading-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 16px;
+    background: #edf5d9;
+    color: #064e32;
+    display: grid;
+    place-items: center;
+    position: relative;
+    flex-shrink: 0
+}
+
+.reg-heading-icon span {
+    position: absolute;
+    font-size: 19px;
+    right: 8px;
+    bottom: 6px;
+    background: #edf5d9
+}
+
+.reg-card-heading h2 {
+    font: 700 clamp(28px, 2.5vw, 40px)/1 'Cormorant Garamond', serif;
+    margin: 0 0 4px;
+    color: #071a13
+}
+
+.reg-card-heading p {
+    font-size: 14px;
+    color: #293b55;
+    margin: 0
+}
+
+.reg-card-heading p b,
+.reg-label b {
+    color: #df2626
+}
+
+.reg-leaf-decoration {
+    position: absolute;
+    right: 0;
+    top: -14px;
+    font: 88px 'Cormorant Garamond', serif;
+    color: #c8dfa2;
+    transform: rotate(-25deg);
+    opacity: .8
+}
+
+.reg-photo-row {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    margin: 8px 0 15px 24px
+}
+
+.reg-avatar {
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    border: 2px solid #8fc75b;
+    background: #e6eadf;
+    display: grid;
+    place-items: center;
+    color: #9aa39b;
+    position: relative;
+    flex-shrink: 0;
+    overflow: visible
+}
+
+.reg-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover
+}
+
+.reg-avatar>button {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 29px;
+    height: 29px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: #005333;
+    color: white;
+    display: grid;
+    place-items: center
+}
+
+.reg-photo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px
+}
+
+.reg-photo-info strong {
+    font-size: 15px;
+    color: #06432c
+}
+
+.reg-photo-info em,
+.reg-label em {
+    font-style: normal;
+    font-weight: 400;
+    color: #35455b
+}
+
+.reg-photo-info small {
+    font-size: 12px;
+    color: #4e5a65
+}
+
+.reg-photo-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px
+}
+
+.reg-photo-actions button {
+    height: 32px;
+    border-radius: 8px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700
+}
+
+.reg-upload {
+    background: #fff;
+    border: 1px solid #79a66b;
+    color: #064c30
+}
+
+.reg-remove {
+    background: #f7f7f5;
+    border: 1px solid #d8ddd5;
+    color: #59635e
+}
+
+.reg-section-bar {
+    height: 35px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 14px;
+    margin: 12px 0 8px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #e8f3cc, #eff5d9);
+    color: #063b27
+}
+
+.reg-section-bar>svg {
+    width: 21px;
+    height: 21px
+}
+
+.reg-section-bar strong {
+    font: 700 20px 'Cormorant Garamond', serif
+}
+
+.reg-number {
+    height: 29px;
+    min-width: 43px;
+    padding: 0 10px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #78ae32, #4e8d1f);
+    color: white;
+    text-align: center;
+    font: 700 17px 'Cormorant Garamond', serif;
+    display: grid;
+    place-items: center
+}
+
+.reg-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 28px;
+    row-gap: 9px;
+    padding: 0 10px 3px
+}
+
+.reg-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0
+}
+
+.reg-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #15231c
+}
+
+.reg-label em {
+    font-size: inherit
+}
+
+.reg-control {
+    height: 39px;
+    border: 1px solid #b9c5d0;
+    border-radius: 10px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    color: #08703b;
+    box-shadow: 0 1px 2px #173c2510;
+    min-width: 0
+}
+
+.reg-control:focus-within {
+    border-color: #6da84c;
+    box-shadow: 0 0 0 3px #8cbd6330
+}
+
+.reg-control input,
+.reg-control select {
+    height: 100%;
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #17243a;
+    font: 500 13px 'DM Sans', sans-serif
+}
+
+.reg-control input::placeholder {
+    color: #87939c
+}
+
+.reg-control select {
+    appearance: auto
+}
+
+.reg-control select:invalid {
+    color: #87939c
+}
+
+.span-two {
+    grid-column: span 2
+}
+
+.reg-control:has(.reg-eye) {
+    padding-right: 8px
+}
+
+.reg-eye {
+    border: 0;
+    background: transparent;
+    color: #075332;
+    display: grid;
+    place-items: center;
+    padding: 4px
+}
+
+.reg-password-feedback {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px 28px;
+    padding: 0 14px;
+    margin-top: 3px;
+    font-size: 12px;
+    color: #182a22
+}
+
+.reg-password-feedback>div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 8px
+}
+
+.reg-password-feedback b.strong {
+    color: #12833d
+}
+
+.reg-password-feedback b.medium {
+    color: #b27b16
+}
+
+.reg-password-feedback b.weak {
+    color: #b43d31
+}
+
+.reg-strength {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    max-width: 185px
+}
+
+.reg-strength i {
+    height: 5px;
+    border-radius: 5px;
+    background: #dfe4dd;
+    flex: 1
+}
+
+.reg-strength i.filled {
+    background: linear-gradient(90deg, #0a653c, #22a34c)
+}
+
+.reg-password-feedback ul {
+    grid-row: 2;
+    list-style: none;
+    margin: 2px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px 10px
+}
+
+.reg-password-feedback li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #344050
+}
+
+.reg-password-feedback li svg {
+    color: #b4bcb5
+}
+
+.reg-password-feedback li.valid svg {
+    color: #4a9b20;
+    fill: #4a9b20;
+    color: white
+}
+
+.reg-password-feedback .match,
+.reg-password-feedback .no-match {
+    margin: 3px 0;
+    color: #14833c;
+    font-weight: 600
+}
+
+.reg-password-feedback .no-match {
+    color: #bd302b
+}
+
+.reg-health-bar {
+    margin-top: 12px
+}
+
+.reg-health-bar small {
+    margin-left: auto;
+    color: #69756d;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400
+}
+
+.reg-alert {
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin: 8px 10px
+}
+
+.reg-alert.error {
+    background: #fff0ee;
+    color: #b3261e
+}
+
+.reg-alert.success {
+    background: #edf8ed;
+    color: #176b35
+}
+
+.reg-submit {
+    height: 43px;
+    width: 100%;
+    border: 0;
+    border-radius: 13px;
+    background: linear-gradient(100deg, #087445, #00482f);
+    color: white;
+    font: 700 18px 'Cormorant Garamond', serif;
+    box-shadow: 0 6px 14px #00533325;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 13px
+}
+
+.reg-submit span {
+    font: 25px 'DM Sans', sans-serif
+}
+
+.reg-submit:disabled {
+    opacity: .65;
+    cursor: wait
+}
+
+.reg-bottom-signin {
+    text-align: center;
+    margin-top: 9px;
+    color: #19233b;
+    font-size: 14px
+}
+
+.reg-bottom-signin button {
+    font-size: 17px
+}
+
+@media(min-width:1500px) {
+    .reg-card {
+        padding-top: 26px
+    }
+
+    .reg-fields {
+        row-gap: 12px
+    }
+
+    .reg-control {
+        height: 42px
+    }
+
+    .reg-section-bar {
+        margin-top: 15px
+    }
+
+    .reg-photo-row {
+        margin-bottom: 20px
+    }
+}
+
+@media(max-width:1100px) {
+    .patient-register-page {
+        grid-template-columns: 29% minmax(0, 1fr)
+    }
+
+    .reg-brand-panel {
+        padding: 26px 22px
+    }
+
+    .reg-brand-copy h1 {
+        font-size: 39px
+    }
+
+    .reg-brand-copy p {
+        font-size: 13px
+    }
+
+    .reg-benefits>div {
+        font-size: 12px
+    }
+
+    .reg-form-scroll {
+        padding: 10px
+    }
+
+    .reg-card {
+        padding: 18px 20px
+    }
+
+    .reg-fields {
+        column-gap: 14px
+    }
+
+    .reg-card-heading h2 {
+        font-size: 30px
+    }
+}
+
+@media (max-width: 760px) {
+
+    .patient-register-page {
+        display: block;
+        height: auto;
+        min-height: 100dvh;
+        overflow: visible;
+    }
+
+    .reg-brand-panel {
+        display: none;
+    }
+
+    .reg-main {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 100dvh;
+        overflow: visible;
+    }
+
+    .reg-topbar {
+        height: 56px;
+        padding: 0 15px;
+    }
+
+    .reg-form-scroll {
+        flex: none;
+        height: auto;
+        min-height: auto;
+        overflow: visible !important;
+        padding: 12px;
+    }
+
+    .reg-card {
+        height: auto;
+        min-height: auto;
+        border-radius: 18px;
+        padding: 17px 15px;
+    }
+}
+
+@media(max-width:430px) {
+    .reg-signin-top {
+        font-size: 0
+    }
+
+    .reg-signin-top button {
+        font-size: 12px
+    }
+
+    .reg-breadcrumb strong {
+        font-size: 10px
+    }
+
+    .reg-card-heading h2 {
+        font-size: 24px
+    }
+
+    .reg-fields {
+        grid-template-columns: 1fr
+    }
+
+    .span-two {
+        grid-column: span 1
+    }
+
+    .reg-health-bar small {
+        display: none
+    }
+
+    .reg-section-bar strong {
+        font-size: 17px
+    }
+
+    .reg-photo-info strong {
+        font-size: 13px
+    }
+
+    .reg-photo-info small {
+        font-size: 10px
+    }
+}
