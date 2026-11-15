@@ -13,6 +13,9 @@ const {
   getDoctors,
   getDoctorId,
   getTreatments,
+  getTreatmentSessions,
+  updateTreatmentSession,
+  createTreatmentPlan,
   getTherapistsForScheduling,
   updateSession,
   getAlerts,
@@ -29,6 +32,50 @@ router.get("/therapists", authorizeRoles("doctor", "admin"), async (req, res) =>
   } catch (error) {
     console.error("Fetch therapists error:", error);
     res.status(500).json({ message: "Failed to fetch therapists" });
+  }
+});
+
+// Create a doctor-reviewed treatment plan. Patients and therapists cannot prescribe plans.
+router.post("/plans", authorizeRoles("doctor", "admin"), async (req, res) => {
+  try {
+    const plan = await createTreatmentPlan(req.body || {}, req.user);
+    res.status(201).json({ message: "Treatment plan created successfully", treatment: plan });
+  } catch (error) {
+    console.error("Create treatment plan error:", error);
+    const clientErrors = [
+      "Patient and treatment name are required",
+      "Treatment duration must be between 15 and 480 minutes",
+      "Priority must be between 1 and 5",
+      "Patient record not found",
+      "Doctor profile not found",
+      "Choose the doctor responsible for this treatment"
+    ];
+    res.status(clientErrors.includes(error.message) ? 400 : 500).json({ message: error.message || "Failed to create treatment plan" });
+  }
+});
+
+// Individual appointment history (one row per session, not one row per treatment plan).
+router.get("/sessions", async (req, res) => {
+  try {
+    res.json(await getTreatmentSessions(req.user));
+  } catch (error) {
+    console.error("Fetch treatment session history error:", error);
+    res.status(500).json({ message: "Failed to fetch session history. Apply treatment_sessions.sql first." });
+  }
+});
+
+router.patch("/sessions/:session_id", authorizeRoles("therapist", "doctor", "admin"), async (req, res) => {
+  try {
+    const { session_status, session_notes = "", outcome = "" } = req.body || {};
+    const updated = await updateTreatmentSession(
+      req.params.session_id, session_status, session_notes, outcome, req.user
+    );
+    if (!updated) return res.status(404).json({ message: "Session not found or not assigned to your account" });
+    res.json({ message: "Session history updated", session: updated });
+  } catch (error) {
+    console.error("Update treatment session history error:", error);
+    res.status(error.message === "Invalid session status" ? 400 : 500)
+      .json({ message: error.message || "Failed to update session history" });
   }
 });
 
@@ -221,10 +268,13 @@ router.post("/schedule", authorizeRoles("doctor", "admin"), async (req, res) => 
   } catch (error) {
     console.error("Scheduling error:", error);
 
-    if (
-      error.message === "Invalid scheduling details" ||
-      error.message === "Invalid appointment date or time"
-    ) {
+    if ([
+      "Invalid scheduling details",
+      "Invalid appointment date or time",
+      "Choose a future appointment time",
+      "No therapist matches this treatment expertise. Update therapist expertise or treatment requirements.",
+      "No suitable slot is available in the next 14 days. Try a later requested time or review therapist working hours."
+    ].includes(error.message)) {
       return res.status(400).json({
         message: error.message
       });
@@ -238,6 +288,49 @@ router.post("/schedule", authorizeRoles("doctor", "admin"), async (req, res) => 
 
     res.status(500).json({
       message: "Failed to schedule treatment"
+    });
+  }
+});
+router.patch("/:id/profile", async (req, res) => {
+  try {
+    const { name, email, phone_number } = req.body;
+
+    if (!name?.trim() || !email?.trim()) {
+      return res.status(400).json({
+        message: "Name and email are required.",
+      });
+    }
+
+    const updatedUser = await service.updateUserProfile(
+      req.params.id,
+      {
+        name: name.trim(),
+        email: email.trim(),
+        phone_number,
+      }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "Doctor or therapist not found.",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Profile updated successfully.",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("UPDATE PROFILE error:", error.message);
+
+    if (error.code === "23505") {
+      return res.status(409).json({
+        message: "This email address is already registered.",
+      });
+    }
+
+    return res.status(500).json({
+      message: "Failed to update profile.",
     });
   }
 });

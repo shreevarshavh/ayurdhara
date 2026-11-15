@@ -2,18 +2,19 @@
 const express = require("express");
 const router = express.Router();
 const service = require("./service");
+const { authorizeRoles } = require("../middleware/authMiddleware");
 
-router.post("/", async (req, res) => {
+router.post("/", authorizeRoles("admin", "doctor"), async (req, res) => {
   try {
     const { name, email, password, role, phone_number } = req.body;
-
-    const user = await service.createUser(
-      name,
-      email,
-      password,
-      role,
-      phone_number
-    );
+    const requestedRole = String(role || "").toLowerCase();
+    if (String(req.user.role || "").toLowerCase() === "doctor" && requestedRole !== "patient") {
+      return res.status(403).json({ message: "Doctors can create patient accounts only." });
+    }
+    if (requestedRole === "admin" && String(req.user.role || "").toLowerCase() !== "admin") {
+      return res.status(403).json({ message: "Only an administrator can create admin accounts." });
+    }
+    const user = await service.createUser(name, email, password, requestedRole, phone_number, req.body);
 
     return res.status(201).json({
       message: "User created successfully",
@@ -22,6 +23,9 @@ router.post("/", async (req, res) => {
   } catch (error) {
     console.error("POST error:", error.message);
 
+    if (["Name, email and a password of at least 8 characters are required", "Invalid user role", "Therapist workday end must be after start"].includes(error.message)) {
+      return res.status(400).json({ message: error.message });
+    }
     if (error.code === "23505") {
       return res.status(409).json({
         message: "This email is already registered"
@@ -35,7 +39,7 @@ router.post("/", async (req, res) => {
 });
 
 // Delete user
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authorizeRoles("admin"), async (req, res) => {
   try {
     const deleted = await service.deleteUser(req.params.id);
 
@@ -58,7 +62,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Get users and search by user_id, name, or email
-router.get("/", async (req, res) => {
+router.get("/", authorizeRoles("admin"), async (req, res) => {
   try {
     const { user_id, name, email, phone_number } = req.query;
 
@@ -89,7 +93,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get patients and search by user_id, name, or email
-router.get("/p/", async (req, res) => {
+router.get("/p/", authorizeRoles("doctor", "admin"), async (req, res) => {
   try {
     const { user_id, name, email, phone_number } = req.query;
 
@@ -120,7 +124,7 @@ router.get("/p/", async (req, res) => {
 });
 
 // Get one patient by patient_id
-router.get("/p/:id", async (req, res) => {
+router.get("/p/:id", authorizeRoles("doctor", "admin"), async (req, res) => {
   try {
     const patient = await service.getPatientById(req.params.id);
 
@@ -144,7 +148,7 @@ router.get("/p/:id", async (req, res) => {
 });
 
 // Get doctors and search by user_id, name, or email
-router.get("/doctors/", async (req, res) => {
+router.get("/doctors/", authorizeRoles("admin"), async (req, res) => {
   try {
     const { user_id, name, email, phone_number } = req.query;
 
@@ -175,7 +179,7 @@ router.get("/doctors/", async (req, res) => {
 });
 
 // Get one doctor by doctor_id
-router.get("/doctors/:id", async (req, res) => {
+router.get("/doctors/:id", authorizeRoles("admin"), async (req, res) => {
   try {
     const doctor = await service.getDoctorById(req.params.id);
 
@@ -199,7 +203,7 @@ router.get("/doctors/:id", async (req, res) => {
 });
 
 // Get therapists and search by user_id, name, or email
-router.get("/therapists/", async (req, res) => {
+router.get("/therapists/", authorizeRoles("admin"), async (req, res) => {
   try {
     const { user_id, name, email, phone_number } = req.query;
 
@@ -230,7 +234,7 @@ router.get("/therapists/", async (req, res) => {
 });
 
 // Get one therapist by therapist_id
-router.get("/therapists/:id", async (req, res) => {
+router.get("/therapists/:id", authorizeRoles("admin"), async (req, res) => {
   try {
     const therapist = await service.getTherapistById(req.params.id);
 
@@ -249,6 +253,204 @@ router.get("/therapists/:id", async (req, res) => {
 
     return res.status(500).json({
       message: "Failed to fetch therapist"
+    });
+  }
+});
+
+router.patch("/:id/profile", authorizeRoles("admin"), async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      phone_number,
+      degree,
+      specialization,
+      license_number,
+      experience_years
+    } = req.body;
+
+    if (
+      name !== undefined &&
+      (typeof name !== "string" || !name.trim())
+    ) {
+      return res.status(400).json({
+        message: "Name cannot be empty."
+      });
+    }
+
+    if (
+      email !== undefined &&
+      (typeof email !== "string" || !email.trim())
+    ) {
+      return res.status(400).json({
+        message: "Email cannot be empty."
+      });
+    }
+
+    const user = await service.updateUserProfile(
+      req.params.id,
+      {
+        name,
+        email,
+        phone_number,
+        degree,
+        specialization,
+        license_number,
+        experience_years
+      }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Doctor or therapist not found."
+      });
+    }
+
+    return res.status(200).json({
+      message: "Profile updated successfully.",
+      user
+    });
+  } catch (error) {
+    console.error("UPDATE PROFILE error:", error.message);
+
+    if (error.code === "23505") {
+      return res.status(409).json({
+        message: "This email is already registered."
+      });
+    }
+
+    return res.status(500).json({
+      message: "Failed to update profile."
+    });
+  }
+});
+
+router.patch("/patients/:user_id/profile", authorizeRoles("doctor", "admin"), async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      phone_number,
+      gender,
+      blood_group,
+      height_cm,
+      weight_kg,
+      address
+    } = req.body;
+
+    if (
+      name !== undefined &&
+      (typeof name !== "string" || !name.trim())
+    ) {
+      return res.status(400).json({
+        message: "Name cannot be empty."
+      });
+    }
+
+    if (
+      email !== undefined &&
+      (typeof email !== "string" || !email.trim())
+    ) {
+      return res.status(400).json({
+        message: "Email cannot be empty."
+      });
+    }
+
+    if (
+      height_cm !== undefined &&
+      height_cm !== null &&
+      (!Number.isFinite(Number(height_cm)) || Number(height_cm) <= 0)
+    ) {
+      return res.status(400).json({
+        message: "Height must be a positive number."
+      });
+    }
+
+    if (
+      weight_kg !== undefined &&
+      weight_kg !== null &&
+      (!Number.isFinite(Number(weight_kg)) || Number(weight_kg) <= 0)
+    ) {
+      return res.status(400).json({
+        message: "Weight must be a positive number."
+      });
+    }
+
+    const patient = await service.updatePatientProfile(
+      req.params.user_id,
+      {
+        name,
+        email,
+        phone_number,
+        gender,
+        blood_group,
+        height_cm,
+        weight_kg,
+        address
+      }
+    );
+
+    if (!patient) {
+      return res.status(404).json({
+        message: "Patient not found."
+      });
+    }
+
+    return res.status(200).json({
+      message: "Patient profile updated successfully.",
+      user: patient
+    });
+  } catch (error) {
+    console.error("UPDATE PATIENT PROFILE error:", error.message);
+
+    if (error.code === "23505") {
+      return res.status(409).json({
+        message: "This email is already registered."
+      });
+    }
+
+    return res.status(500).json({
+      message: "Failed to update patient profile."
+    });
+  }
+});
+
+
+// Upload or update doctor/therapist profile photo
+router.patch("/:id/photo", authorizeRoles("doctor", "admin"), async (req, res) => {
+  try {
+    const { profile_photo } = req.body;
+    const user_id = req.params.id;
+
+    if (
+      typeof profile_photo !== "string" ||
+      !profile_photo.startsWith("data:image/")
+    ) {
+      return res.status(400).json({
+        message: "Please provide a valid image."
+      });
+    }
+
+    const user = await service.updateUserPhoto(
+      user_id,
+      profile_photo
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Doctor or therapist not found."
+      });
+    }
+
+    return res.status(200).json({
+      message: "Profile photo updated successfully.",
+      user
+    });
+  } catch (error) {
+    console.error("UPDATE PHOTO error:", error.message);
+
+    return res.status(500).json({
+      message: "Failed to update profile photo."
     });
   }
 });

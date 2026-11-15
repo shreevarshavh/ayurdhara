@@ -128,7 +128,7 @@ router.post("/register", async (req, res) => {
     const user = userResult.rows[0];
 
     await client.query(
-      `INSERT INTO patients (user_id, height, weight, address, blood_group, profile_photo)
+      `INSERT INTO patients (user_id, height_cm, weight_kg, address, blood_group, profile_photo)
        VALUES ($1, $2, $3, $4, $5, $6)`,
       [
         user.user_id,

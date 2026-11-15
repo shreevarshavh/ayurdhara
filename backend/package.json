@@ -1,13 +1,14 @@
-
 {
   "name": "backend",
   "version": "1.0.0",
   "description": "Ayurdhara Panchakarma backend",
   "main": "server.js",
   "scripts": {
-  "start": "node src/server.js",
-  "dev": "nodemon src/server.js"
-},
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node --test test/*.test.js",
+    "test:constraints": "node --test test/constraintScheduler.test.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
