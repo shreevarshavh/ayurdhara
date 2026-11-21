@@ -1,5 +1,6 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+
 import {
   Routes,
   Route,
@@ -9,7 +10,8 @@ import {
 } from "react-router-dom";
 
 import api from "./services/api";
-import { NAV, fmtDate, fmtTime, shortId } from "./utils";
+
+import { NAV, fmtDate, fmtTime, shortId, normalizeRole } from "./utils";
 
 import Login from "./components/Login";
 import Scheduling from "./components/Scheduling";
@@ -48,6 +50,8 @@ function App() {
       return null;
     }
   });
+
+  console.log("Current logged-in user:", user);
 
   // Application states
   const [patients, setPatients] = useState([]);
@@ -151,7 +155,7 @@ function App() {
 
   // Navigation and dashboard calculations
   const visibleNav = NAV.filter(
-    (n) => !n.roles || n.roles.includes(user?.role)
+    (n) => !n.roles || n.roles.includes(normalizeRole(user?.role))
   );
 
   const scheduled = useMemo(
@@ -399,10 +403,14 @@ function App() {
       <Routes>
         <Route
           path="/login"
-          element={<Login onLogin={(loggedInUser) => {
-            setUser(loggedInUser);
-            navigate("/dashboard", { replace: true });
-          }} />}
+          element={
+            <Login
+              onLogin={(loggedInUser) => {
+                setUser(loggedInUser);
+                navigate("/dashboard", { replace: true });
+              }}
+            />
+          }
         />
 
         <Route
@@ -979,7 +987,7 @@ function App() {
                 <option value="doctor">Doctor</option>
                 <option value="therapist">Therapist</option>
                 <option value="patient">Patient</option>
-                <option value="admin">Admin</option>
+                <option value="ADMIN">Admin</option>
               </select>
 
               <p className="form-hint">

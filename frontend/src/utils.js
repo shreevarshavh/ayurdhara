@@ -1,3 +1,4 @@
+
 const NAV = [
   { id: "dashboard", label: "Dashboard", icon: "◫", group: "Overview", roles: ["admin", "doctor", "therapist", "patient"] },
   { id: "profile", label: "My Profile", icon: "♙", group: "Overview", roles: ["patient"] },
@@ -14,9 +15,37 @@ const NAV = [
   { id: "users", label: "User management", icon: "♙", group: "Administration", roles: ["admin"] }
 ];
 
-const fmtDate = (value) => value ? new Date(value).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "Not scheduled";
-const fmtTime = (value) => value ? new Date(value).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) : "—";
-const shortId = (value) => value ? `${String(value).slice(0, 8)}…` : "—";
-const fullName = (user) => user?.name || user?.patient_name || "Patient";
+const fmtDate = (value) =>
+  value
+    ? new Date(value).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      })
+    : "Not scheduled";
 
-export { NAV, fmtDate, fmtTime, shortId, fullName };
+const fmtTime = (value) =>
+  value
+    ? new Date(value).toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit"
+      })
+    : "—";
+
+const shortId = (value) =>
+  value ? `${String(value).slice(0, 8)}…` : "—";
+
+const fullName = (user) =>
+  user?.name || user?.patient_name || "Patient";
+
+const normalizeRole = (role) =>
+  String(role || "").toLowerCase();
+
+export {
+  NAV,
+  fmtDate,
+  fmtTime,
+  shortId,
+  fullName,
+  normalizeRole
+};

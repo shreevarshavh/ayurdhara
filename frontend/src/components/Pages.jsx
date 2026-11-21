@@ -1,6 +1,8 @@
 import React from "react";
 import { fmtDate, fmtTime, shortId } from "../utils";
 
+export { Progress } from "./pages/Progress";
+
 export function PageHeading({ eyebrow, title, description, action }) {
   return <div className="page-heading"><div><div className="eyebrow">{eyebrow}</div><h1>{title}</h1><p>{description}</p></div>{action}</div>;
 }
@@ -120,31 +122,6 @@ export function Sessions({ treatments, notes = {}, setNotes, onUpdate, readOnly 
         {!readOnly && <td><button className="patient-save-button" onClick={() => onUpdate?.(t, draftStatuses[t.uuid] ?? t.session_status ?? "Scheduled")}>Save</button></td>}
       </tr>)}
     </tbody></table></div></div> : <section className="patient-card patient-page-empty"><div className="patient-empty-icon"><span>◷</span></div><h2>No sessions scheduled</h2><p>Your approved therapy appointments and session updates will appear here.</p></section>}
-  </div>;
-}
-
-export function Progress({ patients, treatments, completed }) {
-  const pct = treatments.length ? Math.round(completed.length / treatments.length * 100) : 0;
-  const statusNames = ["Scheduled", "Ongoing", "Completed", "Missed", "Interrupted"];
-  const statusCounts = statusNames.map(status => ({ status, count: treatments.filter(t => (t.session_status || "Scheduled").toLowerCase() === status.toLowerCase()).length }));
-  const patientRows = patients.length ? patients : [];
-  return <div className="patient-subpage">
-    <PatientPageHero eyebrow="OUTCOME MONITORING" title="Progress Tracking" description="Follow your Panchakarma treatment progress and review completed care activities." action={<button className="patient-print-button" onClick={() => window.print()}>↓ Print summary</button>} />
-    <PatientPageStats items={[
-      { label: "Treatment Records", value: treatments.length, detail: "Plans in your care record", icon: "▤", tone: "green" },
-      { label: "Completed", value: completed.length, detail: "Recorded as complete", icon: "✓", tone: "blue" },
-      { label: "In Progress", value: statusCounts.find(x => x.status === "Ongoing")?.count || 0, detail: "Currently underway", icon: "◷", tone: "gold" },
-      { label: "Scheduled", value: statusCounts.find(x => x.status === "Scheduled")?.count || 0, detail: "Awaiting session", icon: "▦", tone: "purple" },
-      { label: "Overall Progress", value: `${pct}%`, detail: "Based on available records", icon: "↗", tone: "sky" }
-    ]} />
-    <div className="patient-progress-summary-grid">
-      <section className="patient-card patient-progress-overview"><div className="patient-section-kicker">SESSION COMPLETION</div><div className="patient-progress-overview-body"><div className="patient-donut patient-progress-donut" style={{ "--progress": `${pct}%` }}><div><b>{pct}%</b><span>Completed</span></div></div><div className="patient-progress-stats"><div><span>Treatment records</span><b>{treatments.length}</b></div><div><span>Completed sessions</span><b>{completed.length}</b></div><div><span>Remaining records</span><b>{Math.max(0, treatments.length - completed.length)}</b></div></div></div></section>
-      <section className="patient-card patient-session-status-card"><h2>Session status</h2><p>Current status of your treatment records</p>{statusCounts.map(item => <div className="patient-status-bar-row" key={item.status}><div><span>{item.status}</span><b>{item.count}</b></div><div><i style={{ width: `${treatments.length ? item.count / treatments.length * 100 : 0}%` }} /></div></div>)}</section>
-    </div>
-    <section className="patient-card patient-progress-table-card"><div className="patient-card-heading"><div className="patient-card-title"><div className="patient-card-icon"><span>↗</span></div><div><h2>My treatment progress</h2><p>Summary calculated from session statuses recorded by your care team.</p></div></div></div>
-      {patientRows.length ? <div className="patient-table-scroll"><table className="patient-data-table"><thead><tr><th>Patient</th><th>Treatment records</th><th>Completed</th><th>Scheduled / ongoing</th><th>Progress</th></tr></thead><tbody>{patientRows.map(p => { const own = treatments.filter(t => String(t.patient_id) === String(p.patient_id)); const done = own.filter(t => (t.session_status || "").toLowerCase() === "completed").length; const value = own.length ? Math.round(done / own.length * 100) : 0; return <tr key={p.patient_id}><td><div className="patient-progress-person"><span>{(p.name || "P").slice(0, 1).toUpperCase()}</span><b>{p.name || "Patient"}</b></div></td><td>{own.length}</td><td>{done}</td><td>{own.filter(t => !["completed", "missed", "interrupted"].includes((t.session_status || "scheduled").toLowerCase())).length}</td><td><div className="patient-mini-progress"><i style={{ width: `${value}%` }} /></div><b className="patient-progress-percent">{value}%</b></td></tr>; })}</tbody></table></div> : <div className="patient-inline-empty">Your progress summary will appear when your care records are available.</div>}
-    </section>
-    <p className="patient-data-note">Progress is based only on treatment and session status records currently available in your account.</p>
   </div>;
 }
 
