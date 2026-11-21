@@ -48,7 +48,9 @@ router.post("/plans", authorizeRoles("doctor", "admin"), async (req, res) => {
       "Priority must be between 1 and 5",
       "Patient record not found",
       "Doctor profile not found",
-      "Choose the doctor responsible for this treatment"
+      "Choose the doctor responsible for this treatment",
+      "Therapist record not found",
+      "Invalid appointment date or time"
     ];
     res.status(clientErrors.includes(error.message) ? 400 : 500).json({ message: error.message || "Failed to create treatment plan" });
   }

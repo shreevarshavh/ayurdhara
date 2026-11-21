@@ -119,7 +119,9 @@ async function createTreatmentPlan({
   treatment_requirements = "",
   duration_minutes = 60,
   priority = 2,
-  doctor_id
+  doctor_id,
+  therapist_id = null,
+  appointment_start = null
 }, currentUser) {
   const name = String(treatment_name || "").trim();
   const duration = Number(duration_minutes);
@@ -149,17 +151,45 @@ async function createTreatmentPlan({
       throw new Error("Choose the doctor responsible for this treatment");
     }
 
+    let chosenTherapistId = therapist_id || null;
+    if (chosenTherapistId) {
+      const therapistCheck = await client.query("SELECT therapist_id FROM therapists WHERE therapist_id = $1", [chosenTherapistId]);
+      if (!therapistCheck.rowCount) throw new Error("Therapist record not found");
+    }
+
+    let parsedStart = null;
+    if (appointment_start) {
+      const startCandidate = new Date(appointment_start);
+      if (Number.isNaN(startCandidate.getTime())) {
+        throw new Error("Invalid appointment date or time");
+      }
+      parsedStart = startCandidate;
+    }
+
     const result = await client.query(
       `INSERT INTO treatment
-        (patient_id, doctor_id, p1, treatment_name, treatment_requirements,
+        (patient_id, doctor_id, therapist_id, appointment_start, p1, treatment_name, treatment_requirements,
          duration_minutes, priority, session_status, session_notes)
-       VALUES ($1, $2, $3, $3, $4, $5, $6, 'Scheduled', '')
-       RETURNING uuid, patient_id, doctor_id, p1, treatment_name, treatment_requirements,
+       VALUES ($1, $2, $3, $4, $5, $5, $6, $7, $8, 'Scheduled', '')
+       RETURNING uuid, patient_id, doctor_id, therapist_id, appointment_start, p1, treatment_name, treatment_requirements,
                  duration_minutes, priority, session_status`,
-      [patient_id, assignedDoctorId, name, String(treatment_requirements || "").trim(), duration, treatmentPriority]
+      [patient_id, assignedDoctorId, chosenTherapistId, parsedStart, name, String(treatment_requirements || "").trim(), duration, treatmentPriority]
     );
+
+    const plan = result.rows[0];
+
+    if (chosenTherapistId && parsedStart) {
+      await client.query(
+        `INSERT INTO treatment_sessions
+           (treatment_uuid, therapist_id, appointment_start,
+            duration_minutes, priority, session_status)
+         VALUES ($1, $2, $3, $4, $5, 'Scheduled')`,
+        [plan.uuid, chosenTherapistId, parsedStart, duration, treatmentPriority]
+      );
+    }
+
     await client.query("COMMIT");
-    return result.rows[0];
+    return plan;
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
@@ -386,7 +416,7 @@ async function scheduleTreatment({
     try {
       solverResponse = await fetch(
         process.env.ORTOOLS_SOLVER_URL ||
-          "http://127.0.0.1:8000/schedule",
+        "http://127.0.0.1:8000/schedule",
         {
           method: "POST",
           headers: {
@@ -721,7 +751,7 @@ async function updateTreatmentSession(sessionId, session_status, session_notes =
           updated_at = NOW()
       WHERE session_id = $4
       RETURNING session_id, treatment_uuid, session_status, session_notes, outcome, completed_at`,
-    [session_status, String(session_notes || ''), String(outcome || ''), sessionId]);
+      [session_status, String(session_notes || ''), String(outcome || ''), sessionId]);
 
     // Keep the old treatment columns synchronized for screens/integrations that still use them.
     await client.query(`
