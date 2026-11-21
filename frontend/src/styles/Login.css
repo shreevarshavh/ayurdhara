@@ -657,3 +657,29 @@ button {
     outline: 3px solid #91b99b;
     outline-offset: 3px;
 }
+
+/* Google Identity Services patient sign-in */
+.google-signin-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+}
+
+.google-signin-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+}
+
+.google-signin-container iframe {
+    max-width: 100%;
+}
+
+.google-signin-status {
+    margin: 8px 0 0;
+    color: #376348;
+    font-size: 13px;
+}

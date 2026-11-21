@@ -79,6 +79,149 @@ router.post("/login", async (req, res) => {
   }
 });
 
+
+// Google sign-in is restricted to PATIENT accounts.
+// Google ID tokens are verified server-side; never trust profile data sent by the browser.
+router.post("/google", async (req, res) => {
+  const { OAuth2Client } = require("google-auth-library");
+  const crypto = require("crypto");
+  const jwt = require("jsonwebtoken");
+
+  const credential = String(req.body?.credential || "");
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+
+  if (!clientId) {
+    return res.status(503).json({
+      message: "Google sign-in is not configured on the server yet."
+    });
+  }
+
+  if (!credential) {
+    return res.status(400).json({ message: "Google credential is required." });
+  }
+
+  let client;
+  try {
+    const googleClient = new OAuth2Client(clientId);
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: clientId
+    });
+    const profile = ticket.getPayload();
+
+    if (!profile?.sub || !profile?.email || profile.email_verified !== true) {
+      return res.status(401).json({
+        message: "Google must verify your email address before you can sign in."
+      });
+    }
+
+    const googleSub = profile.sub;
+    const email = profile.email.trim().toLowerCase();
+    const name = String(profile.name || email.split("@")[0]).trim();
+
+    client = await pool.connect();
+    await client.query("BEGIN");
+
+    let result = await client.query(
+      `SELECT user_id, name, email, role, phone_number, google_sub
+       FROM users
+       WHERE google_sub = $1 OR LOWER(email) = $2
+       ORDER BY CASE WHEN google_sub = $1 THEN 0 ELSE 1 END
+       LIMIT 1
+       FOR UPDATE`,
+      [googleSub, email]
+    );
+
+    let user = result.rows[0];
+
+    if (user && String(user.role).toLowerCase() !== "patient") {
+      await client.query("ROLLBACK");
+      return res.status(403).json({
+        message: "Google sign-in is available for patient accounts only. Please use your staff login."
+      });
+    }
+
+    if (user && !user.google_sub) {
+      await client.query(
+        `UPDATE users SET google_sub = $1 WHERE user_id = $2`,
+        [googleSub, user.user_id]
+      );
+    }
+
+    if (!user) {
+      // Google-authenticated accounts do not use a locally chosen password.
+      // Store a random, one-way password hash to satisfy the existing users schema.
+      const randomPassword = crypto.randomBytes(48).toString("hex");
+      const passwordHash = await require("bcrypt").hash(randomPassword, 12);
+
+      const created = await client.query(
+        `INSERT INTO users (name, email, password_hash, role, google_sub)
+         VALUES ($1, $2, $3, 'patient', $4)
+         RETURNING user_id, name, email, role, phone_number, google_sub`,
+        [name, email, passwordHash, googleSub]
+      );
+
+      user = created.rows[0];
+
+      await client.query(
+        `INSERT INTO patients
+           (user_id, height_cm, weight_kg, address, blood_group, profile_photo)
+         VALUES ($1, NULL, NULL, NULL, NULL, NULL)`,
+        [user.user_id]
+      );
+    }
+
+    await client.query("COMMIT");
+
+    const token = jwt.sign(
+      {
+        user_id: user.user_id,
+        role: user.role,
+        email: user.email
+      },
+      process.env.JWT_SECRET || "ayurdhara-local-development-secret",
+      { expiresIn: "8h" }
+    );
+
+    return res.status(200).json({
+      message: "Google sign-in successful",
+      token,
+      user
+    });
+  } catch (error) {
+    if (client) {
+      try { await client.query("ROLLBACK"); } catch (_) { }
+    }
+
+    if (error.code === "23505") {
+      // A concurrent first-time sign-in may have created the same email.
+      try {
+        const existing = await pool.query(
+          `SELECT user_id, name, email, role, phone_number
+           FROM users WHERE LOWER(email) = LOWER($1)`,
+          [String(req.body?.email || "")]
+        );
+        if (existing.rows[0] && String(existing.rows[0].role).toLowerCase() === "patient") {
+          const user = existing.rows[0];
+          const token = jwt.sign(
+            { user_id: user.user_id, role: user.role, email: user.email },
+            process.env.JWT_SECRET || "ayurdhara-local-development-secret",
+            { expiresIn: "8h" }
+          );
+          return res.json({ message: "Google sign-in successful", token, user });
+        }
+      } catch (_) { }
+    }
+
+    console.error("Google sign-in error:", error.message);
+    return res.status(401).json({
+      message: "Google sign-in could not be verified. Please try again."
+    });
+  } finally {
+    if (client) client.release();
+  }
+});
+
 // Public registration creates patient accounts only.
 router.post("/register", async (req, res) => {
   const { name, email, password, phone_number, height, weight, address, blood_group, profile_photo } = req.body || {};
@@ -166,28 +309,28 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/register-doctor", async (req, res) => {
- const {
-  name,
-  email,
-  password,
-  degree,
-  date_of_birth,
-  specialization,
-  license_number,
-  phone
-} = req.body || {};
-console.log("Received body:", req.body);
-console.log("Required fields:", {
-  name,
-  email,
-  password: !!password,
-  degree,
-  specialization,
-  license_number
-});
+  const {
+    name,
+    email,
+    password,
+    degree,
+    date_of_birth,
+    specialization,
+    license_number,
+    phone
+  } = req.body || {};
+  console.log("Received body:", req.body);
+  console.log("Required fields:", {
+    name,
+    email,
+    password: !!password,
+    degree,
+    specialization,
+    license_number
+  });
 
   if (!name || !email || !password || !degree ||
-      !specialization || !license_number) {
+    !specialization || !license_number) {
     return res.status(400).json({
       message: "Name, email, password, degree, specialization, and license number are required"
     });
@@ -198,7 +341,7 @@ console.log("Required fields:", {
       message: "Password must be at least 8 characters"
     });
   }
-  
+
 
   const client = await pool.connect();
 
@@ -261,7 +404,7 @@ console.log("Required fields:", {
     }
 
     if (error.code === "23514" || error.code === "22P02" ||
-        error.code === "22007") {
+      error.code === "22007") {
       return res.status(400).json({
         message: "One or more supplied fields have an invalid value"
       });

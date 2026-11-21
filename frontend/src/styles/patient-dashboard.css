@@ -4383,3 +4383,427 @@
         width: 100%;
     }
 }
+
+.patient-page-hero-light {
+    background-image: url("/ayurdhara-light-hero.png") !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+/* FIX: LIGHT HERO TEXT VISIBILITY */
+
+.patient-page-hero-light .patient-page-hero-copy {
+    position: relative;
+    z-index: 5;
+}
+
+.patient-page-hero-light .patient-page-hero-copy>span {
+    color: #527b43 !important;
+    font-weight: 800;
+}
+
+.patient-page-hero-light .patient-page-hero-copy h1 {
+    color: #174b35 !important;
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 700;
+}
+
+.patient-page-hero-light .patient-page-hero-copy p {
+    color: #526b5b !important;
+    opacity: 1 !important;
+}
+
+/* Remove duplicate page headings below the hero */
+
+.page-heading-actions-only {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    margin: 0 0 20px;
+    padding: 0;
+}
+
+.page-heading-actions-only>div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Consistent spacing below inner-page hero banners */
+
+.patient-page-hero-light {
+    margin-bottom: 24px !important;
+}
+
+/* Prevent the next section from touching the hero */
+.patient-page-hero-light+* {
+    margin-top: 0 !important;
+}
+
+/* Responsive spacing */
+@media (max-width: 768px) {
+    .patient-page-hero-light {
+        margin-bottom: 18px !important;
+    }
+}
+
+/* Keep page action buttons aligned to the right */
+
+.page-heading-actions-only {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    width: 100% !important;
+    text-align: right !important;
+}
+
+.page-heading-actions-only>div {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 10px;
+    margin-left: auto !important;
+}
+
+/* Ensure buttons don't stretch */
+.page-heading-actions-only button {
+    width: auto;
+    flex-shrink: 0;
+}
+
+/* FIX: Reduce excessive spacing on inner pages */
+
+.patient-page-hero-light {
+    margin-bottom: 12px !important;
+}
+
+/* Keep action buttons on the right with less spacing */
+.page-heading-actions-only {
+    margin-top: 0 !important;
+    margin-bottom: 8px !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+}
+
+/* Reduce gap before search bars and content */
+.page-heading-actions-only+* {
+    margin-top: 0 !important;
+}
+
+/* Keep action buttons grouped on the right */
+.page-heading-actions-only>div {
+    margin-left: auto !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 10px;
+}
+
+/* =================================
+   AYURDHARA TYPOGRAPHY
+================================= */
+
+body,
+button,
+input,
+select,
+textarea {
+    font-family: "DM Sans", sans-serif;
+}
+
+h1,
+h2,
+h3,
+.patient-page-hero-light h1 {
+    font-family: "Playfair Display", serif;
+}
+
+.patient-page-hero-light h1 {
+    font-size: 40px;
+    font-weight: 700;
+    color: #174b35;
+}
+
+/* =================================
+   TABLE DESIGN
+================================= */
+
+.patient-page table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+}
+
+.patient-page thead th {
+    background: #f7f9f5;
+    color: #718477;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    padding: 16px 18px;
+    text-align: left;
+    border-bottom: 1px solid #e7ece5;
+}
+
+.patient-page tbody td {
+    padding: 17px 18px;
+    color: #263c31;
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 1px solid #edf0eb;
+}
+
+.patient-page tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.patient-page tbody tr:hover {
+    background: #f8faf6;
+}
+
+/* =================================
+   CARD DESIGN
+================================= */
+
+.patient-page .patient-card,
+.patient-page .table-card {
+    background: #ffffff;
+    border: 1px solid #e5ebe3;
+    border-radius: 15px;
+    box-shadow: 0 4px 14px rgba(26, 65, 43, 0.045);
+    overflow: hidden;
+}
+
+/* =================================
+   TEXT WEIGHTS
+================================= */
+
+.patient-page strong,
+.patient-page tbody td b {
+    color: #173d2d;
+    font-weight: 700;
+}
+
+.patient-page p {
+    color: #758579;
+    font-weight: 400;
+}
+
+/* =================================
+   BUTTONS
+================================= */
+
+.patient-page button {
+    font-family: "DM Sans", sans-serif;
+    font-weight: 700;
+    border-radius: 10px;
+}
+
+/* ==========================================
+   AYURDHARA GLOBAL TABLE DESIGN
+   Applies to ALL FOUR ROLES
+========================================== */
+
+/* Table containers */
+.table-panel,
+.table-card,
+.patient-table-card {
+    width: 100%;
+    background: #ffffff !important;
+    border: 1px solid #e5ebe3 !important;
+    border-radius: 15px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(25, 65, 43, 0.04) !important;
+}
+
+/* Horizontal scrolling */
+.table-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Tables */
+.table-panel table,
+.table-card table,
+.patient-table-card table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+/* Column headings */
+.table-panel thead th,
+.table-card thead th,
+.patient-table-card thead th {
+    background: #f6f8f4 !important;
+    color: #718477 !important;
+    font-family: "DM Sans", sans-serif;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 16px 18px !important;
+    border-bottom: 1px solid #e7ece5 !important;
+    white-space: nowrap;
+}
+
+/* Table rows */
+.table-panel tbody tr,
+.table-card tbody tr,
+.patient-table-card tbody tr {
+    background: #ffffff;
+    transition: background 0.2s ease;
+}
+
+.table-panel tbody tr:hover,
+.table-card tbody tr:hover,
+.patient-table-card tbody tr:hover {
+    background: #f7faf5 !important;
+}
+
+/* Table content */
+.table-panel tbody td,
+.table-card tbody td,
+.patient-table-card tbody td {
+    color: #34483b !important;
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    padding: 16px 18px !important;
+    border-bottom: 1px solid #edf0eb !important;
+    vertical-align: middle;
+}
+
+.table-panel tbody tr:last-child td,
+.table-card tbody tr:last-child td,
+.patient-table-card tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Patient names */
+.person-cell b,
+.table-panel tbody td strong,
+.table-card tbody td strong {
+    color: #183e2e !important;
+    font-weight: 700 !important;
+}
+
+/* Secondary information */
+.cell-sub {
+    display: block;
+    margin-top: 4px;
+    color: #89968c;
+    font-size: 10px;
+    font-weight: 400;
+}
+
+/* Patient avatars */
+.table-avatar {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #e9f0d9;
+    color: #24583c;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+/* Empty states */
+.table-panel .empty-state,
+.table-card .empty-state,
+.patient-table-card .empty-state {
+    padding: 55px 20px;
+    text-align: center;
+}
+
+/* Typography */
+.table-panel,
+.table-card,
+.patient-table-card {
+    font-family: "DM Sans", sans-serif;
+}
+
+/* ==========================================
+   GLOBAL PANEL HEADER SPACING FIX
+   Applies across ALL roles and pages
+========================================== */
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+
+    width: 100%;
+    min-height: 72px;
+
+    padding: 18px 22px !important;
+    box-sizing: border-box;
+}
+
+.panel-header>div {
+    min-width: 0;
+    flex: 1;
+}
+
+.panel-header h2 {
+    margin: 0 0 6px !important;
+    padding: 0 !important;
+
+    color: #173d2d;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.panel-header p {
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: #829187;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.panel-header button {
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+/* Table panels */
+
+.table-panel {
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.table-panel>.panel-header {
+    background: #ffffff;
+    border-bottom: 1px solid #edf0eb;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+    .panel-header {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        padding: 16px !important;
+    }
+
+    .panel-header button {
+        margin-left: 0;
+    }
+}

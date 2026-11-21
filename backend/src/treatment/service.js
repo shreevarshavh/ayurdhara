@@ -151,12 +151,20 @@ async function createTreatmentPlan({
 
     const result = await client.query(
       `INSERT INTO treatment
-        (patient_id, doctor_id, p1, treatment_name, treatment_requirements,
-         duration_minutes, priority, session_status, session_notes)
-       VALUES ($1, $2, $3, $3, $4, $5, $6, 'Scheduled', '')
-       RETURNING uuid, patient_id, doctor_id, p1, treatment_name, treatment_requirements,
-                 duration_minutes, priority, session_status`,
-      [patient_id, assignedDoctorId, name, String(treatment_requirements || "").trim(), duration, treatmentPriority]
+    (patient_id, doctor_id, p1, treatment_name, treatment_requirements,
+     duration_minutes, priority, session_status, session_notes)
+   VALUES ($1, $2, $3, $4, $5, $6, $7, 'Scheduled', '')
+   RETURNING uuid, patient_id, doctor_id, p1, treatment_name,
+             treatment_requirements, duration_minutes, priority, session_status`,
+      [
+        patient_id,
+        assignedDoctorId,
+        name,
+        name,
+        String(treatment_requirements || "").trim(),
+        duration,
+        treatmentPriority
+      ]
     );
     await client.query("COMMIT");
     return result.rows[0];
@@ -364,7 +372,7 @@ async function scheduleTreatment({
        WHERE therapist_id = ANY($1::uuid[])
          AND appointment_start >= $2
          AND appointment_start < $3
-         AND ($4::bigint IS NULL OR session_id <> $4::bigint)`,
+         AND ($4::uuid IS NULL OR session_id <> $4::uuid)`,
       [therapistIds, dayStart, nextDay, activeSessionId]
     );
 
@@ -386,7 +394,7 @@ async function scheduleTreatment({
     try {
       solverResponse = await fetch(
         process.env.ORTOOLS_SOLVER_URL ||
-          "http://127.0.0.1:8000/schedule",
+        "http://127.0.0.1:8000/schedule",
         {
           method: "POST",
           headers: {
@@ -500,7 +508,7 @@ async function scheduleTreatment({
        FROM treatment_sessions
        WHERE therapist_id = $1
          AND session_status IN ('Scheduled', 'Ongoing')
-         AND ($2::bigint IS NULL OR session_id <> $2::bigint)
+         AND ($2::uuid IS NULL OR session_id <> $2::uuid)
          AND appointment_start < $4
          AND appointment_start
              + (COALESCE(duration_minutes, 60) * INTERVAL '1 minute') > $3
@@ -567,10 +575,26 @@ async function scheduleTreatment({
     } else {
       sessionResult = await client.query(
         `INSERT INTO treatment_sessions
-           (treatment_uuid, therapist_id, appointment_start,
-            duration_minutes, priority, session_status)
-         VALUES ($1, $2, $3, $4, $5, 'Scheduled')
-         RETURNING session_id`,
+       (
+         treatment_uuid,
+         session_number,
+         therapist_id,
+         appointment_start,
+         duration_minutes,
+         priority,
+         session_status
+       )
+     VALUES (
+       $1,
+       COALESCE(
+         (SELECT MAX(session_number) + 1
+          FROM treatment_sessions
+          WHERE treatment_uuid = $1),
+         1
+       ),
+       $2, $3, $4, $5, 'Scheduled'
+     )
+     RETURNING session_id, session_number`,
         [
           uuid,
           chosenTherapist.therapist_id,
@@ -579,6 +603,7 @@ async function scheduleTreatment({
           treatmentPriority
         ]
       );
+
     }
 
     await client.query("COMMIT");
@@ -721,7 +746,7 @@ async function updateTreatmentSession(sessionId, session_status, session_notes =
           updated_at = NOW()
       WHERE session_id = $4
       RETURNING session_id, treatment_uuid, session_status, session_notes, outcome, completed_at`,
-    [session_status, String(session_notes || ''), String(outcome || ''), sessionId]);
+      [session_status, String(session_notes || ''), String(outcome || ''), sessionId]);
 
     // Keep the old treatment columns synchronized for screens/integrations that still use them.
     await client.query(`

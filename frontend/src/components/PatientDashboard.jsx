@@ -5,14 +5,14 @@ import {
     ChartNoAxesColumnIncreasing, Info, ClipboardList
 } from "lucide-react";
 import "../styles/patient-dashboard.css";
-
+import AyurDharaIcon from "./AyurDharaIcons";
 import {
-  Treatments,
-  Sessions,
-  Progress,
-  Notifications,
-  VitalsSymptoms,
-  HelpFAQs
+    Treatments,
+    Sessions,
+    Progress,
+    Notifications,
+    VitalsSymptoms,
+    HelpFAQs
 } from "./Pages";
 
 
@@ -316,6 +316,37 @@ export default function PatientDashboard({
                 </header>
 
                 <div className="patient-page">
+
+                    {activePage !== "dashboard" && (
+                        <section className="patient-page-hero patient-page-hero-light">
+
+                            <div className="patient-page-hero-copy">
+
+                                <span>
+                                    YOUR PATIENT WORKSPACE
+                                </span>
+
+                                <h1>
+                                    {{
+                                        treatments: "Treatment Plans",
+                                        sessions: "My Sessions",
+                                        progress: "Progress Tracking",
+                                        vitals: "Vitals & Symptoms",
+                                        notifications: "Notifications",
+                                        help: "Help & FAQs",
+                                        profile: "My Profile"
+                                    }[activePage] || "Patient Care"}
+                                </h1>
+
+                                <p>
+                                    Your Panchakarma care information, treatment activities,
+                                    and health progress.
+                                </p>
+
+                            </div>
+
+                        </section>
+                    )}
 
                     {activePage === "dashboard" ? (
                         <>

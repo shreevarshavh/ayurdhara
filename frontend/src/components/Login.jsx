@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   Mail,
@@ -22,6 +22,7 @@ export default function Login({ onLogin }) {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // Registration navigation state
   const [showRegister, setShowRegister] = useState(false);
@@ -82,9 +83,95 @@ export default function Login({ onLogin }) {
   };
 
 
-  // GOOGLE LOGIN
+  // GOOGLE SIGN-IN: Google Identity Services returns an ID token.
+  // The backend verifies that token and creates/logs in PATIENT accounts only.
+  useEffect(() => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const container = document.getElementById('google-signin-container');
+
+    if (!clientId || !container) return;
+
+    let cancelled = false;
+
+    const initializeGoogle = () => {
+      if (cancelled || !window.google?.accounts?.id) return;
+
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: async (googleResponse) => {
+          if (!googleResponse?.credential) {
+            setError('Google sign-in could not be completed. Please try again.');
+            return;
+          }
+
+          setError('');
+          setGoogleLoading(true);
+
+          try {
+            const response = await api('/api/auth/google', {
+              method: 'POST',
+              body: JSON.stringify({ credential: googleResponse.credential })
+            });
+
+            if (!response.token || !response.user || response.user.role !== 'patient') {
+              throw new Error('Google sign-in is available for patient accounts only.');
+            }
+
+            localStorage.setItem('ayurdhara_token', response.token);
+            localStorage.setItem('ayurdhara_user', JSON.stringify(response.user));
+            onLogin(response.user);
+          } catch (err) {
+            setError(err.message || 'Google sign-in failed. Please try again.');
+          } finally {
+            setGoogleLoading(false);
+          }
+        },
+        auto_select: false,
+        context: 'signin'
+      });
+
+      container.innerHTML = '';
+      window.google.accounts.id.renderButton(container, {
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+        text: 'continue_with',
+        shape: 'rectangular',
+        logo_alignment: 'left',
+        width: Math.min(container.clientWidth || 380, 420)
+      });
+    };
+
+    if (window.google?.accounts?.id) {
+      initializeGoogle();
+    } else {
+      let script = document.querySelector('script[data-google-identity="true"]');
+      if (!script) {
+        script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.dataset.googleIdentity = 'true';
+        document.head.appendChild(script);
+      }
+      script.addEventListener('load', initializeGoogle);
+      script.addEventListener('error', () => {
+        if (!cancelled) setError('Could not load Google sign-in. Check your internet connection.');
+      });
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [onLogin]);
+
   const handleGoogleLogin = () => {
-    setError('Google sign-in is not configured yet.');
+    if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) {
+      setError('Google sign-in setup is incomplete. Add VITE_GOOGLE_CLIENT_ID to frontend/.env.');
+      return;
+    }
+    if (googleLoading) return;
+    setError('Please use the Google button below to continue.');
   };
 
 
@@ -339,47 +426,19 @@ export default function Login({ onLogin }) {
           </div>
 
 
-          {/* GOOGLE LOGIN */}
-          <button
-            type="button"
-            className="google-login-btn"
-            onClick={handleGoogleLogin}
-          >
-
-            {/* GOOGLE LOGO */}
-            <svg
-              className="google-logo"
-              viewBox="0 0 48 48"
-              aria-hidden="true"
-            >
-
-              <path
-                fill="#EA4335"
-                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z"
-              />
-
-              <path
-                fill="#4285F4"
-                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.73 7.18l7.2 5.59c4.2-3.88 6.57-9.6 6.57-17.24Z"
-              />
-
-              <path
-                fill="#FBBC05"
-                d="M10.53 28.59a14.4 14.4 0 0 1 0-9.18l-7.98-6.19a23.96 23.96 0 0 0 0 21.56l7.98-6.19Z"
-              />
-
-              <path
-                fill="#34A853"
-                d="M24 48c6.48 0 11.94-2.13 15.91-5.79l-7.2-5.59c-2 1.35-4.55 2.15-8.71 2.15-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.69 14.62 48 24 48Z"
-              />
-
-            </svg>
-
-            <span>
-              Continue with Google
-            </span>
-
-          </button>
+          {/* GOOGLE SIGN-IN — rendered securely by Google Identity Services */}
+          <div className="google-signin-area">
+            <div
+              id="google-signin-container"
+              className="google-signin-container"
+              aria-label="Continue with Google"
+            />
+            {googleLoading && (
+              <p className="google-signin-status" role="status">
+                Signing in with Google…
+              </p>
+            )}
+          </div>
 
 
           {/* CREATE PATIENT ACCOUNT */}
