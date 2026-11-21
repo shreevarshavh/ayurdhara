@@ -119,7 +119,9 @@ async function createTreatmentPlan({
   treatment_requirements = "",
   duration_minutes = 60,
   priority = 2,
-  doctor_id
+  doctor_id,
+  therapist_id = null,
+  appointment_start = null
 }, currentUser) {
   const name = String(treatment_name || "").trim();
   const duration = Number(duration_minutes);
@@ -149,25 +151,78 @@ async function createTreatmentPlan({
       throw new Error("Choose the doctor responsible for this treatment");
     }
 
+    let chosenTherapistId = therapist_id || null;
+    if (chosenTherapistId) {
+      const therapistCheck = await client.query("SELECT therapist_id FROM therapists WHERE therapist_id = $1", [chosenTherapistId]);
+      if (!therapistCheck.rowCount) throw new Error("Therapist record not found");
+    }
+
+    let parsedStart = null;
+    if (appointment_start) {
+      const startCandidate = new Date(appointment_start);
+      if (Number.isNaN(startCandidate.getTime())) {
+        throw new Error("Invalid appointment date or time");
+      }
+      parsedStart = startCandidate;
+    }
+
+    const initialStatus = parsedStart ? 'Scheduled' : 'Awaiting Therapist Scheduling';
     const result = await client.query(
+
       `INSERT INTO treatment
-    (patient_id, doctor_id, p1, treatment_name, treatment_requirements,
-     duration_minutes, priority, session_status, session_notes)
-   VALUES ($1, $2, $3, $4, $5, $6, $7, 'Scheduled', '')
-   RETURNING uuid, patient_id, doctor_id, p1, treatment_name,
-             treatment_requirements, duration_minutes, priority, session_status`,
+    (
+      patient_id,
+      doctor_id,
+      therapist_id,
+      appointment_start,
+      p1,
+      treatment_name,
+      treatment_requirements,
+      duration_minutes,
+      priority,
+      session_status,
+      session_notes
+    )
+   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, '')
+   RETURNING
+     uuid,
+     patient_id,
+     doctor_id,
+     therapist_id,
+     appointment_start,
+     p1,
+     treatment_name,
+     treatment_requirements,
+     duration_minutes,
+     priority,
+     session_status`,
       [
         patient_id,
         assignedDoctorId,
+        chosenTherapistId,
+        parsedStart,
         name,
         name,
         String(treatment_requirements || "").trim(),
         duration,
-        treatmentPriority
+        treatmentPriority,
+        initialStatus
       ]
     );
+    const plan = result.rows[0];
+
+    if (chosenTherapistId && parsedStart) {
+      await client.query(
+        `INSERT INTO treatment_sessions
+           (treatment_uuid, therapist_id, appointment_start,
+            duration_minutes, priority, session_status)
+         VALUES ($1, $2, $3, $4, $5, 'Scheduled')`,
+        [plan.uuid, chosenTherapistId, parsedStart, duration, treatmentPriority]
+      );
+    }
+
     await client.query("COMMIT");
-    return result.rows[0];
+    return plan;
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
@@ -214,8 +269,8 @@ async function scheduleTreatment({
 
   const role = String(currentUser.role || "").toLowerCase();
 
-  if (!["admin", "doctor"].includes(role)) {
-    throw new Error("Only doctors and admins can schedule treatments");
+  if (!["admin", "doctor", "therapist"].includes(role)) {
+    throw new Error("Only doctors, therapists, and admins can schedule treatments");
   }
 
   // Use local wall-clock times consistently with the current Python solver.
@@ -259,16 +314,19 @@ async function scheduleTreatment({
          t.uuid,
          t.patient_id,
          t.doctor_id,
+         t.therapist_id,
          t.treatment_name,
          t.treatment_requirements,
          t.p1,
          t.priority
        FROM treatment t
        LEFT JOIN doctors d ON d.doctor_id = t.doctor_id
+       LEFT JOIN therapists th ON th.therapist_id = t.therapist_id
        WHERE t.uuid = $1
          AND (
            $2 = 'admin'
            OR ($2 = 'doctor' AND d.user_id = $3)
+           OR ($2 = 'therapist' AND th.user_id = $3)
          )
        FOR UPDATE OF t`,
       [uuid, role, currentUser.user_id]
@@ -344,13 +402,20 @@ async function scheduleTreatment({
       throw new Error("No therapists are registered in the system");
     }
 
-    // Keep the requested therapist first as a preference, if supplied.
-    if (therapist_id) {
+    // Keep the assigned or requested therapist prioritized.
+    const effectiveTherapistId = role === 'therapist'
+      ? (therapists.find(t => String(t.user_id) === String(currentUser.user_id))?.therapist_id || plan.therapist_id || therapist_id)
+      : (therapist_id || plan.therapist_id);
+
+    if (role === 'therapist' && effectiveTherapistId) {
+      // When a therapist schedules, strictly constrain the solver to their own schedule
+      therapists = therapists.filter(t => String(t.therapist_id) === String(effectiveTherapistId));
+    } else if (effectiveTherapistId) {
       therapists.sort((a, b) => {
         const aPreferred =
-          String(a.therapist_id) === String(therapist_id);
+          String(a.therapist_id) === String(effectiveTherapistId);
         const bPreferred =
-          String(b.therapist_id) === String(therapist_id);
+          String(b.therapist_id) === String(effectiveTherapistId);
 
         return Number(bPreferred) - Number(aPreferred);
       });
@@ -668,7 +733,7 @@ async function getTreatments(currentUser) {
       t.appointment_start,
       t.duration_minutes,
       t.priority,
-      COALESCE(t.session_status, 'Scheduled') AS session_status,
+      COALESCE(t.session_status, 'Awaiting Therapist Scheduling') AS session_status,
       COALESCE(t.session_notes, '') AS session_notes,
       pu.name AS patient_name,
       du.name AS doctor_name,
@@ -685,7 +750,10 @@ async function getTreatments(currentUser) {
       OR ($1 = 'therapist' AND th.user_id = $2)
       OR ($1 = 'patient' AND p.user_id = $2)
       OR ($1 = 'admin')
-    ORDER BY t.appointment_start NULLS LAST
+    ORDER BY
+      CASE WHEN t.session_status = 'Awaiting Therapist Scheduling' THEN 0 ELSE 1 END,
+      t.appointment_start NULLS FIRST,
+      t.uuid DESC
   `, [String(currentUser.role || '').toLowerCase(), currentUser.user_id]);
   return result.rows;
 }

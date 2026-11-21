@@ -1584,31 +1584,76 @@ export function Reports({
 }
 
 export function Notifications({
-  treatments,
-  alerts,
-  onNavigate
+  treatments = [],
+  alerts = [],
+  onNavigate,
+  role = "doctor"
 }) {
+  const userRole = String(role || "").toLowerCase();
+
   const alertItems = alerts.map(a => ({
     id: `a${a.id}`,
     kind: "Emergency alert",
+    tone: "rose",
+    icon: "⚑",
     title: `${a.patient_name || "Patient"} · ${a.severity} alert`,
     detail: a.symptoms,
     date: a.created_at,
     action: "alerts"
   }));
 
-  const treatmentItems = treatments
-    .filter(t => t.appointment_start)
-    .map(t => ({
-      id: `t${t.uuid}`,
-      kind: "Scheduled session",
-      title: `${t.patient_name || "Patient"} · ${t.p1 || "Panchakarma session"
-        }`,
-      detail: `${fmtDate(t.appointment_start)} at ${fmtTime(t.appointment_start)
-        } · ${t.therapist_name || "Therapist not assigned"}`,
-      date: t.appointment_start,
-      action: "schedule"
-    }));
+  let treatmentItems = [];
+  if (userRole === "therapist") {
+    // Therapists see pending treatments that need scheduling + confirmed appointments
+    treatmentItems = treatments.map((t) => {
+      const isAwaiting = !t.appointment_start || t.session_status === "Awaiting Therapist Scheduling";
+      return {
+        id: `t${t.uuid}`,
+        kind: isAwaiting ? "Action Required" : "Scheduled session",
+        tone: isAwaiting ? "amber" : "blue",
+        icon: isAwaiting ? "⚡" : "◷",
+        title: isAwaiting
+          ? `New Assignment · ${t.treatment_name || t.p1 || "Panchakarma"} (Priority ${t.priority || 3}/5)`
+          : `Confirmed Session · ${t.patient_name || "Patient"} · ${t.treatment_name || t.p1}`,
+        detail: isAwaiting
+          ? `Patient: ${t.patient_name || "Patient"} · ${t.duration_minutes || 60} min · Needs your appointment confirmation`
+          : `${fmtDate(t.appointment_start)} at ${fmtTime(t.appointment_start)} · ${t.duration_minutes || 60} min`,
+        date: t.appointment_start || new Date().toISOString(),
+        action: "treatments"
+      };
+    });
+  } else if (userRole === "patient") {
+    // Patients ONLY see confirmed appointments (never unconfirmed/awaiting scheduling)
+    treatmentItems = treatments
+      .filter((t) => t.appointment_start && t.session_status !== "Awaiting Therapist Scheduling")
+      .map((t) => ({
+        id: `t${t.uuid}`,
+        kind: "Confirmed Appointment",
+        tone: "mint",
+        icon: "✓",
+        title: `Appointment Confirmed · ${t.treatment_name || t.p1 || "Panchakarma"}`,
+        detail: `${fmtDate(t.appointment_start)} at ${fmtTime(t.appointment_start)} · Therapist: ${t.therapist_name || "Assigned"} (${t.duration_minutes || 60} min)`,
+        date: t.appointment_start,
+        action: "sessions"
+      }));
+  } else {
+    // Doctor or Admin
+    treatmentItems = treatments.map((t) => {
+      const isAwaiting = !t.appointment_start || t.session_status === "Awaiting Therapist Scheduling";
+      return {
+        id: `t${t.uuid}`,
+        kind: isAwaiting ? "Awaiting Therapist Schedule" : "Confirmed Appointment",
+        tone: isAwaiting ? "amber" : "blue",
+        icon: isAwaiting ? "◷" : "✓",
+        title: `${t.patient_name || "Patient"} · ${t.treatment_name || t.p1}`,
+        detail: isAwaiting
+          ? `Assigned to ${t.therapist_name || "Therapist"} · Awaiting therapist scheduling`
+          : `${fmtDate(t.appointment_start)} at ${fmtTime(t.appointment_start)} · Therapist: ${t.therapist_name || "Assigned"}`,
+        date: t.appointment_start || new Date().toISOString(),
+        action: "treatments"
+      };
+    });
+  }
 
   const items = [...alertItems, ...treatmentItems].sort(
     (a, b) => new Date(b.date) - new Date(a.date)
@@ -1629,11 +1674,8 @@ export function Notifications({
             key={item.id}
             onClick={() => onNavigate(item.action)}
           >
-            <div
-              className={`notification-icon ${item.kind === "Emergency alert" ? "rose" : "blue"
-                }`}
-            >
-              {item.kind === "Emergency alert" ? "⚑" : "◷"}
+            <div className={`notification-icon ${item.tone || "blue"}`}>
+              {item.icon || "◷"}
             </div>
 
             <div className="notification-body">

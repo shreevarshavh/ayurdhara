@@ -9,7 +9,6 @@ import Scheduling from "./components/Scheduling";
 import PatientDashboard from "./components/PatientDashboard";
 import Modal from "./components/Modal";
 import "./styles/ui-consistency.css";
-
 import {
   Dashboard,
   Patients,

@@ -3,13 +3,13 @@ const NAV = [
   { id: "profile", label: "My Profile", icon: "♙", group: "Overview", roles: ["patient"] },
   { id: "patients", label: "Patients", icon: "♧", group: "Care", roles: ["admin", "doctor"] },
   { id: "treatments", label: "Treatment plans", icon: "✳", group: "Care", roles: ["admin", "doctor", "therapist", "patient"] },
-  { id: "schedule", label: "Scheduling", icon: "▦", group: "Care", roles: ["admin", "doctor"] },
+  { id: "schedule", label: "Scheduling", icon: "▦", group: "Care", roles: ["admin", "therapist"] },
   { id: "sessions", label: "Sessions", icon: "◷", group: "Care", roles: ["admin", "doctor", "therapist", "patient"] },
   { id: "progress", label: "Progress tracking", icon: "↗", group: "Care", roles: ["admin", "doctor", "patient"] },
   { id: "alerts", label: "Emergency alerts", icon: "⚑", group: "Coordination", roles: ["admin", "doctor", "therapist"] },
   { id: "reports", label: "Reports", icon: "▤", group: "Coordination", roles: ["admin", "doctor"] },
   { id: "notifications", label: "Notifications", icon: "♧", group: "Coordination", roles: ["admin", "doctor", "therapist", "patient"] },
-    { id: "doctors", label: "Doctors", icon: "♙", group: "Administration", roles: ["admin"] },
+  { id: "doctors", label: "Doctors", icon: "♙", group: "Administration", roles: ["admin"] },
   { id: "therapists", label: "Therapists", icon: "♧", group: "Administration", roles: ["admin"] },
   { id: "users", label: "User management", icon: "♙", group: "Administration", roles: ["admin"] }
 ];
