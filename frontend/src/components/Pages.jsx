@@ -1139,24 +1139,36 @@ export function Sessions({
 }
 
 export function Progress({
-  patients,
-  sessions = [],
+  patients = [],
+  treatments = [],
   completed = []
 }) {
-  const pct = sessions.length
-    ? Math.round(completed.length / sessions.length * 100)
+  // Calculate progress directly from treatment records.
+  const rows = treatments || [];
+
+  const getStatus = (t) =>
+    (t.session_status || "Scheduled").toLowerCase();
+
+  const completedRows = rows.filter(
+    t => getStatus(t) === "completed"
+  );
+
+  const pct = rows.length
+    ? Math.round((completedRows.length / rows.length) * 100)
     : 0;
 
-  const statusCounts = [
+  const statusNames = [
     "Scheduled",
     "Ongoing",
     "Completed",
     "Missed",
     "Interrupted"
-  ].map(status => ({
+  ];
+
+  const statusCounts = statusNames.map(status => ({
     status,
-    count: sessions.filter(
-      s => (s.session_status || "Scheduled") === status
+    count: rows.filter(
+      t => getStatus(t) === status.toLowerCase()
     ).length
   }));
 
@@ -1165,7 +1177,7 @@ export function Progress({
       <PageHeading
         eyebrow="OUTCOME MONITORING"
         title="Progress tracking"
-        description="Track completed appointments and review each patient's session history."
+        description="Track completed appointments and review each patient's treatment history."
       />
 
       <div className="toolbar page-toolbar page-toolbar-actions-only">
@@ -1181,7 +1193,7 @@ export function Progress({
 
       <div className="progress-top-grid">
         <div className="panel completion-panel">
-          <div className="eyebrow">SESSION COMPLETION</div>
+          <div className="eyebrow">TREATMENT COMPLETION</div>
 
           <div className="completion-content">
             <div
@@ -1201,20 +1213,20 @@ export function Progress({
               </div>
 
               <div>
-                <span>Session records</span>
-                <b>{sessions.length}</b>
+                <span>Treatment records</span>
+                <b>{rows.length}</b>
               </div>
 
               <div>
                 <span>Completed</span>
-                <b>{completed.length}</b>
+                <b>{completedRows.length}</b>
               </div>
             </div>
           </div>
         </div>
 
         <div className="panel status-breakdown">
-          <h2>Session status</h2>
+          <h2>Treatment status</h2>
 
           {statusCounts.map(s => (
             <div className="bar-row" key={s.status}>
@@ -1226,9 +1238,9 @@ export function Progress({
               <div className="bar-track">
                 <span
                   style={{
-                    width: `${sessions.length
-                      ? s.count / sessions.length * 100
-                      : 0
+                    width: `${rows.length
+                        ? (s.count / rows.length) * 100
+                        : 0
                       }%`
                   }}
                 />
@@ -1243,8 +1255,8 @@ export function Progress({
           <div>
             <h2>Patient treatment progress</h2>
             <p>
-              Progress is calculated from individual session records,
-              not treatment-plan count.
+              Progress is calculated from treatment statuses
+              recorded in the system.
             </p>
           </div>
         </div>
@@ -1254,25 +1266,29 @@ export function Progress({
             <thead>
               <tr>
                 <th>Patient</th>
-                <th>Session records</th>
+                <th>Treatment records</th>
                 <th>Completed</th>
-                <th>In progress / scheduled</th>
+                <th>Remaining</th>
                 <th>Progress</th>
               </tr>
             </thead>
 
             <tbody>
               {patients.map(p => {
-                const pt = sessions.filter(
-                  s => String(s.patient_id) === String(p.patient_id)
+                const patientTreatments = rows.filter(
+                  t =>
+                    String(t.patient_id) ===
+                    String(p.patient_id)
                 );
 
-                const done = pt.filter(
-                  s => s.session_status === "Completed"
+                const done = patientTreatments.filter(
+                  t => getStatus(t) === "completed"
                 ).length;
 
-                const progress = pt.length
-                  ? Math.round(done / pt.length * 100)
+                const progress = patientTreatments.length
+                  ? Math.round(
+                    (done / patientTreatments.length) * 100
+                  )
                   : 0;
 
                 return (
@@ -1282,20 +1298,20 @@ export function Progress({
                         <div className="table-avatar">
                           {(p.name || "P").slice(0, 1)}
                         </div>
-
                         <b>{p.name}</b>
                       </div>
                     </td>
 
-                    <td>{pt.length}</td>
+                    <td>{patientTreatments.length}</td>
                     <td>{done}</td>
-                    <td>{pt.length - done}</td>
+                    <td>{patientTreatments.length - done}</td>
 
                     <td>
                       <div className="mini-progress">
-                        <span style={{ width: `${progress}%` }} />
+                        <span
+                          style={{ width: `${progress}%` }}
+                        />
                       </div>
-
                       <small>{progress}%</small>
                     </td>
                   </tr>
@@ -1303,6 +1319,12 @@ export function Progress({
               })}
             </tbody>
           </table>
+
+          {patients.length === 0 && (
+            <p className="empty-state">
+              No patient records available.
+            </p>
+          )}
         </div>
       </div>
     </>
