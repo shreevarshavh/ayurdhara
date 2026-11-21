@@ -212,54 +212,11 @@ export default function NewTreatmentPlan({
             : "No declared expertise keywords recorded.";
         }
 
-        // Availability evaluation
+        // Regular clinic working schedule
         const workDays = Array.isArray(th.work_days) && th.work_days.length ? th.work_days : [1, 2, 3, 4, 5, 6];
         const workStart = th.workday_start || "09:00";
         const workEnd = th.workday_end || "17:00";
-
-        let availabilityStatus = "schedule-known"; // neutral when no appointment date chosen
-        let availabilityMessage = `Working days: ${workDays.map((d) => DAY_NAMES[d]).join(", ")}; Hours: ${workStart} – ${workEnd}`;
-
-        if (appointmentStart) {
-          const reqDate = new Date(appointmentStart);
-          if (!Number.isNaN(reqDate.getTime())) {
-            const dayOfWeek = reqDate.getDay();
-            const pad = (n) => String(n).padStart(2, "0");
-            const reqTime = `${pad(reqDate.getHours())}:${pad(reqDate.getMinutes())}`;
-            const endMinutes = reqDate.getHours() * 60 + reqDate.getMinutes() + Number(durationMinutes || 60);
-            const reqEndTime = `${pad(Math.floor(endMinutes / 60))}:${pad(endMinutes % 60)}`;
-
-            if (!workDays.includes(dayOfWeek)) {
-              availabilityStatus = "off-day";
-              availabilityMessage = `Non-working day (${DAY_NAMES[dayOfWeek]} is outside regular clinic schedule)`;
-            } else if (reqTime < workStart || reqEndTime > workEnd) {
-              availabilityStatus = "outside-hours";
-              availabilityMessage = `Outside working hours (${workStart} – ${workEnd})`;
-            } else {
-              // Check appointment conflict with active treatments
-              const reqStartTime = reqDate.getTime();
-              const reqEndTimeMs = reqStartTime + Number(durationMinutes || 60) * 60000;
-
-              const hasConflict = treatments.some((t) => {
-                if (String(t.therapist_id) !== String(th.therapist_id)) return false;
-                if (!t.appointment_start) return false;
-                if (["Completed", "Missed"].includes(t.session_status)) return false;
-
-                const tStart = new Date(t.appointment_start).getTime();
-                const tEnd = tStart + Number(t.duration_minutes || 60) * 60000;
-                return reqStartTime < tEnd && tStart < reqEndTimeMs;
-              });
-
-              if (hasConflict) {
-                availabilityStatus = "booked";
-                availabilityMessage = "Schedule conflict: Already booked for another session at this time.";
-              } else {
-                availabilityStatus = "available";
-                availabilityMessage = "Available for the requested appointment date and time.";
-              }
-            }
-          }
-        }
+        const availabilityMessage = `Regular schedule: ${workDays.map((d) => DAY_NAMES[d]).join(", ")} (${workStart} – ${workEnd})`;
 
         return {
           ...th,
@@ -269,12 +226,11 @@ export default function NewTreatmentPlan({
           workDays,
           workStart,
           workEnd,
-          availabilityStatus,
           availabilityMessage
         };
       })
       .sort((a, b) => b.matchScore - a.matchScore);
-  }, [therapists, selectedTreatment, appointmentStart, durationMinutes, treatments]);
+  }, [therapists, selectedTreatment]);
 
   // Form Submission
   async function handleSubmit(e) {
@@ -305,14 +261,6 @@ export default function NewTreatmentPlan({
       return;
     }
 
-    if (appointmentStart) {
-      const appDate = new Date(appointmentStart);
-      if (Number.isNaN(appDate.getTime())) {
-        setFormError("Please enter a valid appointment date and time.");
-        return;
-      }
-    }
-
     // Combine clinical notes
     const clinicalNotes = [
       diseaseDescription.trim() ? `Condition / Disease: ${diseaseDescription.trim()}` : "",
@@ -329,7 +277,7 @@ export default function NewTreatmentPlan({
         duration_minutes: durationNum,
         priority: priorityNum,
         therapist_id: selectedTherapist ? selectedTherapist.therapist_id : null,
-        appointment_start: appointmentStart ? new Date(appointmentStart).toISOString() : null
+        appointment_start: null
       };
 
       const result = await api("/api/treatment/plans", {
@@ -337,7 +285,7 @@ export default function NewTreatmentPlan({
         body: JSON.stringify(payload)
       });
 
-      flash?.("success", result.message || "Treatment plan created successfully.");
+      flash?.("success", "Treatment plan saved. Assigned therapist has been notified to schedule the appointment.");
       if (onSuccess) {
         await onSuccess();
       } else if (onBack) {
@@ -634,6 +582,26 @@ export default function NewTreatmentPlan({
                     </small>
                   </div>
                 </div>
+
+                {/* EXPECTED TREATMENT DURATION */}
+                <div style={{ marginTop: "14px" }}>
+                  <label htmlFor="duration-min" style={{ display: "block", marginBottom: "4px" }}>
+                    Expected Treatment Duration (Minutes) <span style={{ color: "var(--rose)" }}>*</span>
+                  </label>
+                  <input
+                    id="duration-min"
+                    type="number"
+                    min="15"
+                    max="480"
+                    step="15"
+                    value={durationMinutes}
+                    onChange={(e) => setDurationMinutes(e.target.value)}
+                    required
+                  />
+                  <small style={{ color: "var(--muted)", fontSize: "11px", display: "block", marginTop: "3px" }}>
+                    Standard: 60 min (Range: 15–480 min). Provided to the therapist for OR-Tools appointment slot calculation.
+                  </small>
+                </div>
               </div>
             </section>
           </div>
@@ -766,15 +734,6 @@ export default function NewTreatmentPlan({
                           <span style={{ color: "#6a7b70" }}>
                             ◷ {th.availabilityMessage}
                           </span>
-                          {th.availabilityStatus === "available" && (
-                            <span style={{ color: "#19563f", fontWeight: "700" }}>✓ Available</span>
-                          )}
-                          {th.availabilityStatus === "booked" && (
-                            <span style={{ color: "var(--rose)", fontWeight: "700" }}>✕ Conflict</span>
-                          )}
-                          {th.availabilityStatus === "off-day" && (
-                            <span style={{ color: "#a87114", fontWeight: "700" }}>✕ Off-day</span>
-                          )}
                         </div>
                       </div>
                     );
@@ -799,60 +758,16 @@ export default function NewTreatmentPlan({
               )}
             </section>
 
-            {/* SECTION 5: Duration and Appointment Details */}
-            <section className="panel" style={{ padding: "20px" }}>
-              <div className="panel-header" style={{ marginBottom: "12px", paddingBottom: "10px" }}>
-                <div>
-                  <span className="eyebrow" style={{ color: "#366b4d" }}>STEP 6</span>
-                  <h2 style={{ fontSize: "16px", margin: "2px 0" }}>Duration & Appointment Schedule</h2>
-                  <p style={{ margin: 0, fontSize: "11px", color: "var(--muted)" }}>
-                    Configure session length and preferred appointment time.
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                <div>
-                  <label htmlFor="duration-min" style={{ display: "block", marginBottom: "4px" }}>
-                    Duration (Minutes) <span style={{ color: "var(--rose)" }}>*</span>
-                  </label>
-                  <input
-                    id="duration-min"
-                    type="number"
-                    min="15"
-                    max="480"
-                    step="15"
-                    value={durationMinutes}
-                    onChange={(e) => setDurationMinutes(e.target.value)}
-                    required
-                  />
-                  <small style={{ color: "var(--muted)", fontSize: "10px", display: "block", marginTop: "2px" }}>
-                    Standard: 60 min (Range: 15–480 min)
-                  </small>
-                </div>
-
-                <div>
-                  <label htmlFor="appointment-datetime" style={{ display: "block", marginBottom: "4px" }}>
-                    Requested Date & Time (Optional)
-                  </label>
-                  <input
-                    id="appointment-datetime"
-                    type="datetime-local"
-                    value={appointmentStart}
-                    onChange={(e) => setAppointmentStart(e.target.value)}
-                  />
-                  <small style={{ color: "var(--muted)", fontSize: "10px", display: "block", marginTop: "2px" }}>
-                    Select date to check therapist work schedule
-                  </small>
-                </div>
-              </div>
-            </section>
-
-            {/* SECTION 6: Plan Summary and Save Action */}
+            {/* SECTION 5: Plan Summary and Save Action */}
             <section className="panel" style={{ padding: "20px", background: "#f8fbf9", border: "1px solid #d8e5da" }}>
-              <h2 style={{ fontSize: "15px", margin: "0 0 10px", color: "#19563f" }}>Plan Formulation Summary</h2>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                <h2 style={{ fontSize: "15px", margin: 0, color: "#19563f" }}>Plan Formulation Summary</h2>
+                <span className="status warning" style={{ fontSize: "11px", fontWeight: "600" }}>
+                  Awaiting Therapist Scheduling
+                </span>
+              </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", fontSize: "11px", marginBottom: "16px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", fontSize: "11px", marginBottom: "16px" }}>
                 <div>
                   <span style={{ color: "var(--muted)" }}>Patient:</span>{" "}
                   <b>{selectedPatient ? selectedPatient.name : "Not selected"}</b>
@@ -866,17 +781,21 @@ export default function NewTreatmentPlan({
                   <b>{priority} / 5 ({PRIORITY_LEVELS.find((p) => p.value === priority)?.urgency})</b>
                 </div>
                 <div>
-                  <span style={{ color: "var(--muted)" }}>Duration:</span>{" "}
+                  <span style={{ color: "var(--muted)" }}>Expected Duration:</span>{" "}
                   <b>{durationMinutes} minutes</b>
                 </div>
                 <div>
                   <span style={{ color: "var(--muted)" }}>Assigned Therapist:</span>{" "}
-                  <b>{selectedTherapist ? selectedTherapist.name : "Unassigned (Can be scheduled later)"}</b>
+                  <b>{selectedTherapist ? selectedTherapist.name : "Unassigned"}</b>
                 </div>
                 <div>
                   <span style={{ color: "var(--muted)" }}>Appointment:</span>{" "}
-                  <b>{appointmentStart ? `${fmtDate(appointmentStart)} at ${fmtTime(appointmentStart)}` : "Not scheduled"}</b>
+                  <b style={{ color: "#a87114" }}>Awaiting Therapist Scheduling</b>
                 </div>
+              </div>
+
+              <div style={{ background: "#f5f9f6", border: "1px solid #dbe8dd", borderRadius: "6px", padding: "10px 12px", marginBottom: "16px", fontSize: "11px", color: "#365c48" }}>
+                ℹ <b>Workflow Note:</b> You prescribe the Panchakarma plan and assign the qualified therapist. The therapist schedules the appointment using Google OR-Tools. The patient will receive appointment notification once confirmed.
               </div>
 
               <div style={{ display: "flex", gap: "10px" }}>

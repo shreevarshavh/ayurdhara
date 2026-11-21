@@ -325,8 +325,12 @@ const loadData = useCallback(async () => {
             patients={patients}
             treatments={treatments}
             therapists={therapists}
-            onBack={() => setPage("treatments")}
+            onBack={() => {
+              setSearch("");
+              setPage("treatments");
+            }}
             onSuccess={async () => {
+              setSearch("");
               await loadData();
               setPage("treatments");
             }}
@@ -334,11 +338,11 @@ const loadData = useCallback(async () => {
           />
         )}
         {activeNav === "schedule" && <Scheduling treatments={treatments} therapists={therapists} selectedTreatment={selectedTreatment} setSelectedTreatment={setSelectedTreatment} form={scheduleForm} setForm={setScheduleForm} onSubmit={scheduleTreatment} busy={busy} />}
-        {activeNav === "sessions" && <Sessions treatments={scheduled} notes={sessionNotes} setNotes={setSessionNotes} onUpdate={updateSession} />}
+        {activeNav === "sessions" && <Sessions treatments={scheduled} notes={sessionNotes} setNotes={setSessionNotes} onUpdate={updateSession} role={user?.role} />}
         {activeNav === "progress" && <Progress patients={patients} treatments={treatments} completed={completed} />}
         {activeNav === "alerts" && <Alerts alerts={alerts} patients={patients} treatments={treatments} form={alertForm} setForm={setAlertForm} onCreate={() => setModal("alert")} onUpdate={updateAlert} />}
         {activeNav === "reports" && <Reports patients={patients} treatments={treatments} alerts={alerts} />}
-        {activeNav === "notifications" && <Notifications treatments={treatments} alerts={alerts} onNavigate={setPage} />}
+        {activeNav === "notifications" && <Notifications treatments={treatments} alerts={alerts} onNavigate={setPage} role={user?.role} />}
         {activeNav === "users" && <Users users={users} onAdd={() => setModal("user")} onDelete={deleteUser} />}
       </div>
       <footer className="app-footer"><span>✦</span> AyurDhara <span>·</span> Panchakarma care, organized for better healing <span className="footer-right">Built for coordinated care</span></footer>

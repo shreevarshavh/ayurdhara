@@ -34,18 +34,18 @@ export function Dashboard({user,patients,treatments,scheduled,completed,alerts,o
     {page:"progress",icon:"↗",title:"My progress",subtitle:"View completed sessions"}
   ] : isTherapist ? [
     {page:"treatments",icon:"✳",title:"Assigned treatments",subtitle:"Review your assignments"},
-    {page:"sessions",icon:"▦",title:"My schedule",subtitle:"Check assigned appointment times"},
+    {page:"schedule",icon:"▦",title:"Schedule appointments",subtitle:"Use OR-Tools constraint engine"},
     {page:"sessions",icon:"◷",title:"Update sessions",subtitle:"Record session status"}
   ] : [
     {page:"patients",icon:"♧",title:"View patients",subtitle:"Patient records"},
-    {page:"schedule",icon:"▦",title:"Schedule care",subtitle:"Resolve time conflicts"},
+    {page:role === "doctor" ? "treatments" : "schedule",icon:role === "doctor" ? "✳" : "▦",title:role === "doctor" ? "Treatment plans" : "Schedule care",subtitle:role === "doctor" ? "Prescribe & assign care" : "Resolve time conflicts"},
     {page:"alerts",icon:"⚑",title:"Emergency alerts",subtitle:"Review incidents"}
   ];
   return <>
     <div className="welcome-banner"><div><span className="banner-kicker">YOUR {role.toUpperCase()} WORKSPACE</span><h1>{title}: {user.name?.split(" ")[0] || "Welcome"} <span>✦</span></h1><p>{isPatient ? "Review your Panchakarma treatment plan, sessions, and progress." : isTherapist ? "Review assigned treatments, manage sessions, and check your schedule." : role === "doctor" ? "Manage patient care plans, prescribe treatments, and coordinate appointments." : "Manage AyurDhara users and monitor coordinated Panchakarma care."}</p></div><div className="banner-art">❧</div></div>
     <div className="metrics-grid">{metrics.map(m=><div className="metric-card" key={m.label}><div className={`metric-icon ${m.tone}`}>{m.icon}</div><div className="metric-label">{m.label}</div><div className="metric-value">{m.value}</div><div className="metric-detail">{m.detail}</div></div>)}</div>
     <div className="dashboard-grid">
-      <section className="panel schedule-panel"><div className="panel-header"><div><h2>{isPatient ? "My upcoming sessions" : isTherapist ? "My assigned schedule" : "Upcoming care schedule"}</h2><p>{isPatient ? "Your appointment details" : isTherapist ? "Treatments assigned to you" : "Appointments from treatment records"}</p></div><button className="link-button" onClick={()=>onNavigate(isPatient||isTherapist?"sessions":"schedule")}>{isPatient ? "View sessions →" : "Manage schedule →"}</button></div>
+      <section className="panel schedule-panel"><div className="panel-header"><div><h2>{isPatient ? "My upcoming sessions" : isTherapist ? "My assigned schedule" : "Upcoming care schedule"}</h2><p>{isPatient ? "Your appointment details" : isTherapist ? "Treatments assigned to you" : "Appointments from treatment records"}</p></div><button className="link-button" onClick={()=>onNavigate(isPatient||isTherapist?"sessions":role==="doctor"?"treatments":"schedule")}>{isPatient ? "View sessions →" : role === "doctor" ? "View treatment plans →" : "Manage schedule →"}</button></div>
         {scheduled.length===0?<Empty icon="◷" title={isPatient ? "No sessions scheduled yet" : "No scheduled treatments yet"} text="Scheduled appointments will appear here when they are available."/>:
         <div className="schedule-list">{scheduled.slice(0,6).map(t=><div className="schedule-row" key={t.session_id || t.uuid}><div className="time-block"><b>{fmtTime(t.appointment_start)}</b><span>{fmtDate(t.appointment_start)}</span></div><div className="schedule-avatar">{(isPatient ? (t.therapist_name||"T") : (t.patient_name||"P")).slice(0,1)}</div><div className="schedule-info"><b>{t.p1 || "Panchakarma session"}</b><span>{isPatient ? (t.therapist_name || "Care team") : isTherapist ? (t.patient_name || "Patient") : `${t.patient_name || "Patient"} · ${t.therapist_name || "Therapist not assigned"}`}</span></div><Status value={t.session_status || "Scheduled"}/></div>)}</div>}
       </section>
@@ -93,11 +93,60 @@ export function PatientProfile({ patient, onBack, onUploadPhoto, loading = false
 }
 
 export function Treatments({treatments,search,setSearch,onSchedule,onAdd,role="doctor"}) {
-  const title = role === "patient" ? "My treatment plans" : role === "therapist" ? "Assigned treatments" : "Treatment plans";
-  const description = role === "patient" ? "Review the Panchakarma treatments prescribed for you." : role === "therapist" ? "Review the treatments assigned to you by the care team." : "Review treatment records and schedule or reschedule their sessions.";
+  const isDoctor = role === "doctor";
+  const isTherapist = role === "therapist";
+  const isAdmin = role === "admin";
+  const isPatient = role === "patient";
+
+  const title = isPatient ? "My treatment plans" : isTherapist ? "Assigned treatments" : "Treatment plans";
+  const description = isPatient
+    ? "Review the Panchakarma treatments prescribed for you."
+    : isTherapist
+      ? "Review your assigned Panchakarma treatments and schedule appointments using OR-Tools."
+      : "Review prescribed treatment plans and monitor therapist scheduling progress.";
+
   return <><PageHeading eyebrow="CARE PLANNING" title={title} description={description} action={<div className="heading-actions">{["doctor","admin"].includes(role)&&<button className="primary-btn" onClick={onAdd}>＋ New treatment plan</button>}<button className="outline-btn" onClick={()=>window.print()}>⤓ Print list</button></div>}/>
     <div className="toolbar"><SearchBox value={search} onChange={setSearch} placeholder="Search patient or treatment…"/><span className="results-count">{treatments.length} treatment records</span></div>
-    <div className="treatment-grid">{treatments.map(t=><div className="panel treatment-card" key={t.uuid}><div className="treatment-card-top"><div className="treatment-icon">✳</div><Status value={t.session_status||"Scheduled"}/></div><h3>{t.treatment_name || t.p1 || "Panchakarma treatment"}</h3><p className="treatment-patient">{t.patient_name||"Patient record"} <span>·</span> {t.patient_id?shortId(t.patient_id):""}</p><div className="treatment-detail-grid"><div><small>Duration</small><b>{t.duration_minutes?`${t.duration_minutes} min`:"Not set"}</b></div><div><small>Priority</small><b>{t.priority||"—"} / 5</b></div><div><small>Appointment</small><b>{fmtDate(t.appointment_start)}</b></div><div><small>Therapist</small><b>{t.therapist_name||"Unassigned"}</b></div></div><div className="procedure-tags">{[t.p2,t.p3,t.p4,t.p5].filter(Boolean).map((p,i)=><span key={i}>{p}</span>)}</div>{t.treatment_requirements&&<p className="muted treatment-requirements">Expertise: {t.treatment_requirements}</p>}{["doctor","admin"].includes(role)&&<button className="outline-btn wide" onClick={()=>onSchedule(t)}>↻ Schedule / reschedule</button>}</div>)}</div>
+    <div className="treatment-grid">{treatments.map(t=>{
+      const isAwaiting = !t.appointment_start || t.session_status === "Awaiting Therapist Scheduling";
+      return (
+        <div className="panel treatment-card" key={t.uuid}>
+          <div className="treatment-card-top">
+            <div className="treatment-icon">✳</div>
+            <Status value={t.session_status||(isAwaiting ? "Awaiting Therapist Scheduling" : "Scheduled")}/>
+          </div>
+          <h3>{t.treatment_name || t.p1 || "Panchakarma treatment"}</h3>
+          <p className="treatment-patient">{t.patient_name||"Patient record"} <span>·</span> {t.patient_id?shortId(t.patient_id):""}</p>
+          <div className="treatment-detail-grid">
+            <div><small>Duration</small><b>{t.duration_minutes?`${t.duration_minutes} min`:"60 min"}</b></div>
+            <div><small>Priority</small><b>{t.priority||"—"} / 5</b></div>
+            <div><small>Appointment</small><b>{fmtDate(t.appointment_start)}</b></div>
+            <div><small>Therapist</small><b>{t.therapist_name||"Assigned"}</b></div>
+          </div>
+          <div className="procedure-tags">{[t.p2,t.p3,t.p4,t.p5].filter(Boolean).map((p,i)=><span key={i}>{p}</span>)}</div>
+          {t.treatment_requirements&&<p className="muted treatment-requirements">Clinical context: {t.treatment_requirements}</p>}
+          {/* Scheduling Actions: Only for Therapist and Admin. Doctors view status only */}
+          {isTherapist && (
+            <button
+              className={isAwaiting ? "primary-btn wide" : "outline-btn wide"}
+              onClick={()=>onSchedule(t)}
+              style={{marginTop: "8px"}}
+            >
+              {isAwaiting ? "⚡ Schedule with OR-Tools" : "↻ Reschedule with OR-Tools"}
+            </button>
+          )}
+          {isAdmin && (
+            <button
+              className="outline-btn wide"
+              onClick={()=>onSchedule(t)}
+              style={{marginTop: "8px"}}
+            >
+              ↻ Schedule / reschedule
+            </button>
+          )}
+        </div>
+      );
+    })}</div>
     {treatments.length===0&&<div className="panel"><Empty icon="✳" title="No treatment records" text="Treatment records from PostgreSQL will appear here when available."/></div>}
   </>;
 }
@@ -128,23 +177,72 @@ export function Reports({patients,treatments,alerts}) {
   const exportCsv=()=>{const rows=[["Patient","Treatment","Therapist","Appointment","Duration minutes","Priority","Status"],...treatments.map(t=>[t.patient_name||"",t.p1||"",t.therapist_name||"",t.appointment_start||"",t.duration_minutes||"",t.priority||"",t.session_status||"Scheduled"])];const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\r\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));a.download="ayurdhara-treatment-report.csv";a.click();URL.revokeObjectURL(a.href);};
   return <><PageHeading eyebrow="CARE INSIGHTS" title="Reports" description="Export the current treatment schedule and review summary indicators." action={<button className="primary-btn" onClick={exportCsv}>↓ Export CSV</button>}/><div className="metrics-grid report-metrics"><div className="metric-card"><div className="metric-icon mint">♧</div><div className="metric-label">Patients</div><div className="metric-value">{patients.length}</div></div><div className="metric-card"><div className="metric-icon blue">▦</div><div className="metric-label">Treatment records</div><div className="metric-value">{treatments.length}</div></div><div className="metric-card"><div className="metric-icon gold">✓</div><div className="metric-label">Completed sessions</div><div className="metric-value">{treatments.filter(t=>t.session_status==="Completed").length}</div></div><div className="metric-card"><div className="metric-icon rose">⚑</div><div className="metric-label">Emergency alerts</div><div className="metric-value">{alerts.length}</div></div></div><div className="panel table-panel"><div className="panel-header"><div><h2>Treatment report preview</h2><p>Export includes only records currently returned by the backend.</p></div><button className="link-button" onClick={exportCsv}>Download CSV →</button></div><div className="table-scroll"><table><thead><tr><th>Patient</th><th>Treatment</th><th>Therapist</th><th>Appointment</th><th>Status</th></tr></thead><tbody>{treatments.map(t=><tr key={t.uuid}><td>{t.patient_name||"—"}</td><td>{t.p1||"Treatment"}</td><td>{t.therapist_name||"—"}</td><td>{fmtDate(t.appointment_start)} {fmtTime(t.appointment_start)}</td><td><Status value={t.session_status||"Scheduled"}/></td></tr>)}</tbody></table></div></div></>;
 }
-export function Notifications({ treatments, alerts, onNavigate }) {
+export function Notifications({ treatments = [], alerts = [], onNavigate, role = "doctor" }) {
+  const userRole = String(role || "").toLowerCase();
   const alertItems = alerts.map((a) => ({
     id: `a${a.id}`,
     kind: "Emergency alert",
+    tone: "rose",
+    icon: "⚑",
     title: `${a.patient_name || "Patient"} · ${a.severity} alert`,
     detail: a.symptoms,
     date: a.created_at,
     action: "alerts"
   }));
-  const treatmentItems = treatments.filter((t) => t.appointment_start).map((t) => ({
-    id: `t${t.uuid}`,
-    kind: "Scheduled session",
-    title: `${t.patient_name || "Patient"} · ${t.p1 || "Panchakarma session"}`,
-    detail: `${fmtDate(t.appointment_start)} at ${fmtTime(t.appointment_start)} · ${t.therapist_name || "Therapist not assigned"}`,
-    date: t.appointment_start,
-    action: "schedule"
-  }));
+
+  let treatmentItems = [];
+  if (userRole === "therapist") {
+    // Therapists see pending treatments that need scheduling + confirmed appointments
+    treatmentItems = treatments.map((t) => {
+      const isAwaiting = !t.appointment_start || t.session_status === "Awaiting Therapist Scheduling";
+      return {
+        id: `t${t.uuid}`,
+        kind: isAwaiting ? "Action Required" : "Scheduled session",
+        tone: isAwaiting ? "amber" : "blue",
+        icon: isAwaiting ? "⚡" : "◷",
+        title: isAwaiting
+          ? `New Assignment · ${t.treatment_name || t.p1 || "Panchakarma"} (Priority ${t.priority || 3}/5)`
+          : `Confirmed Session · ${t.patient_name || "Patient"} · ${t.treatment_name || t.p1}`,
+        detail: isAwaiting
+          ? `Patient: ${t.patient_name || "Patient"} · ${t.duration_minutes || 60} min · Needs your appointment confirmation`
+          : `${fmtDate(t.appointment_start)} at ${fmtTime(t.appointment_start)} · ${t.duration_minutes || 60} min`,
+        date: t.appointment_start || new Date().toISOString(),
+        action: "treatments"
+      };
+    });
+  } else if (userRole === "patient") {
+    // Patients ONLY see confirmed appointments (never unconfirmed/awaiting scheduling)
+    treatmentItems = treatments
+      .filter((t) => t.appointment_start && t.session_status !== "Awaiting Therapist Scheduling")
+      .map((t) => ({
+        id: `t${t.uuid}`,
+        kind: "Confirmed Appointment",
+        tone: "mint",
+        icon: "✓",
+        title: `Appointment Confirmed · ${t.treatment_name || t.p1 || "Panchakarma"}`,
+        detail: `${fmtDate(t.appointment_start)} at ${fmtTime(t.appointment_start)} · Therapist: ${t.therapist_name || "Assigned"} (${t.duration_minutes || 60} min)`,
+        date: t.appointment_start,
+        action: "sessions"
+      }));
+  } else {
+    // Doctor or Admin
+    treatmentItems = treatments.map((t) => {
+      const isAwaiting = !t.appointment_start || t.session_status === "Awaiting Therapist Scheduling";
+      return {
+        id: `t${t.uuid}`,
+        kind: isAwaiting ? "Awaiting Therapist Schedule" : "Confirmed Appointment",
+        tone: isAwaiting ? "amber" : "blue",
+        icon: isAwaiting ? "◷" : "✓",
+        title: `${t.patient_name || "Patient"} · ${t.treatment_name || t.p1}`,
+        detail: isAwaiting
+          ? `Assigned to ${t.therapist_name || "Therapist"} · Awaiting therapist scheduling`
+          : `${fmtDate(t.appointment_start)} at ${fmtTime(t.appointment_start)} · Therapist: ${t.therapist_name || "Assigned"}`,
+        date: t.appointment_start || new Date().toISOString(),
+        action: "treatments"
+      };
+    });
+  }
+
   const items = [...alertItems, ...treatmentItems].sort(
     (a, b) => new Date(b.date) - new Date(a.date)
   );
@@ -163,8 +261,8 @@ export function Notifications({ treatments, alerts, onNavigate }) {
             key={item.id}
             onClick={() => onNavigate(item.action)}
           >
-            <div className={`notification-icon ${item.kind === "Emergency alert" ? "rose" : "blue"}`}>
-              {item.kind === "Emergency alert" ? "⚑" : "◷"}
+            <div className={`notification-icon ${item.tone || "blue"}`}>
+              {item.icon || "◷"}
             </div>
             <div className="notification-body">
               <b>{item.title}</b>

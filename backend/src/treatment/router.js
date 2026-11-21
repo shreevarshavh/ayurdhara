@@ -26,7 +26,7 @@ const {
 
 
 // Therapists with their scheduling IDs
-router.get("/therapists", authorizeRoles("doctor", "admin"), async (req, res) => {
+router.get("/therapists", authorizeRoles("doctor", "admin", "therapist"), async (req, res) => {
   try {
     res.json(await getTherapistsForScheduling());
   } catch (error) {
@@ -259,7 +259,7 @@ router.get("/doctor/:user_id", authorizeRoles("doctor", "admin"), async (req, re
 });
 
 // Schedule treatment and resolve conflicts
-router.post("/schedule", authorizeRoles("doctor", "admin"), async (req, res) => {
+router.post("/schedule", authorizeRoles("doctor", "admin", "therapist"), async (req, res) => {
   try {
     const schedule = await scheduleTreatment(req.body, req.user);
 
