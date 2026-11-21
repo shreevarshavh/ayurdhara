@@ -6,6 +6,7 @@ import Scheduling from "./components/Scheduling";
 import PatientDashboard from "./components/PatientDashboard";
 
 import Modal from "./components/Modal";
+import NewTreatmentPlan from "./components/NewTreatmentPlan";
 import {
   Dashboard, Patients, Treatments, Sessions, Progress, Alerts,
   Reports, Notifications, Users
@@ -29,7 +30,19 @@ function App() {
   const [scheduleForm, setScheduleForm] = useState({ therapist_id: "", appointment_start: "", duration_minutes: 60, priority: 2 });
   const [patientForm, setPatientForm] = useState({ name: "", email: "", phone_number: "", password: "" });
   const [userForm, setUserForm] = useState({ name: "", email: "", phone_number: "", password: "", role: "therapist" });
-  const [alertForm, setAlertForm] = useState({ patient_id: "", treatment_uuid: "", severity: "High", symptoms: "" });
+ const [alertForm, setAlertForm] = useState({
+  patient_id: "",
+  treatment_uuid: "",
+  severity: "High",
+  symptoms: "",
+});
+const [treatmentForm, setTreatmentForm] = useState({
+  patient_id: "",
+  treatment_name: "",
+  duration_minutes: 60,
+  priority: 2,
+  therapist_id: "",
+});
   const [sessionNotes, setSessionNotes] = useState({});
   const [sessionStatuses, setSessionStatuses] = useState({});
   const [busy, setBusy] = useState(false);
@@ -39,25 +52,84 @@ function App() {
     window.setTimeout(() => setNotice(null), 4500);
   };
 
-  const loadData = useCallback(async () => {
-    setLoading(true);
+ 
+const loadData = useCallback(async () => {
+  setLoading(true);
+
+  try {
+    const isAdmin =
+      String(user?.role || "").toLowerCase() === "admin";
+
     const results = await Promise.allSettled([
       api("/api/treatment/patients"),
       api("/api/treatment"),
-      api("/api/users"),
+      isAdmin
+        ? api("/api/users")
+        : Promise.resolve({ data: [] }),
       api("/api/treatment/therapists"),
-      api("/api/treatment/alerts")
+      api("/api/treatment/alerts"),
     ]);
+
     const [p, t, u, th, a] = results;
-    if (p.status === "fulfilled") setPatients(Array.isArray(p.value) ? p.value : []);
-    if (t.status === "fulfilled") setTreatments(Array.isArray(t.value) ? t.value : []);
-    if (u.status === "fulfilled") setUsers(u.value.data || []);
-    if (th.status === "fulfilled") setTherapists(Array.isArray(th.value) ? th.value : []);
-    if (a.status === "fulfilled") setAlerts(Array.isArray(a.value) ? a.value : []);
-    const failures = results.filter(r => r.status === "rejected");
-    if (failures.length) console.warn("Some AyurDhara data endpoints failed:", failures.map(f => f.reason?.message));
+
+    if (p.status === "fulfilled") {
+      setPatients(Array.isArray(p.value) ? p.value : []);
+    }
+
+    if (t.status === "fulfilled") {
+      setTreatments(Array.isArray(t.value) ? t.value : []);
+    }
+
+    if (u.status === "fulfilled") {
+      setUsers(
+        Array.isArray(u.value)
+          ? u.value
+          : Array.isArray(u.value?.data)
+            ? u.value.data
+            : []
+      );
+    }
+
+    if (th.status === "fulfilled") {
+      setTherapists(
+        Array.isArray(th.value) ? th.value : []
+      );
+    }
+
+    if (a.status === "fulfilled") {
+      setAlerts(Array.isArray(a.value) ? a.value : []);
+    }
+
+    const failures = results
+      .filter((r) => r.status === "rejected")
+      .map((r) => r.reason?.message || "Request failed");
+
+    const hasAuthFailure = results.some(
+      (r) =>
+        r.status === "rejected" &&
+        (r.reason?.message?.includes("expired") ||
+         r.reason?.message?.includes("Authentication required") ||
+         r.reason?.message?.includes("401"))
+    );
+
+    if (hasAuthFailure) {
+      localStorage.removeItem("ayurdhara_token");
+      localStorage.removeItem("ayurdhara_user");
+      setUser(null);
+      return;
+    }
+
+    if (failures.length) {
+      console.warn(
+        "Some AyurDhara data endpoints failed:",
+        failures
+      );
+    }
+  } finally {
     setLoading(false);
-  }, []);
+  }
+}, [user]);
+
 
   useEffect(() => { if (user) loadData(); }, [user, loadData]);
 
@@ -65,7 +137,7 @@ function App() {
   const scheduled = useMemo(() => treatments.filter(t => t.appointment_start), [treatments]);
   const completed = useMemo(() => treatments.filter(t => (t.session_status || "Scheduled") === "Completed"), [treatments]);
   const openAlerts = alerts.filter(a => a.status !== "Resolved");
-  const activeNav = visibleNav.some(n => n.id === page) ? page : "dashboard";
+  const activeNav = page === "new-treatment-plan" ? "treatments" : (visibleNav.some(n => n.id === page) ? page : "dashboard");
   const isPatient = String(user?.role || "").toLowerCase() === "patient";
 
   function logout() {
@@ -218,7 +290,7 @@ function App() {
 
     <main className="main-area">
       <header className="topbar">
-        <div className="crumb">AYURDHARA <span>/</span> {visibleNav.find(n => n.id === activeNav)?.label || "Dashboard"}</div>
+        <div className="crumb">AYURDHARA <span>/</span> {page === "new-treatment-plan" ? "New Treatment Plan" : (visibleNav.find(n => n.id === activeNav)?.label || "Dashboard")}</div>
         <div className="topbar-right"><div className="today">{new Date().toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", year: "numeric" })}</div><button className="icon-button" onClick={() => setPage("notifications")} title="Notifications">♧{openAlerts.length > 0 && <i />}</button><div className="top-avatar">{(user.name || "A").slice(0, 1).toUpperCase()}</div><div className="top-username"><b>{user.name}</b><span>{user.role}</span></div></div>
       </header>
       <div className="page-content">
@@ -226,13 +298,51 @@ function App() {
         {loading && <div className="loading-line"><span /> Syncing your care workspace…</div>}
         {activeNav === "dashboard" && <Dashboard user={user} patients={patients} treatments={treatments} scheduled={scheduled} completed={completed} alerts={openAlerts} onNavigate={setPage} />}
         {activeNav === "patients" && <Patients patients={filteredPatients} search={search} setSearch={setSearch} onAdd={() => setModal("patient")} />}
-        {activeNav === "treatments" && <Treatments treatments={filteredTreatments} search={search} setSearch={setSearch} onSchedule={t => { setSelectedTreatment(t.uuid); setScheduleForm({ therapist_id: t.therapist_id || "", appointment_start: t.appointment_start ? new Date(t.appointment_start).toISOString().slice(0, 16) : "", duration_minutes: t.duration_minutes || 60, priority: t.priority || 2 }); setPage("schedule"); }} />}
+       {activeNav === "treatments" && page !== "new-treatment-plan" && (
+  <Treatments
+    treatments={filteredTreatments}
+    search={search}
+    setSearch={setSearch}
+    role={user?.role}
+    onAdd={() => setPage("new-treatment-plan")}
+    onSchedule={(t) => {
+      setSelectedTreatment(t.uuid);
+      setScheduleForm({
+        therapist_id: t.therapist_id || "",
+        appointment_start: t.appointment_start
+          ? new Date(t.appointment_start).toISOString().slice(0, 16)
+          : "",
+        duration_minutes: t.duration_minutes || 60,
+        priority: t.priority || 2,
+      });
+      setPage("schedule");
+    }}
+  />
+)}
+        {page === "new-treatment-plan" && (
+          <NewTreatmentPlan
+            user={user}
+            patients={patients}
+            treatments={treatments}
+            therapists={therapists}
+            onBack={() => {
+              setSearch("");
+              setPage("treatments");
+            }}
+            onSuccess={async () => {
+              setSearch("");
+              await loadData();
+              setPage("treatments");
+            }}
+            flash={flash}
+          />
+        )}
         {activeNav === "schedule" && <Scheduling treatments={treatments} therapists={therapists} selectedTreatment={selectedTreatment} setSelectedTreatment={setSelectedTreatment} form={scheduleForm} setForm={setScheduleForm} onSubmit={scheduleTreatment} busy={busy} />}
-        {activeNav === "sessions" && <Sessions treatments={scheduled} notes={sessionNotes} setNotes={setSessionNotes} onUpdate={updateSession} />}
+        {activeNav === "sessions" && <Sessions treatments={scheduled} notes={sessionNotes} setNotes={setSessionNotes} onUpdate={updateSession} role={user?.role} />}
         {activeNav === "progress" && <Progress patients={patients} treatments={treatments} completed={completed} />}
         {activeNav === "alerts" && <Alerts alerts={alerts} patients={patients} treatments={treatments} form={alertForm} setForm={setAlertForm} onCreate={() => setModal("alert")} onUpdate={updateAlert} />}
         {activeNav === "reports" && <Reports patients={patients} treatments={treatments} alerts={alerts} />}
-        {activeNav === "notifications" && <Notifications treatments={treatments} alerts={alerts} onNavigate={setPage} />}
+        {activeNav === "notifications" && <Notifications treatments={treatments} alerts={alerts} onNavigate={setPage} role={user?.role} />}
         {activeNav === "users" && <Users users={users} onAdd={() => setModal("user")} onDelete={deleteUser} />}
       </div>
       <footer className="app-footer"><span>✦</span> AyurDhara <span>·</span> Panchakarma care, organized for better healing <span className="footer-right">Built for coordinated care</span></footer>

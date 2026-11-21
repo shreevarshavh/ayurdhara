@@ -5,8 +5,16 @@ import {
     ChartNoAxesColumnIncreasing, Info, ClipboardList
 } from "lucide-react";
 import "../styles/patient-dashboard.css";
-import AyurDharaIcon from "./AyurDharaIcons";
-import { Treatments, Sessions, Progress, Notifications, VitalsSymptoms, HelpFAQs } from "./Pages";
+
+import {
+  Treatments,
+  Sessions,
+  Progress,
+  Notifications,
+  VitalsSymptoms,
+  HelpFAQs
+} from "./Pages";
+
 
 const asDate = (value) => {
     if (!value) return null;
