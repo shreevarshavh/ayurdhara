@@ -4807,3 +4807,531 @@ h3,
         margin-left: 0;
     }
 }
+
+/* ===== Patient Vitals + Help pages: refined content layouts ===== */
+.patient-page-content {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.patient-content-kicker {
+    display: block;
+    color: #78927d;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .17em;
+    line-height: 1.4;
+}
+
+.patient-content-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.patient-content-heading h2,
+.patient-vitals-heading h2 {
+    margin: 5px 0 0;
+    color: #194b36;
+    font: 700 21px/1.25 'Playfair Display', Georgia, serif;
+    letter-spacing: -.02em;
+}
+
+.patient-help-intro {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    padding: 23px 25px;
+    border: 1px solid #e5ecdf;
+    border-radius: 17px;
+    background: linear-gradient(110deg, #fff 0%, #f2f7eb 100%);
+    box-shadow: 0 7px 22px rgba(29, 69, 45, .045);
+}
+
+.patient-help-intro-icon,
+.patient-contact-icon {
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    background: #e4efd9;
+    color: #246344;
+}
+
+.patient-help-intro h2 {
+    margin: 4px 0 5px;
+    color: #194b36;
+    font: 700 22px/1.25 'Playfair Display', Georgia, serif;
+}
+
+.patient-help-intro p {
+    margin: 0;
+    color: #74857a;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.patient-help-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 285px;
+    gap: 20px;
+    align-items: start;
+}
+
+.patient-help-main,
+.patient-vitals-record {
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid #e6ece3;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 5px 18px rgba(24, 64, 43, .04);
+}
+
+.patient-help-count,
+.patient-record-pill {
+    padding: 6px 10px;
+    border-radius: 30px;
+    background: #f0f5eb;
+    color: #64806a;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.patient-help-faq-list {
+    display: grid;
+    gap: 10px;
+}
+
+.patient-help-faq {
+    overflow: hidden;
+    border: 1px solid #e9eee7;
+    border-radius: 12px;
+    background: #fff;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.patient-help-faq[open] {
+    border-color: #cbdcbe;
+    box-shadow: 0 5px 14px rgba(28, 75, 48, .045);
+}
+
+.patient-help-faq summary {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 15px 16px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.patient-help-faq summary::-webkit-details-marker {
+    display: none;
+}
+
+.patient-faq-icon {
+    width: 37px;
+    height: 37px;
+    flex: 0 0 37px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: #f0f5eb;
+    color: #387451;
+}
+
+.patient-faq-copy {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.patient-faq-copy small {
+    color: #8a9a8c;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .13em;
+}
+
+.patient-faq-copy strong {
+    color: #294b38;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.patient-faq-toggle {
+    width: 27px;
+    height: 27px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #f4f7f1;
+    color: #54745b;
+    transition: transform .2s;
+}
+
+.patient-help-faq[open] .patient-faq-toggle {
+    transform: rotate(180deg);
+}
+
+.patient-help-faq>p {
+    margin: 0;
+    padding: 0 55px 17px 66px;
+    color: #77877c;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.patient-help-contact-card {
+    padding: 22px;
+    border: 1px solid #e2eadc;
+    border-radius: 16px;
+    background: linear-gradient(160deg, #f5f8ef, #fff);
+    box-shadow: 0 5px 18px rgba(24, 64, 43, .035);
+}
+
+.patient-contact-icon {
+    margin-bottom: 17px;
+}
+
+.patient-help-contact-card h3,
+.patient-vitals-note h3 {
+    margin: 7px 0 8px;
+    color: #194b36;
+    font: 700 20px/1.25 'Playfair Display', Georgia, serif;
+}
+
+.patient-help-contact-card p,
+.patient-vitals-note p {
+    margin: 0;
+    color: #74857a;
+    font-size: 12px;
+    line-height: 1.75;
+}
+
+.patient-contact-divider,
+.patient-note-rule {
+    height: 1px;
+    margin: 19px 0;
+    background: #e1e9dc;
+}
+
+.patient-help-contact-card>strong,
+.patient-help-contact-card>span:last-child {
+    display: block;
+}
+
+.patient-help-contact-card>strong {
+    color: #355a41;
+    font-size: 11px;
+}
+
+.patient-help-contact-card>span:last-child {
+    margin-top: 5px;
+    color: #87958a;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.patient-vitals-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 18px;
+}
+
+.patient-vitals-heading p {
+    margin: 7px 0 0;
+    color: #77877c;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.patient-vitals-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 11px;
+    border: 1px solid #e3eadf;
+    border-radius: 30px;
+    background: #fff;
+    color: #718374;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.patient-vitals-status i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #d2a34e;
+}
+
+.patient-vitals-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.patient-vital-metric {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid #e7ece4;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 5px 18px rgba(24, 64, 43, .035);
+}
+
+.patient-vital-icon {
+    width: 39px;
+    height: 39px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 14px;
+    border-radius: 12px;
+}
+
+.patient-vital-icon.sage {
+    background: #edf4e8;
+    color: #4c8055
+}
+
+.patient-vital-icon.gold {
+    background: #fbf2e2;
+    color: #b08336
+}
+
+.patient-vital-icon.blue {
+    background: #eaf3f5;
+    color: #568494
+}
+
+.patient-vital-icon.lavender {
+    background: #f0eef8;
+    color: #7970a1
+}
+
+.patient-vital-label {
+    display: block;
+    color: #75857a;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.patient-vital-metric>strong {
+    display: block;
+    margin: 7px 0 9px;
+    color: #214c36;
+    font: 700 27px/1 'Playfair Display', Georgia, serif;
+}
+
+.patient-vital-metric>strong small {
+    margin-left: 5px;
+    color: #8b998d;
+    font: 500 10px 'DM Sans', sans-serif;
+}
+
+.patient-vital-foot {
+    display: block;
+    padding-top: 10px;
+    border-top: 1px solid #eff2ed;
+    color: #9aa59b;
+    font-size: 9px;
+}
+
+.patient-vitals-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 290px;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.patient-vitals-record {
+    padding: 21px;
+}
+
+.patient-vitals-empty {
+    min-height: 155px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.patient-empty-round {
+    width: 45px;
+    height: 45px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    background: #eff5e9;
+    color: #4e8057;
+}
+
+.patient-vitals-empty strong {
+    color: #365641;
+    font-size: 12px;
+}
+
+.patient-vitals-empty p {
+    max-width: 360px;
+    margin: 6px 0 0;
+    color: #8a978d;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.patient-vitals-note {
+    padding: 22px;
+    border: 1px solid #e5ebdf;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #f0f5e9, #fff);
+}
+
+.patient-note-icon {
+    width: 39px;
+    height: 39px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 17px;
+    border-radius: 12px;
+    background: #e0ecd6;
+    color: #38714a;
+}
+
+.patient-vitals-note h3 {
+    font-size: 19px;
+}
+
+.patient-note-caption {
+    color: #7d8d80;
+    font-size: 10px;
+    line-height: 1.65;
+}
+
+.patient-brand-lockup {
+    min-width: 0;
+}
+
+.patient-brand-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    border-radius: 14px;
+    background: rgba(224, 239, 184, .12);
+}
+
+.patient-brand-mark svg {
+    width: 38px;
+    height: 38px;
+}
+
+.patient-brand-lockup strong {
+    display: block;
+    color: #fff;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 21px;
+    letter-spacing: .035em;
+    line-height: 1.1;
+}
+
+.patient-brand-lockup span:not(.patient-brand-mark) {
+    display: block;
+    margin-top: 5px;
+    color: #c4d9c8;
+    font-size: 11px;
+    letter-spacing: .02em;
+}
+
+@media(max-width:1050px) {
+
+    .patient-help-layout,
+    .patient-vitals-bottom {
+        grid-template-columns: 1fr
+    }
+
+    .patient-help-contact-card {
+        display: grid;
+        grid-template-columns: 50px 1fr;
+        column-gap: 14px;
+        align-items: center
+    }
+
+    .patient-help-contact-card .patient-contact-icon {
+        grid-row: span 2;
+        margin: 0
+    }
+
+    .patient-help-contact-card .patient-content-kicker,
+    .patient-help-contact-card h3,
+    .patient-help-contact-card p,
+    .patient-help-contact-card .patient-contact-divider,
+    .patient-help-contact-card>strong,
+    .patient-help-contact-card>span:last-child {
+        grid-column: 2
+    }
+
+    .patient-help-contact-card .patient-contact-divider {
+        margin: 12px 0
+    }
+}
+
+@media(max-width:760px) {
+    .patient-vitals-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+
+    .patient-vitals-heading {
+        align-items: flex-start;
+        flex-direction: column
+    }
+
+    .patient-help-main {
+        padding: 16px
+    }
+
+    .patient-help-intro {
+        padding: 18px
+    }
+
+    .patient-help-faq>p {
+        padding-left: 16px
+    }
+
+    .patient-faq-copy strong {
+        font-size: 11px
+    }
+}
+
+@media(max-width:420px) {
+    .patient-vitals-metrics {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px
+    }
+
+    .patient-vital-metric {
+        padding: 13px
+    }
+
+    .patient-vital-metric>strong {
+        font-size: 23px
+    }
+}

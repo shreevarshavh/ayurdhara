@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
 
 :root {
     font-family: "DM Sans", sans-serif;
@@ -2366,5 +2367,126 @@ td b {
 
     body {
         background: white
+    }
+}
+
+/* =================================
+   PATIENT PROFILE PAGE
+================================= */
+
+.patient-profile-panel {
+    width: 100%;
+    margin-top: 28px;
+    padding: 24px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e4eadf;
+    border-radius: 20px;
+    box-shadow: 0 8px 28px rgba(27, 74, 49, 0.07);
+}
+
+.patient-profile-hero {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    min-height: 220px;
+    padding: 32px;
+    border-radius: 16px;
+    background: linear-gradient(120deg, #064d35, #08734b);
+    color: #ffffff;
+    overflow: hidden;
+}
+
+.patient-profile-hero .eyebrow {
+    color: #d8e9b4;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.patient-profile-hero h2 {
+    margin: 12px 0;
+    color: #ffffff;
+    font-size: 30px;
+}
+
+.patient-profile-hero p {
+    margin: 0 0 14px;
+    color: #e0eee5;
+    overflow-wrap: anywhere;
+}
+
+.patient-profile-photo {
+    width: 145px;
+    height: 145px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+}
+
+.patient-profile-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e5efd5;
+    color: #14583c;
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.profile-photo-control {
+    margin-top: 16px;
+}
+
+.profile-photo-control input {
+    display: none;
+}
+
+.patient-profile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.patient-profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    padding: 18px;
+    background: #f6f8f3;
+    border: 1px solid #e8ede3;
+    border-radius: 12px;
+}
+
+.patient-profile-field span {
+    color: #718078;
+    font-size: 13px;
+}
+
+.patient-profile-field b {
+    color: #174c35;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+@media (max-width: 768px) {
+    .patient-profile-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px;
+    }
+
+    .patient-profile-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .patient-profile-grid {
+        grid-template-columns: 1fr;
     }
 }

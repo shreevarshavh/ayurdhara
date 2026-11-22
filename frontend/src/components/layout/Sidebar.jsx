@@ -1,6 +1,7 @@
 import React from "react";
 import { LogOut, X } from "lucide-react";
 import { ROLE_NAVIGATION, normalizeRole } from "../../config/navigation";
+import AyurDharaLogo from "../AyurDharaLogo";
 
 export default function Sidebar({
     user,
@@ -28,13 +29,12 @@ export default function Sidebar({
         <>
             <aside className={`patient-sidebar ${mobileNavOpen ? "is-open" : ""}`}>
                 <div className="patient-brand">
-                    <div className="patient-brand-mark">
-                        <span className="brand-letter">A</span>
-                    </div>
-                    <div>
-                        <strong>AYURDHARA</strong>
-                        <span>Panchakarma Care</span>
-                    </div>
+                    <AyurDharaLogo
+                        size={42}
+                        variant="light"
+                        withText={true}
+                    />
+
                     <button
                         type="button"
                         className="patient-mobile-close"

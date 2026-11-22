@@ -5,7 +5,6 @@ import {
     ClipboardList,
     CalendarDays,
     ChartNoAxesColumnIncreasing,
-    HeartPulse,
     Bell,
     Info,
     ShieldAlert,
@@ -14,6 +13,8 @@ import {
 
 // Navigation menus for each user role
 export const ROLE_NAVIGATION = {
+
+    // PATIENT
     patient: [
         {
             title: "OVERVIEW",
@@ -28,7 +29,6 @@ export const ROLE_NAVIGATION = {
                 { label: "Treatment Plans", page: "treatments", icon: ClipboardList },
                 { label: "Sessions", page: "sessions", icon: CalendarDays },
                 { label: "Progress Tracking", page: "progress", icon: ChartNoAxesColumnIncreasing },
-                { label: "Vitals & Symptoms", page: "vitals", icon: HeartPulse },
             ],
         },
         {
@@ -40,6 +40,7 @@ export const ROLE_NAVIGATION = {
         },
     ],
 
+    // THERAPIST
     therapist: [
         {
             title: "OVERVIEW",
@@ -64,6 +65,7 @@ export const ROLE_NAVIGATION = {
         },
     ],
 
+    // DOCTOR
     doctor: [
         {
             title: "OVERVIEW",
@@ -72,7 +74,6 @@ export const ROLE_NAVIGATION = {
                 { label: "Patients", page: "patients", icon: Users },
             ],
         },
-
         {
             title: "CLINICAL MANAGEMENT",
             items: [
@@ -81,13 +82,8 @@ export const ROLE_NAVIGATION = {
                 { label: "Progress Tracking", page: "progress", icon: ChartNoAxesColumnIncreasing },
                 { label: "Progress Reports", page: "reports", icon: FileText },
                 { label: "Emergency Alerts", page: "alerts", icon: ShieldAlert },
-                {
-                    label: "Scheduling",
-                    page: "schedule",
-                    icon: CalendarDays
-                },
+                { label: "Scheduling", page: "schedule", icon: CalendarDays },
             ],
-
         },
         {
             title: "SUPPORT",
@@ -97,6 +93,7 @@ export const ROLE_NAVIGATION = {
         },
     ],
 
+    // ADMIN
     admin: [
         {
             title: "OVERVIEW",
@@ -126,13 +123,11 @@ export const ROLE_NAVIGATION = {
     ],
 };
 
-// Normalize user roles
+// Normalize roles
 export function normalizeRole(role) {
     const value = String(role || "patient").trim().toLowerCase();
 
-    if (value === "practitioner") {
-        return "doctor";
-    }
+    if (value === "practitioner") return "doctor";
 
     if (["patient", "therapist", "doctor", "admin"].includes(value)) {
         return value;
@@ -141,7 +136,7 @@ export function normalizeRole(role) {
     return "patient";
 }
 
-// Get available pages for a particular role
+// Get available pages
 export function getRolePageIds(role) {
     return (
         ROLE_NAVIGATION[normalizeRole(role)] ||
