@@ -4,7 +4,6 @@ import {
     HeartPulse, Home, LogOut, Menu, Plus, UserRound, X,
     ChartNoAxesColumnIncreasing, Info, ClipboardList
 } from "lucide-react";
-import "../styles/patient-dashboard.css";
 import AyurDharaIcon from "./AyurDharaIcons";
 import { Treatments, Sessions, Progress, Notifications, VitalsSymptoms, HelpFAQs } from "./Pages";
 
@@ -158,23 +157,23 @@ export default function PatientDashboard({
     };
 
     return (
-        <div className="patient-workspace">
+        <div className="min-h-screen bg-[#f6f7f2] text-[#19372b] font-['DM_Sans',sans-serif] flex">
 
             {/* SIDEBAR */}
-            <aside className={`patient-sidebar ${mobileNavOpen ? "is-open" : ""}`}>
+            <aside className={`fixed inset-y-0 left-0 z-20 flex flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden w-[307px] max-[1450px]:w-[270px] max-[1200px]:w-[238px] max-[760px]:w-[280px] max-[760px]:transition-transform max-[760px]:duration-200 bg-[linear-gradient(160deg,#064b34_0%,#075338_58%,#075b3e_100%)] text-white p-[20px_19px_18px] ${mobileNavOpen ? "max-[760px]:translate-x-0" : "max-[760px]:-translate-x-full"}`}>
 
-                <div className="patient-brand">
-                    <div className="patient-brand-mark" aria-hidden="true">
-                        <span className="brand-letter">A</span>
+                <div className="flex items-center gap-[10px] px-[10px] pb-[20px] pt-0 border-b border-[#ffffff20] min-h-[72px]">
+                    <div className="w-[58px] h-[48px] shrink-0 text-[#e5e9a9] grid place-items-center" aria-hidden="true">
+                        <span className="font-['Playfair_Display',serif] text-[38px] font-bold text-[#e5d89b] leading-none">A</span>
                     </div>
 
                     <div>
-                        <strong>AYURDHARA</strong>
-                        <span>Panchakarma Care</span>
+                        <strong className="block font-['Playfair_Display',serif] text-[22px] font-bold tracking-[0.035em] whitespace-nowrap">AYURDHARA</strong>
+                        <span className="block text-[#c4d9c8] text-[12px] mt-[2px]">Panchakarma Care</span>
                     </div>
 
                     <button
-                        className="patient-mobile-close"
+                        className="hidden max-[760px]:block ml-auto bg-transparent border-0 text-white cursor-pointer"
                         onClick={() => setMobileNavOpen(false)}
                         aria-label="Close menu"
                     >
@@ -182,28 +181,28 @@ export default function PatientDashboard({
                     </button>
                 </div>
 
-                <div className="patient-user-chip">
-                    <div className="patient-avatar">
+                <div className="flex items-center gap-[11px] my-[18px_22px] p-[12px_13px] min-h-[70px] border border-[#ffffff35] rounded-[15px] bg-[#ffffff0b]">
+                    <div className="w-[43px] h-[43px] rounded-full grid place-items-center bg-[#e7f0d5] text-[#15563b] font-extrabold text-[17px] shrink-0">
                         {firstName.charAt(0).toUpperCase()}
                     </div>
 
-                    <div>
-                        <b>{user?.name || patient?.name || "Patient"}</b>
-                        <span>Patient</span>
+                    <div className="flex flex-col gap-[3px] min-w-0">
+                        <b className="text-[13px] font-bold whitespace-nowrap overflow-hidden text-ellipsis">{user?.name || patient?.name || "Patient"}</b>
+                        <span className="text-[11px] text-[#c4d9c8] capitalize">Patient</span>
                     </div>
 
-                    <i />
+                    <i className="w-[9px] h-[9px] bg-[#6bd47c] rounded-full ml-auto shrink-0 not-italic" />
                 </div>
 
-                <nav className="patient-nav">
+                <nav className="flex flex-col">
                     {navGroups.map((group) => (
-                        <section key={group.title}>
-                            <h3>{group.title}</h3>
+                        <section key={group.title} className="mb-[18px]">
+                            <h3 className="text-[10px] tracking-[0.12em] text-[#b9d1c1] m-[0_0_9px_13px] font-extrabold uppercase">{group.title}</h3>
 
                             {group.items.map(({ label, icon: Icon, page: navPage }) => (
                                 <button
                                     key={label}
-                                    className={`patient-nav-item ${activePage === navPage ? "active" : ""}`}
+                                    className={`w-full flex items-center gap-[13px] border-0 text-left min-h-[43px] p-[10px_13px] rounded-[12px] text-[14px] font-semibold my-[3px] transition-colors duration-200 cursor-pointer ${activePage === navPage ? "bg-[#dcebc0] text-[#124c33] shadow-[inset_4px_0_#85b77d]" : "bg-transparent text-[#e4eee6] hover:bg-[#ffffff12]"}`}
                                     onClick={() => {
                                         onNavigate(navPage);
                                         setMobileNavOpen(false);
@@ -215,7 +214,7 @@ export default function PatientDashboard({
 
                                     {label === "Notifications" &&
                                         notificationsCount > 0 && (
-                                            <em>{notificationsCount}</em>
+                                            <em className="not-italic ml-auto rounded-[20px] bg-[#d94d45] text-white px-[7px] py-[3px] text-[10px]">{notificationsCount}</em>
                                         )}
                                 </button>
                             ))}
@@ -224,21 +223,21 @@ export default function PatientDashboard({
                 </nav>
 
                 {/* SIDEBAR DECORATION - NO LOTUS */}
-                <div className="patient-sidebar-art" aria-hidden="true">
+                <div className="min-h-[174px] flex-auto mt-[10px] -mx-[19px] mb-0 p-0 relative bg-[linear-gradient(180deg,transparent_0%,rgba(19,105,66,.2)_100%)] overflow-hidden" aria-hidden="true">
                     <svg
-                        className="patient-sidebar-waves"
+                        className="absolute inset-0 w-full h-full"
                         viewBox="0 0 320 190"
                         preserveAspectRatio="none"
                     >
-                        <path d="M0 105 C65 55 102 115 165 85 S260 40 320 0 L320 190 L0 190Z" />
-                        <path d="M0 130 C70 80 115 145 185 112 S270 82 320 40" />
-                        <path d="M0 151 C72 103 120 163 195 132 S270 103 320 68" />
+                        <path className="fill-[#167449] opacity-[0.58]" d="M0 105 C65 55 102 115 165 85 S260 40 320 0 L320 190 L0 190Z" />
+                        <path className="fill-none stroke-[#a7bb65] stroke-[1.3] opacity-80" d="M0 130 C70 80 115 145 185 112 S270 82 320 40" />
+                        <path className="fill-none stroke-[#a7bb65] stroke-[1.3] opacity-80" d="M0 151 C72 103 120 163 195 132 S270 103 320 68" />
                     </svg>
                 </div>
 
                 <button
                     type="button"
-                    className="patient-signout"
+                    className="flex items-center gap-[12px] border border-[#ffffff55] bg-[#ffffff08] text-white rounded-[13px] min-h-[54px] p-[12px_14px] text-[12px] font-semibold shrink-0 mt-[8px] cursor-pointer hover:bg-[#ffffff15] transition-colors"
                     onClick={onLogout}
                     aria-label="Sign out of AyurDhara"
                 >
@@ -249,30 +248,30 @@ export default function PatientDashboard({
 
             {mobileNavOpen && (
                 <button
-                    className="patient-nav-scrim"
+                    className="hidden max-[760px]:block fixed inset-0 bg-[#10281ccc] border-0 z-15 cursor-pointer"
                     onClick={() => setMobileNavOpen(false)}
                     aria-label="Close navigation"
                 />
             )}
 
             {/* MAIN CONTENT */}
-            <main className="patient-main">
+            <main className="ml-[307px] w-[calc(100%-307px)] max-[1450px]:ml-[270px] max-[1450px]:w-[calc(100%-270px)] max-[1200px]:ml-[238px] max-[1200px]:w-[calc(100%-238px)] max-[760px]:ml-0 max-[760px]:w-full min-h-screen min-w-0 flex-1">
 
-                <header className="patient-topbar">
+                <header className="h-[70px] max-[760px]:h-[62px] bg-white border-b border-[#e8ece5] flex items-center justify-between px-[clamp(20px,3vw,44px)] max-[760px]:px-[15px] sticky top-0 z-10">
                     <button
-                        className="patient-menu-toggle"
+                        className="hidden max-[760px]:grid max-[760px]:place-items-center border-0 bg-transparent text-[#315d42] cursor-pointer"
                         onClick={() => setMobileNavOpen(true)}
                         aria-label="Open menu"
                     >
                         <Menu />
                     </button>
 
-                    <div className="patient-breadcrumb">
-                        AYURDHARA <span>/</span> <b>{({ dashboard: "Patient Dashboard", treatments: "Treatment plans", sessions: "Sessions", progress: "Progress tracking", vitals: "Vitals & Symptoms", notifications: "Notifications", help: "Help & FAQs", profile: "My Profile" })[activePage] || "Patient Dashboard"}</b>
+                    <div className="text-[10px] max-[760px]:text-[9px] font-extrabold tracking-[0.1em] text-[#6f8174]">
+                        AYURDHARA <span className="text-[#b6c2b8] px-[12px]">/</span> <b className="text-[#263e30] tracking-[0.02em]">{({ dashboard: "Patient Dashboard", treatments: "Treatment plans", sessions: "Sessions", progress: "Progress tracking", vitals: "Vitals & Symptoms", notifications: "Notifications", help: "Help & FAQs", profile: "My Profile" })[activePage] || "Patient Dashboard"}</b>
                     </div>
 
-                    <div className="patient-top-actions">
-                        <span className="patient-today">
+                    <div className="flex items-center gap-[17px] max-[760px]:gap-[9px]">
+                        <span className="text-[10px] text-[#87958b] max-[760px]:hidden">
                             {new Date().toLocaleDateString("en-IN", {
                                 weekday: "short",
                                 day: "2-digit",
@@ -282,50 +281,52 @@ export default function PatientDashboard({
                         </span>
 
                         <button
-                            className="patient-notification"
+                            className="w-[39px] h-[39px] grid place-items-center relative bg-white border border-[#e6ebe3] rounded-[12px] text-[#456d54] cursor-pointer hover:bg-[#f6f8f5] transition-colors"
                             onClick={() => onNavigate("notifications")}
                             aria-label="Notifications"
                         >
                             <Bell size={19} />
                             {notificationsCount > 0 && (
-                                <i>{notificationsCount}</i>
+                                <i className="absolute -right-[5px] -top-[5px] bg-[#d94d45] text-white rounded-[20px] not-italic text-[9px] px-[5px] py-[3px]">{notificationsCount}</i>
                             )}
                         </button>
 
-                        <div className="patient-top-user">
-                            <div className="patient-avatar">
+                        <div className="flex items-center gap-[9px]">
+                            <div className="w-[38px] h-[38px] rounded-full grid place-items-center bg-[#e7f0d5] text-[#15563b] font-extrabold text-[15px] shrink-0">
                                 {firstName.charAt(0).toUpperCase()}
                             </div>
 
-                            <div>
-                                <b>{user?.name || "Patient"}</b>
-                                <span>Patient</span>
+                            <div className="flex flex-col gap-[2px] max-[760px]:hidden">
+                                <b className="text-[11px] font-bold text-[#19372b]">{user?.name || "Patient"}</b>
+                                <span className="text-[10px] text-[#849187]">Patient</span>
                             </div>
 
-                            <ChevronDown size={16} />
+                            <ChevronDown size={16} className="max-[760px]:hidden text-[#6f8174]" />
                         </div>
                     </div>
                 </header>
 
-                <div className="patient-page">
+                <div className="w-full p-[18px_27px_20px] max-[1450px]:p-[16px_18px] max-[760px]:p-[14px]">
 
                     {activePage === "dashboard" ? (
                         <>
                             {/* HERO */}
-                            <section className="patient-hero">
-                                <div className="patient-hero-copy">
-                                    <span>YOUR PATIENT WORKSPACE</span>
-                                    <h1>
-                                        Patient Dashboard: {firstName} <b>✦</b>
+                            <section className="h-[170px] min-h-[170px] max-[760px]:min-h-[150px] max-[760px]:h-auto p-[26px_38px] max-[760px]:p-[22px_18px] mb-[18px] rounded-[16px] bg-[#075438] relative isolate overflow-hidden">
+                                <div className="absolute inset-0 z-2 pointer-events-none bg-[linear-gradient(90deg,#064b32_0%,rgba(6,75,50,.98)_29%,rgba(6,75,50,.84)_42%,rgba(6,75,50,.36)_57%,transparent_73%)]" aria-hidden="true" />
+
+                                <div className="max-w-[58%] max-[760px]:max-w-[92%] relative z-3 flex flex-col justify-center">
+                                    <span className="font-['DM_Sans',sans-serif] text-[10px] tracking-[0.18em] font-extrabold text-[#d6e5bb]">YOUR PATIENT WORKSPACE</span>
+                                    <h1 className="font-['Playfair_Display',Georgia,serif] text-[clamp(29px,2.35vw,40px)] max-[760px]:text-[24px] font-bold leading-[1.16] m-[13px_0_8px] text-white whitespace-normal">
+                                        Patient Dashboard: {firstName} <b className="text-[#d9e8a9] text-[22px]">✦</b>
                                     </h1>
-                                    <p>
+                                    <p className="m-0 font-['DM_Sans',sans-serif] text-[15px] max-[760px]:text-[13px] text-[#e0eee4] leading-[1.4] max-w-[480px]">
                                         Review your Panchakarma treatment plan, sessions,
                                         and progress.
                                     </p>
                                 </div>
 
                                 <img
-                                    className="patient-hero-art-image"
+                                    className="absolute right-0 top-0 h-full w-auto max-w-[58%] max-[760px]:max-w-none max-[760px]:w-full max-[760px]:opacity-65 object-contain object-right max-[760px]:object-[65%_center] z-1 block pointer-events-none"
                                     src="/ayurdhara-panchakarma-hero.png"
                                     alt=""
                                     aria-hidden="true"
@@ -333,7 +334,7 @@ export default function PatientDashboard({
                             </section>
 
                             {/* FOUR METRIC CARDS */}
-                            <section className="patient-metrics">
+                            <section className="grid grid-cols-4 max-[1200px]:grid-cols-2 max-[420px]:grid-cols-2 gap-[16px] max-[760px]:gap-[9px] mb-[17px]">
 
                                 <Metric
                                     icon="clipboard"
@@ -382,10 +383,10 @@ export default function PatientDashboard({
                             </section>
 
                             {/* MIDDLE CARDS */}
-                            <section className="patient-middle-grid">
+                            <section className="grid grid-cols-[minmax(0,1.2fr)_minmax(390px,0.8fr)] max-[1450px]:grid-cols-[minmax(0,1.1fr)_minmax(330px,0.9fr)] max-[1200px]:grid-cols-1 gap-[18px] max-[760px]:gap-[12px] mb-[17px]">
 
                                 {/* UPCOMING SESSIONS */}
-                                <article className="patient-card patient-upcoming-card">
+                                <article className="bg-white border border-[#e6ebe3] rounded-[16px] p-[19px_20px] max-[760px]:p-[14px] shadow-[0_4px_14px_#193c260a] min-w-0 min-h-[305px] max-[1200px]:min-h-0">
 
                                     <CardHeading
                                         icon="calendar"
@@ -396,7 +397,7 @@ export default function PatientDashboard({
                                     />
 
                                     {upcoming.length ? (
-                                        <div className="patient-session-list">
+                                        <div className="flex flex-col gap-[8px]">
                                             {upcoming.map((session) => {
                                                 const date = asDate(session.appointment_start);
                                                 const status = titleCase(
@@ -405,11 +406,11 @@ export default function PatientDashboard({
 
                                                 return (
                                                     <div
-                                                        className="patient-session-row"
+                                                        className="grid grid-cols-[48px_minmax(120px,1fr)_minmax(180px,auto)_auto] max-[1200px]:grid-cols-[48px_minmax(120px,1fr)_minmax(150px,auto)_auto] max-[760px]:grid-cols-[43px_minmax(0,1fr)_auto] items-center gap-[11px] max-[760px]:gap-[8px] border border-[#edf0e9] rounded-[12px] p-[9px]"
                                                         key={session.uuid}
                                                     >
-                                                        <div className="patient-date-chip">
-                                                            <b>
+                                                        <div className="h-[46px] rounded-[10px] bg-[#edf5e5] flex flex-col items-center justify-center text-[#326a42]">
+                                                            <b className="text-[15px] font-bold leading-none">
                                                                 {date
                                                                     ? date.toLocaleDateString(
                                                                         "en-IN",
@@ -417,7 +418,7 @@ export default function PatientDashboard({
                                                                     )
                                                                     : "—"}
                                                             </b>
-                                                            <span>
+                                                            <span className="text-[9px] mt-[3px]">
                                                                 {date
                                                                     ? date.toLocaleDateString(
                                                                         "en-IN",
@@ -427,35 +428,39 @@ export default function PatientDashboard({
                                                             </span>
                                                         </div>
 
-                                                        <div className="patient-session-name">
-                                                            <b>
+                                                        <div className="flex flex-col gap-[4px] min-w-0">
+                                                            <b className="text-[11px] font-bold text-[#33483a] whitespace-nowrap overflow-hidden text-ellipsis">
                                                                 {titleCase(
                                                                     session.procedure_type ||
                                                                     session.subtype ||
                                                                     "Panchakarma Therapy"
                                                                 )}
                                                             </b>
-                                                            <span>
+                                                            <span className="text-[9px] text-[#8b968d] whitespace-nowrap overflow-hidden text-ellipsis">
                                                                 {session.treatment_details ||
                                                                     "Prescribed therapy"}
                                                             </span>
                                                         </div>
 
-                                                        <div className="patient-session-time">
-                                                            <CalendarDays size={14} />
+                                                        <div className="grid grid-cols-[14px_auto] items-center gap-[4px_6px] text-[9px] text-[#78867b] max-[760px]:col-start-2 max-[760px]:row-start-2">
+                                                            <CalendarDays size={14} className="text-[#648b6b]" />
                                                             <span>
                                                                 {formatDate(session.appointment_start)}
                                                             </span>
-                                                            <Clock3 size={14} />
+                                                            <Clock3 size={14} className="text-[#648b6b]" />
                                                             <span>
                                                                 {formatTime(session.appointment_start)}
                                                             </span>
                                                         </div>
 
                                                         <span
-                                                            className={`patient-status ${status
-                                                                .toLowerCase()
-                                                                .replace(/\s+/g, "-")}`}
+                                                            className={`text-[9px] font-bold px-[9px] py-[6px] rounded-[20px] whitespace-nowrap max-[760px]:col-start-3 max-[760px]:row-start-1 ${
+                                                                status.toLowerCase().includes("pending")
+                                                                    ? "bg-[#fff0d9] text-[#a77829]"
+                                                                    : status.toLowerCase().includes("progress")
+                                                                    ? "bg-[#e9f0fc] text-[#5078b7]"
+                                                                    : "bg-[#e5f3e5] text-[#367448]"
+                                                            }`}
                                                         >
                                                             {status}
                                                         </span>
@@ -464,16 +469,16 @@ export default function PatientDashboard({
                                             })}
                                         </div>
                                     ) : (
-                                        <div className="patient-empty-state">
+                                        <div className="min-h-[190px] flex flex-col items-center justify-center text-center p-[7px_10px_2px] gap-[3px]">
 
                                             {/* CALENDAR ONLY - NO LEAVES */}
                                             <div
-                                                className="patient-empty-icon"
+                                                className="w-[156px] h-[104px] mb-[6px] rounded-full bg-[radial-gradient(ellipse,#f0f6e6_0%,#f0f6e6_58%,transparent_59%)] text-[#72a25c] grid place-items-center"
                                                 aria-hidden="true"
                                             >
                                                 <svg
                                                     viewBox="0 0 150 105"
-                                                    className="patient-empty-calendar-art"
+                                                    className="w-[150px] h-[105px] overflow-visible"
                                                 >
                                                     <g
                                                         fill="none"
@@ -502,22 +507,22 @@ export default function PatientDashboard({
                                                 </svg>
                                             </div>
 
-                                            <b>No upcoming sessions scheduled</b>
+                                            <b className="font-['Playfair_Display',Georgia,serif] text-[19px] font-bold text-[#102f22]">No upcoming sessions scheduled</b>
 
-                                            <p>
+                                            <p className="text-[13px] text-[#273c31] my-[4px]">
                                                 You don't have any approved appointments yet.
                                             </p>
 
-                                            <small>
+                                            <small className="text-[11px] text-[#87938a] max-w-[430px] leading-[1.5]">
                                                 You can request a session, and your practitioner
                                                 will review and schedule it.
                                             </small>
                                         </div>
                                     )}
 
-                                    <div className="patient-request-wrap">
+                                    <div className="flex flex-col items-center mt-0 gap-[8px]">
                                         <button
-                                            className="patient-request-btn"
+                                            className="flex items-center justify-center gap-[9px] bg-[#075536] hover:bg-[#06452e] text-white border-0 rounded-[12px] min-h-[43px] px-[22px] py-[11px] font-['DM_Sans',sans-serif] text-[13px] font-bold shadow-[0_4px_10px_#07553620] cursor-pointer transition-colors"
                                             onClick={requestSession}
                                         >
                                             <Plus size={17} />
@@ -525,7 +530,7 @@ export default function PatientDashboard({
                                         </button>
 
                                         {requestNotice && (
-                                            <p className="patient-request-note">
+                                            <p className="text-[10px] text-[#8a6b36] text-center m-0">
                                                 Please contact your practitioner to request
                                                 a session. They will review and approve
                                                 your appointment.
@@ -535,7 +540,7 @@ export default function PatientDashboard({
                                 </article>
 
                                 {/* CARE PROGRESS */}
-                                <article className="patient-card patient-progress-card">
+                                <article className="bg-white border border-[#e6ebe3] rounded-[16px] p-[19px_20px] max-[760px]:p-[14px] shadow-[0_4px_14px_#193c260a] min-w-0 min-h-[305px] max-[1200px]:min-h-0">
 
                                     <CardHeading
                                         icon="chart"
@@ -545,22 +550,22 @@ export default function PatientDashboard({
                                         onAction={() => onNavigate("progress")}
                                     />
 
-                                    <div className="patient-progress-content">
+                                    <div className="flex items-center justify-center gap-[28px] max-[760px]:gap-[14px] max-[420px]:flex-col p-[8px_5px_15px]">
                                         <div
-                                            className="patient-donut"
-                                            style={{ "--progress": `${progress}%` }}
+                                            className="w-[150px] h-[150px] shrink-0 max-[760px]:w-[125px] max-[760px]:h-[125px] rounded-full grid place-items-center"
+                                            style={{ background: `conic-gradient(#21804b ${progress}%, #e9eee7 0)` }}
                                         >
-                                            <div>
-                                                <b>{progress}%</b>
-                                                <span>Completed</span>
+                                            <div className="w-[124px] h-[124px] max-[760px]:w-[101px] max-[760px]:h-[101px] rounded-full bg-white flex flex-col items-center justify-center gap-[3px]">
+                                                <b className="font-['Playfair_Display',Georgia,serif] text-[36px] max-[760px]:text-[26px] font-extrabold text-[#073d2a] leading-none">{progress}%</b>
+                                                <span className="text-[10px] text-[#87948a]">Completed</span>
                                             </div>
                                         </div>
 
-                                        <div className="patient-progress-legend">
-                                            <p>
-                                                <i className="green-dot" />
+                                        <div className="flex flex-col gap-[13px] min-w-0 flex-1 max-[420px]:w-full">
+                                            <p className="grid grid-cols-[10px_minmax(0,1fr)_auto] items-center gap-[9px] m-0 text-[12px] text-[#718075]">
+                                                <i className="w-[8px] h-[8px] rounded-full bg-[#25834f] not-italic" />
                                                 Completed Sessions
-                                                <b>
+                                                <b className="text-[12px] text-[#34493a] font-bold">
                                                     {completedCount}
                                                     {totalPrescribed
                                                         ? ` / ${totalPrescribed}`
@@ -568,16 +573,16 @@ export default function PatientDashboard({
                                                 </b>
                                             </p>
 
-                                            <p>
-                                                <i className="blue-dot" />
+                                            <p className="grid grid-cols-[10px_minmax(0,1fr)_auto] items-center gap-[9px] m-0 text-[12px] text-[#718075]">
+                                                <i className="w-[8px] h-[8px] rounded-full bg-[#5a8bd0] not-italic" />
                                                 Scheduled / Ongoing
-                                                <b>{upcoming.length}</b>
+                                                <b className="text-[12px] text-[#34493a] font-bold">{upcoming.length}</b>
                                             </p>
 
-                                            <p>
-                                                <i className="gray-dot" />
+                                            <p className="grid grid-cols-[10px_minmax(0,1fr)_auto] items-center gap-[9px] m-0 text-[12px] text-[#718075]">
+                                                <i className="w-[8px] h-[8px] rounded-full bg-[#c9d0c8] not-italic" />
                                                 Remaining
-                                                <b>
+                                                <b className="text-[12px] text-[#34493a] font-bold">
                                                     {Math.max(
                                                         0,
                                                         totalPrescribed - completedCount
@@ -587,8 +592,8 @@ export default function PatientDashboard({
                                         </div>
                                     </div>
 
-                                    <div className="patient-progress-note">
-                                        <Info size={17} />
+                                    <div className="flex items-center gap-[9px] p-[11px_13px] bg-[#f0f6e8] rounded-[9px] text-[#56704f] text-[11px] leading-[1.5]">
+                                        <Info size={17} className="shrink-0" />
                                         {totalPrescribed
                                             ? `You have completed ${completedCount} of ${totalPrescribed} prescribed sessions (${progress}%).`
                                             : "Your progress will update as your care team records completed sessions."}
@@ -598,43 +603,43 @@ export default function PatientDashboard({
                             </section>
 
                             {/* QUICK ACTIONS */}
-                            <section className="patient-quick-actions patient-card">
+                            <section className="bg-white border border-[#e6ebe3] rounded-[16px] shadow-[0_4px_14px_#193c260a] min-w-0 grid grid-cols-[minmax(250px,1.2fr)_repeat(3,minmax(170px,1fr))] max-[1200px]:grid-cols-2 max-[760px]:grid-cols-1 items-center gap-[15px] min-h-[96px] p-[14px_20px] mb-[2px] relative overflow-hidden">
 
-                                <div className="patient-quick-intro">
-                                    <div className="patient-card-icon">
+                                <div className="flex items-center gap-[12px] min-w-0 max-[1200px]:col-span-2 max-[760px]:col-auto">
+                                    <div className="w-[39px] h-[39px] rounded-[12px] bg-[#eaf3e2] text-[#347448] grid place-items-center shrink-0">
                                         <AyurDharaIcon name="bolt" size={25} />
                                     </div>
 
                                     <div>
-                                        <h2>Quick Actions</h2>
-                                        <p>Frequently used features for your care</p>
+                                        <h2 className="font-['Playfair_Display',serif] text-[20px] font-bold m-[0_0_4px] text-[#183b29]">Quick Actions</h2>
+                                        <p className="text-[11px] text-[#78867c] m-0">Frequently used features for your care</p>
                                     </div>
                                 </div>
 
                                 <button
-                                    className="patient-quick-action green"
+                                    className="min-h-[58px] max-[760px]:min-h-[52px] flex items-center gap-[12px] p-[12px_16px] rounded-[13px] border text-[13px] font-bold shadow-[0_3px_8px_#173b2610] cursor-pointer hover:-translate-y-px transition-transform bg-[linear-gradient(110deg,#f4f8e9,#edf5df)] text-[#315f31] border-[#e1ebd2]"
                                     onClick={() => onNavigate("treatments")}
                                 >
                                     <AyurDharaIcon name="clipboard" size={25} />
-                                    <span>View Treatment Plan</span>
+                                    <span className="flex-1 text-left">View Treatment Plan</span>
                                     <ArrowRight size={18} />
                                 </button>
 
                                 <button
-                                    className="patient-quick-action blue"
+                                    className="min-h-[58px] max-[760px]:min-h-[52px] flex items-center gap-[12px] p-[12px_16px] rounded-[13px] border text-[13px] font-bold shadow-[0_3px_8px_#173b2610] cursor-pointer hover:-translate-y-px transition-transform bg-[linear-gradient(110deg,#f1f6ff,#e8f1ff)] text-[#2767b5] border-[#dce8fb]"
                                     onClick={() => onNavigate("sessions")}
                                 >
                                     <AyurDharaIcon name="calendar" size={24} />
-                                    <span>My Sessions</span>
+                                    <span className="flex-1 text-left">My Sessions</span>
                                     <ArrowRight size={18} />
                                 </button>
 
                                 <button
-                                    className="patient-quick-action gold"
+                                    className="min-h-[58px] max-[760px]:min-h-[52px] flex items-center gap-[12px] p-[12px_16px] rounded-[13px] border text-[13px] font-bold shadow-[0_3px_8px_#173b2610] cursor-pointer hover:-translate-y-px transition-transform bg-[linear-gradient(110deg,#fff9ed,#fff4df)] text-[#a66b13] border-[#f4e8cf]"
                                     onClick={() => onNavigate("progress")}
                                 >
                                     <AyurDharaIcon name="chart" size={24} />
-                                    <span>Track Progress</span>
+                                    <span className="flex-1 text-left">Track Progress</span>
                                     <ArrowRight size={18} />
                                 </button>
 
@@ -655,7 +660,13 @@ export default function PatientDashboard({
                     ) : activePage === "profile" ? (
                         <PatientProfilePage user={user} patient={patient} />
                     ) : (
-                        <section className="patient-card patient-page-empty"><div className="patient-empty-icon"><span>✦</span></div><h2>Care information</h2><p>This section will display information when it becomes available.</p></section>
+                        <section className="bg-white border border-[#e6ebe3] rounded-[16px] p-[19px_20px] shadow-[0_4px_14px_#193c260a] min-h-[190px] flex flex-col items-center justify-center text-center">
+                            <div className="w-[156px] h-[104px] mb-[6px] rounded-full bg-[radial-gradient(ellipse,#f0f6e6_0%,#f0f6e6_58%,transparent_59%)] text-[#72a25c] grid place-items-center">
+                                <span className="font-['Playfair_Display',Georgia,serif] text-[24px]">✦</span>
+                            </div>
+                            <h2 className="font-['Playfair_Display',serif] text-[21px] font-bold text-[#1c3829] mb-[4px]">Care information</h2>
+                            <p className="text-[13px] text-[#728076] m-0">This section will display information when it becomes available.</p>
+                        </section>
                     )}
                 </div>
             </main>
@@ -696,58 +707,66 @@ function PatientProfilePage({ user, patient }) {
     ];
 
     return (
-        <div className="patient-profile-page">
-            <section className="patient-profile-hero">
-                <div>
-                    <span className="patient-profile-eyebrow">YOUR AYURDHARA ACCOUNT</span>
-                    <h1>My Profile</h1>
-                    <p>View your registered details and personal information.</p>
+        <div className="flex flex-col w-full gap-[16px]">
+            <section className="relative flex items-center justify-between min-h-[170px] max-[760px]:min-h-[155px] p-[28px_38px] max-[760px]:p-[23px_22px] overflow-hidden isolate rounded-[16px] bg-[linear-gradient(90deg,rgba(6,75,50,.98),rgba(6,75,50,.88)_52%,rgba(6,75,50,.35)),url('/ayurdhara-panchakarma-hero.png')] bg-cover bg-[center_56%] max-[760px]:bg-[64%_center] no-repeat shadow-[0_7px_20px_rgba(18,64,42,.08)]">
+                <div className="relative z-1">
+                    <span className="block mb-[8px] text-[#769080] text-[10px] font-extrabold tracking-[0.19em] uppercase">YOUR AYURDHARA ACCOUNT</span>
+                    <h1 className="m-[0_0_8px] text-white font-['Playfair_Display',Georgia,serif] text-[clamp(29px,2.5vw,40px)] font-bold leading-[1.12]">My Profile</h1>
+                    <p className="m-0 text-[#f0f6ed] text-[14px] max-[760px]:text-[12px] leading-[1.55] max-[760px]:max-w-[85%]">View your registered details and personal information.</p>
                 </div>
-                <div className="patient-profile-hero-mark" aria-hidden="true">✦</div>
+                <div className="text-[#dce9bb] text-[76px] max-[760px]:text-[54px] opacity-70 pr-[5%] max-[760px]:pr-0" aria-hidden="true">✦</div>
             </section>
 
-            <section className="patient-profile-stats" aria-label="Profile summary">
+            <section className="grid grid-cols-4 max-[1100px]:grid-cols-2 max-[640px]:grid-cols-2 gap-[13px] max-[640px]:gap-[9px] w-full" aria-label="Profile summary">
                 {stats.map((stat) => (
-                    <article className={`patient-profile-stat ${stat.tone}`} key={stat.label}>
-                        <span className="patient-profile-stat-icon" aria-hidden="true">{stat.icon}</span>
-                        <div>
-                            <small>{stat.label}</small>
-                            <strong>{stat.value}</strong>
-                            <span>{stat.detail}</span>
+                    <article className="flex items-center max-[420px]:flex-col max-[420px]:items-start gap-[13px] max-[640px]:gap-[9px] min-w-0 min-h-[94px] max-[640px]:min-h-[82px] p-[14px_15px] max-[640px]:p-[11px] border border-[#e7ece4] rounded-[15px] bg-white shadow-[0_4px_15px_rgba(30,66,43,.055)]" key={stat.label}>
+                        <span className={`grid place-items-center shrink-0 w-[48px] h-[48px] max-[640px]:w-[42px] max-[640px]:h-[42px] rounded-[15px] max-[640px]:rounded-[13px] text-[22px] max-[640px]:text-[20px] font-bold ${
+                            stat.tone === "green"
+                                ? "bg-[#e5f2df] text-[#347c4b]"
+                                : stat.tone === "blue"
+                                ? "bg-[#e5efff] text-[#3977c9]"
+                                : stat.tone === "gold"
+                                ? "bg-[#fff0d7] text-[#b77b18]"
+                                : "bg-[#f0e5ff] text-[#8750c5]"
+                        }`} aria-hidden="true">{stat.icon}</span>
+                        <div className="flex flex-col gap-[4px] min-w-0 max-[420px]:w-full">
+                            <small className="text-[#4f665b] text-[11px] font-bold">{stat.label}</small>
+                            <strong className="text-[#123d2d] font-['Playfair_Display',Georgia,serif] text-[clamp(14px,1.25vw,20px)] max-[640px]:text-[15px] font-bold leading-[1.2] [overflow-wrap:anywhere]">{stat.value}</strong>
+                            <span className="text-[#87948c] text-[10px]">{stat.detail}</span>
                         </div>
                     </article>
                 ))}
             </section>
 
-            <section className="patient-card patient-profile-card">
-                <div className="patient-profile-summary">
+            <section className="bg-white border border-[#e6ebe3] rounded-[16px] p-[27px_30px_30px] max-[640px]:p-[19px_16px] shadow-[0_4px_14px_#193c260a]">
+                <div className="flex items-center gap-[22px] max-[640px]:gap-[14px] pt-[3px] px-0 pb-[25px] border-b border-[#e9eee7]">
                     {patient?.profile_photo ? (
-                        <img className="patient-profile-avatar-large" src={patient.profile_photo} alt={`${name} profile`} />
+                        <img className="grid place-items-center w-[112px] h-[112px] max-[640px]:w-[82px] max-[640px]:h-[82px] shrink-0 rounded-[22px] max-[640px]:rounded-[17px] object-cover border border-[#e3ebdf] shadow-[0_5px_16px_rgba(24,66,43,.08)]" src={patient.profile_photo} alt={`${name} profile`} />
                     ) : (
-                        <div className="patient-profile-avatar-large patient-profile-avatar-fallback" aria-label={`${name} initials`}>{initials || "P"}</div>
+                        <div className="grid place-items-center w-[112px] h-[112px] max-[640px]:w-[82px] max-[640px]:h-[82px] shrink-0 rounded-[22px] max-[640px]:rounded-[17px] border border-[#e3ebdf] shadow-[0_5px_16px_rgba(24,66,43,.08)] bg-[linear-gradient(145deg,#e8f2e2,#d9e9d5)] text-[#176143] font-['Playfair_Display',Georgia,serif] text-[38px] max-[640px]:text-[29px] font-bold" aria-label={`${name} initials`}>{initials || "P"}</div>
                     )}
-                    <div className="patient-profile-identity">
-                        <span className="patient-profile-eyebrow">AYURDHARA PATIENT</span>
-                        <h2>{name}</h2>
-                        <p>{email}</p>
-                        <span className="patient-profile-registered"><i /> Registered patient</span>
+                    <div className="min-w-0">
+                        <span className="block mb-[8px] text-[#769080] text-[10px] font-extrabold tracking-[0.19em] uppercase">AYURDHARA PATIENT</span>
+                        <h2 className="m-[0_0_5px] text-[#123d2d] font-['Playfair_Display',Georgia,serif] text-[29px] max-[640px]:text-[23px] font-bold leading-[1.2]">{name}</h2>
+                        <p className="m-[0_0_12px] text-[#7d8c82] text-[13px] [overflow-wrap:anywhere]">{email}</p>
+                        <span className="inline-flex items-center gap-[7px] px-[11px] py-[6px] rounded-full bg-[#e8f4e8] text-[#287447] text-[11px] font-bold"><i className="w-[7px] h-[7px] rounded-full bg-[#39a566] not-italic" /> Registered patient</span>
                     </div>
                 </div>
 
-                <div className="patient-profile-section-heading">
+                <div className="flex justify-between items-end max-[760px]:items-start max-[760px]:gap-[10px] pt-[24px] pb-[16px]">
                     <div>
-                        <span className="patient-profile-eyebrow">ACCOUNT INFORMATION</span>
-                        <h2>Personal details</h2>
-                        <p>Your information as recorded in your patient account.</p>
+                        <span className="block mb-[5px] text-[#769080] text-[10px] font-extrabold tracking-[0.19em] uppercase">ACCOUNT INFORMATION</span>
+                        <h2 className="m-[0_0_4px] text-[#143e2e] font-['Playfair_Display',Georgia,serif] text-[23px] font-bold">Personal details</h2>
+                        <p className="m-0 text-[#87948c] text-[12px]">Your information as recorded in your patient account.</p>
                     </div>
-                    <span className="patient-profile-detail-count">{details.length} details</span>
+                    <span className="text-[12px] font-bold text-[#456d54] bg-[#edf5e8] px-[10px] py-[4px] rounded-full">{details.length} details</span>
                 </div>
 
-                <div className="patient-profile-details">
+                <div className="grid grid-cols-2 max-[640px]:grid-cols-1 [column-gap:28px]">
                     {details.map(([label, value]) => (
-                        <div className="patient-profile-detail" key={label}>
-                            <span>{label}</span>
-                            <strong>{value || "Not provided"}</strong>
+                        <div className="min-w-0 min-h-[72px] p-[14px_4px] border-b border-[#edf0eb] flex flex-col justify-center gap-[7px]" key={label}>
+                            <span className="text-[#829087] text-[10px] font-extrabold tracking-[0.09em] uppercase">{label}</span>
+                            <strong className="text-[#244638] text-[13px] font-bold [overflow-wrap:anywhere]">{value || "Not provided"}</strong>
                         </div>
                     ))}
                 </div>
@@ -763,16 +782,38 @@ function LeafNavIcon() {
 
 /* METRIC CARD */
 function Metric({ icon, tone, label, value, detail }) {
+    const toneStyles = {
+        green: {
+            card: "bg-[linear-gradient(120deg,#fff,#f4f8ed)]",
+            icon: "bg-[#e7f2df] text-[#3b7b4b]"
+        },
+        blue: {
+            card: "bg-[linear-gradient(120deg,#fff,#f1f6ff)]",
+            icon: "bg-[#e4edfc] text-[#3d75c4]"
+        },
+        gold: {
+            card: "bg-[linear-gradient(120deg,#fff,#fff8ec)]",
+            icon: "bg-[#fff0d8] text-[#b88735]"
+        },
+        rose: {
+            card: "bg-[linear-gradient(120deg,#fff,#fff2f1)]",
+            icon: "bg-[#fde8e5] text-[#c35c50]"
+        }
+    }[tone] || {
+        card: "bg-white",
+        icon: "bg-[#e7f2df] text-[#3b7b4b]"
+    };
+
     return (
-        <article className={`patient-metric ${tone}`}>
-            <div className="patient-metric-icon">
+        <article className={`h-[130px] min-h-[130px] max-[760px]:min-h-[112px] max-[760px]:h-auto p-[17px_20px] max-[1450px]:p-[15px_13px] max-[760px]:p-[12px] gap-[14px] max-[1450px]:gap-[10px] max-[760px]:gap-[9px] rounded-[15px] flex items-start relative overflow-hidden border border-[#e6ebe3] shadow-[0_4px_12px_#193c2610] ${toneStyles.card}`}>
+            <div className={`w-[55px] h-[55px] shrink-0 max-[1450px]:w-[46px] max-[1450px]:h-[46px] max-[760px]:w-[38px] max-[760px]:h-[38px] rounded-[16px] max-[760px]:rounded-[12px] grid place-items-center ${toneStyles.icon}`}>
                 <AyurDharaIcon name={icon} size={29} />
             </div>
 
-            <div className="patient-metric-copy">
-                <span>{label}</span>
-                <b>{value}</b>
-                <small>{detail}</small>
+            <div className="flex flex-col gap-[5px] pt-[2px] min-w-0">
+                <span className="text-[14px] max-[1350px]:text-[12px] max-[760px]:text-[10px] font-bold text-[#263c30] whitespace-nowrap max-[1350px]:whitespace-normal leading-[1.25]">{label}</span>
+                <b className="font-['Playfair_Display',Georgia,serif] text-[36px] max-[1350px]:text-[31px] max-[760px]:text-[26px] font-extrabold text-[#073d2a] leading-[1.05] mt-[1px]">{value}</b>
+                <small className="font-['DM_Sans',sans-serif] text-[11px] max-[760px]:text-[9px] text-[#78867d] leading-[1.35] max-w-[205px]">{detail}</small>
             </div>
         </article>
     );
@@ -787,20 +828,19 @@ function CardHeading({
     onAction
 }) {
     return (
-        <div className="patient-card-heading">
-            <div className="patient-card-title">
-
-                <div className="patient-card-icon">
+        <div className="flex items-center justify-between gap-[12px] mb-[17px]">
+            <div className="flex items-center gap-[11px] min-w-0">
+                <div className="w-[39px] h-[39px] rounded-[12px] bg-[#eaf3e2] text-[#347448] grid place-items-center shrink-0">
                     <AyurDharaIcon name={icon} size={22} />
                 </div>
 
                 <div>
-                    <h2>{title}</h2>
-                    <p>{subtitle}</p>
+                    <h2 className="font-['Playfair_Display',serif] text-[21px] max-[420px]:text-[16px] font-bold m-[0_0_3px] text-[#1c3829]">{title}</h2>
+                    <p className="m-0 text-[12px] max-[420px]:text-[9px] text-[#869289]">{subtitle}</p>
                 </div>
             </div>
 
-            <button onClick={onAction}>
+            <button onClick={onAction} className="flex items-center gap-[5px] border-0 bg-transparent text-[#17613d] font-['DM_Sans',sans-serif] text-[10px] max-[420px]:text-[9px] font-bold whitespace-nowrap cursor-pointer hover:underline">
                 {action}
                 <ArrowRight size={16} />
             </button>

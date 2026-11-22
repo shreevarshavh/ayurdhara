@@ -510,31 +510,31 @@ function App() {
 
   // Main application
   return (
-    <div className="app-shell">
+    <div className="min-h-screen flex">
 
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className="w-[248px] max-[1200px]:px-[10px] max-[900px]:w-[74px] max-[900px]:p-[17px_8px] max-[600px]:w-[57px] max-[600px]:p-[12px_5px] bg-white border-r border-[#e6ebe4] fixed inset-y-0 left-0 flex flex-col p-[22px_14px_14px] z-10 overflow-y-auto">
 
-        <div className="sidebar-brand">
-          <div className="brand-symbol">✺</div>
+        <div className="flex items-center gap-[10px] p-[0_12px_23px] max-[900px]:justify-center max-[900px]:p-[0_0_20px] border-b border-[#edf0eb]">
+          <div className="w-[35px] h-[35px] rounded-[11px] bg-[#e7f2e6] text-[#286344] grid place-items-center text-[25px] shrink-0 font-bold">✺</div>
 
-          <div>
-            <strong>AYURDHARA</strong>
-            <small>Panchakarma Care</small>
+          <div className="max-[900px]:hidden">
+            <strong className="block font-['Manrope',sans-serif] text-[14px] tracking-[0.11em] text-[#244b36] font-bold">AYURDHARA</strong>
+            <small className="text-[10px] text-[#859287] block mt-[2px]">Panchakarma Care</small>
           </div>
         </div>
 
-        <div className="side-user">
-          <div className="avatar">
+        <div className="flex items-center gap-[10px] p-[18px_9px_20px] max-[900px]:justify-center max-[900px]:p-[15px_0] border-b border-[#edf0eb]">
+          <div className="w-[34px] h-[34px] grid place-items-center rounded-full bg-[#e4eee3] text-[#2c6946] font-extrabold text-[13px] shrink-0">
             {(user.name || "A").slice(0, 1).toUpperCase()}
           </div>
 
-          <div className="side-user-text">
-            <b>{user.name}</b>
-            <span>{user.role}</span>
+          <div className="flex flex-1 flex-col gap-[3px] min-w-0 max-[900px]:hidden">
+            <b className="text-[12px] whitespace-nowrap overflow-hidden text-ellipsis font-bold">{user.name}</b>
+            <span className="text-[10px] capitalize text-[#7d8a80]">{user.role}</span>
           </div>
 
-          <span className="online-dot" />
+          <span className="w-[7px] h-[7px] rounded-full bg-[#62a66f] self-start mt-[5px] max-[900px]:hidden" />
         </div>
 
         {["Overview", "Care", "Coordination", "Administration"].map(
@@ -546,23 +546,23 @@ function App() {
             if (!items.length) return null;
 
             return (
-              <div className="nav-group" key={group}>
-                <div className="nav-heading">{group}</div>
+              <div className="pt-[14px] first:pt-[10px]" key={group}>
+                <div className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-[#829184] p-[0_12px] mb-[7px] max-[900px]:hidden">{group}</div>
 
                 {items.map((n) => (
                   <button
                     key={n.id}
-                    className={`nav-item ${
-                      activeNav === n.id ? "active" : ""
+                    className={`w-full flex items-center gap-[10px] max-[900px]:justify-center border-0 rounded-[9px] p-[9px_12px] max-[900px]:p-[11px_6px] text-[12px] font-bold mb-[3px] transition-colors cursor-pointer ${
+                      activeNav === n.id ? "bg-[#e4f1e6] text-[#19563f]" : "bg-transparent text-[#4b6154] hover:bg-[#f1f6f0] hover:text-[#19563f]"
                     }`}
                     onClick={() => navigatePage(n.id)}
                   >
-                    <span className="nav-icon">{n.icon}</span>
-                    <span>{n.label}</span>
+                    <span className="text-[16px] max-[900px]:text-[18px] w-[20px] text-center shrink-0">{n.icon}</span>
+                    <span className="max-[900px]:hidden">{n.label}</span>
 
                     {n.id === "alerts" &&
                       openAlerts.length > 0 && (
-                        <em className="nav-count">
+                        <em className="ml-auto text-[9px] bg-[#d85c54] text-white rounded-[20px] p-[3px_6px] not-italic max-[900px]:hidden">
                           {openAlerts.length}
                         </em>
                       )}
@@ -573,41 +573,41 @@ function App() {
           }
         )}
 
-        <div className="sidebar-bottom">
-          <div className="wellness-card">
-            <span>✦</span>
-            <b>Care, in balance.</b>
-            <p>
+        <div className="mt-auto pt-[16px]">
+          <div className="bg-[#f4f8f2] border border-[#e7efe4] rounded-[12px] p-[13px] mb-[12px] max-[900px]:hidden">
+            <span className="text-[#588e63] text-[16px]">✦</span>
+            <b className="block text-[11px] m-[4px_0_2px] font-bold">Care, in balance.</b>
+            <p className="text-[10px] text-[#7f8e82] leading-[1.4] m-0">
               Every session is a step toward better wellbeing.
             </p>
           </div>
 
           <button
-            className="nav-item logout"
+            className="w-full flex items-center gap-[10px] max-[900px]:justify-center border-0 rounded-[9px] p-[9px_12px] max-[900px]:p-[11px_6px] text-[12px] font-bold mb-[3px] text-[#b04a44] hover:bg-[#faeae8] transition-colors cursor-pointer"
             onClick={logout}
           >
-            <span className="nav-icon">↪</span>
-            Sign out
+            <span className="text-[16px] max-[900px]:text-[18px] w-[20px] text-center shrink-0">↪</span>
+            <span className="max-[900px]:hidden">Sign out</span>
           </button>
         </div>
 
       </aside>
 
       {/* Main content */}
-      <main className="main-area">
+      <main className="ml-[248px] max-[900px]:ml-[74px] max-[600px]:ml-[57px] flex-1 min-w-0 bg-[#f5f7f3] flex flex-col">
 
         {/* Topbar */}
-        <header className="topbar">
+        <header className="h-[70px] max-[600px]:h-[58px] bg-white border-b border-[#e6ebe5] flex items-center justify-between px-[32px] max-[1200px]:px-[20px] max-[600px]:px-[13px] sticky top-0 z-[9]">
 
-          <div className="crumb">
+          <div className="text-[10px] max-[600px]:text-[8px] font-extrabold tracking-[0.14em] text-[#869588] uppercase [&>span]:text-[#b3c1b6] [&>span]:px-[6px]">
             AYURDHARA <span>/</span>{" "}
             {visibleNav.find((n) => n.id === activeNav)?.label ||
               "Dashboard"}
           </div>
 
-          <div className="topbar-right">
+          <div className="flex items-center gap-[14px] max-[600px]:gap-[8px]">
 
-            <div className="today">
+            <div className="text-[10px] text-[#869588] font-bold max-[900px]:hidden">
               {new Date().toLocaleDateString("en-IN", {
                 weekday: "short",
                 day: "2-digit",
@@ -617,46 +617,46 @@ function App() {
             </div>
 
             <button
-              className="icon-button"
+              className="relative border border-[#e6ebe5] bg-white rounded-[10px] w-[38px] h-[38px] text-[18px] text-[#476a54] grid place-items-center cursor-pointer"
               onClick={() => navigatePage("notifications")}
               title="Notifications"
             >
               ♧
-              {openAlerts.length > 0 && <i />}
+              {openAlerts.length > 0 && <i className="absolute right-[7px] top-[6px] w-[7px] h-[7px] rounded-full bg-[#c9554d] border border-white" />}
             </button>
 
-            <div className="top-avatar">
+            <div className="w-[34px] h-[34px] grid place-items-center rounded-full bg-[#e4eee3] text-[#2c6946] font-extrabold text-[13px] shrink-0">
               {(user.name || "A").slice(0, 1).toUpperCase()}
             </div>
 
-            <div className="top-username">
-              <b>{user.name}</b>
-              <span>{user.role}</span>
+            <div className="flex flex-col gap-[1px] max-[900px]:hidden">
+              <b className="text-[11px] font-bold">{user.name}</b>
+              <span className="text-[9px] capitalize text-[#7d8a80]">{user.role}</span>
             </div>
 
           </div>
         </header>
 
         {/* Page content */}
-        <div className="page-content">
+        <div className="p-[27px_32px] max-[1200px]:p-[22px_20px] max-[600px]:p-[19px_12px] min-h-[calc(100vh-120px)] max-[600px]:min-h-[calc(100vh-110px)] flex-1">
 
           {notice && (
-            <div className={`toast ${notice.type}`}>
+            <div className={`fixed right-[24px] bottom-[24px] z-40 p-[12px_18px] rounded-[10px] flex items-center gap-[10px] text-[12px] font-bold shadow-[0_10px_30px_#08211422] ${notice.type === "success" ? "bg-[#19563f] text-white" : "bg-[#b13b35] text-white"}`}>
               <span>
                 {notice.type === "success" ? "✓" : "!"}
               </span>
 
               {notice.message}
 
-              <button onClick={() => setNotice(null)}>
+              <button className="border-0 bg-transparent text-white text-[16px] cursor-pointer ml-[6px]" onClick={() => setNotice(null)}>
                 ×
               </button>
             </div>
           )}
 
           {loading && (
-            <div className="loading-line">
-              <span />
+            <div className="text-[11px] text-[#6d7f73] flex items-center gap-[8px] mb-[12px]">
+              <span className="w-[14px] h-[14px] border-2 border-[#a3bda8] border-t-[#266b4c] rounded-full animate-spin" />
               Syncing your care workspace…
             </div>
           )}
@@ -815,11 +815,11 @@ function App() {
         </div>
 
         {/* Footer */}
-        <footer className="app-footer">
+        <footer className="p-[18px_32px] max-[600px]:p-[14px] max-[600px]:text-[9px] border-t border-[#e7ece5] text-[11px] text-[#8a968d] flex items-center gap-[7px] bg-[#f7f9f5] mt-auto">
           <span>✦</span> AyurDhara <span>·</span>
           Panchakarma care, organized for better healing
 
-          <span className="footer-right">
+          <span className="ml-auto max-[600px]:hidden">
             Built for coordinated care
           </span>
         </footer>
@@ -842,12 +842,13 @@ function App() {
           {/* Patient form */}
           {modal === "patient" && (
             <form
-              className="modal-form"
+              className="flex flex-col gap-[9px]"
               onSubmit={createPatient}
             >
-              <label>Full name</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Full name</label>
 
               <input
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 value={patientForm.name}
                 onChange={(e) =>
                   setPatientForm({
@@ -858,9 +859,10 @@ function App() {
                 required
               />
 
-              <label>Email</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Email</label>
 
               <input
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 type="email"
                 value={patientForm.email}
                 onChange={(e) =>
@@ -872,9 +874,10 @@ function App() {
                 required
               />
 
-              <label>Phone number</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Phone number</label>
 
               <input
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 value={patientForm.phone_number}
                 onChange={(e) =>
                   setPatientForm({
@@ -884,9 +887,10 @@ function App() {
                 }
               />
 
-              <label>Temporary password</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Temporary password</label>
 
               <input
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 type="password"
                 minLength="8"
                 value={patientForm.password}
@@ -899,13 +903,13 @@ function App() {
                 required
               />
 
-              <p className="form-hint">
+              <p className="text-[10px] text-[#869389] leading-[1.4] m-[4px_0_6px]">
                 A patient account and patient record will be
                 created in your existing database.
               </p>
 
               <button
-                className="primary-btn wide"
+                className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[9px] transition-[transform,background] duration-150 bg-[#19563f] text-white shadow-[0_4px_10px_#19563f16] hover:bg-[#124630] hover:-translate-y-px cursor-pointer w-full disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={busy}
               >
                 {busy ? "Saving…" : "Create patient"}
@@ -916,12 +920,13 @@ function App() {
           {/* User form */}
           {modal === "user" && (
             <form
-              className="modal-form"
+              className="flex flex-col gap-[9px]"
               onSubmit={createUser}
             >
-              <label>Full name</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Full name</label>
 
               <input
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 value={userForm.name}
                 onChange={(e) =>
                   setUserForm({
@@ -932,9 +937,10 @@ function App() {
                 required
               />
 
-              <label>Email</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Email</label>
 
               <input
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 type="email"
                 value={userForm.email}
                 onChange={(e) =>
@@ -946,9 +952,10 @@ function App() {
                 required
               />
 
-              <label>Phone number</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Phone number</label>
 
               <input
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 value={userForm.phone_number}
                 onChange={(e) =>
                   setUserForm({
@@ -958,9 +965,10 @@ function App() {
                 }
               />
 
-              <label>Temporary password</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Temporary password</label>
 
               <input
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 type="password"
                 minLength="8"
                 value={userForm.password}
@@ -973,9 +981,10 @@ function App() {
                 required
               />
 
-              <label>Role</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Role</label>
 
               <select
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 value={userForm.role}
                 onChange={(e) =>
                   setUserForm({
@@ -990,14 +999,14 @@ function App() {
                 <option value="ADMIN">Admin</option>
               </select>
 
-              <p className="form-hint">
+              <p className="text-[10px] text-[#869389] leading-[1.4] m-[4px_0_6px]">
                 Only use this admin tool for trusted team
                 accounts. New doctor/therapist records may need
                 their profile details added separately.
               </p>
 
               <button
-                className="primary-btn wide"
+                className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[9px] transition-[transform,background] duration-150 bg-[#19563f] text-white shadow-[0_4px_10px_#19563f16] hover:bg-[#124630] hover:-translate-y-px cursor-pointer w-full disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={busy}
               >
                 {busy ? "Saving…" : "Create user"}
@@ -1008,12 +1017,13 @@ function App() {
           {/* Emergency alert form */}
           {modal === "alert" && (
             <form
-              className="modal-form"
+              className="flex flex-col gap-[9px]"
               onSubmit={createAlert}
             >
-              <label>Patient</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Patient</label>
 
               <select
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 value={alertForm.patient_id}
                 onChange={(e) =>
                   setAlertForm({
@@ -1036,9 +1046,10 @@ function App() {
                 ))}
               </select>
 
-              <label>Related treatment (optional)</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Related treatment (optional)</label>
 
               <select
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 value={alertForm.treatment_uuid}
                 onChange={(e) =>
                   setAlertForm({
@@ -1058,9 +1069,10 @@ function App() {
                 ))}
               </select>
 
-              <label>Severity</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Severity</label>
 
               <select
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 value={alertForm.severity}
                 onChange={(e) =>
                   setAlertForm({
@@ -1074,9 +1086,10 @@ function App() {
                 <option>Medium</option>
               </select>
 
-              <label>Symptoms / observations</label>
+              <label className="text-[11px] font-bold text-[#506158] mt-[5px]">Symptoms / observations</label>
 
               <textarea
+                className="border border-[#dfe6df] rounded-[8px] p-[12px_13px] bg-[#fcfdfb] text-[#20372f] outline-none w-full text-[12px] focus:border-[#7ba888] focus:shadow-[0_0_0_3px_#e6f2e8]"
                 rows="4"
                 value={alertForm.symptoms}
                 onChange={(e) =>
@@ -1090,7 +1103,7 @@ function App() {
               />
 
               <button
-                className="primary-btn wide"
+                className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[9px] transition-[transform,background] duration-150 bg-[#19563f] text-white shadow-[0_4px_10px_#19563f16] hover:bg-[#124630] hover:-translate-y-px cursor-pointer w-full disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={busy}
               >
                 {busy ? "Saving…" : "Save emergency alert"}
