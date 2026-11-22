@@ -11,6 +11,7 @@ import {
 
 import api from '../services/api';
 import Register from './Register';
+import AyurDharaLogo from './AyurDharaLogo';
 
 export default function Login({ onLogin }) {
 
@@ -161,21 +162,21 @@ export default function Login({ onLogin }) {
 
 
           {/* HEADING */}
-          <div className="m-[0_0_18px] max-[1100px]:mb-[16px] text-center">
+          <div className="m-[0_0_18px] max-[1100px]:mb-[16px] text-center flex flex-col items-center">
 
-            <span
-              className="hidden"
-              aria-hidden="true"
-            >
-              <Leaf
-                size={23}
-                fill="currentColor"
+            <div className="mb-[14px]">
+              <AyurDharaLogo
+                size={44}
+                variant="dark"
+                withText={true}
+                textClassName="text-[19px]"
+                subtitleClassName="text-[11px]"
               />
-            </span>
+            </div>
 
-            <h1 className="m-0 text-[#104a32] font-['Cormorant_Garamond',Georgia,serif] text-[clamp(36px,3vw,44px)] max-[1100px]:text-[36px] max-[767px]:text-[36px] max-[380px]:text-[33px] font-bold leading-[1.05]">Welcome Back</h1>
+            <h1 className="m-0 text-[#104a32] font-['Cormorant_Garamond',Georgia,serif] text-[clamp(32px,2.8vw,40px)] max-[1100px]:text-[32px] max-[767px]:text-[30px] max-[380px]:text-[26px] font-bold leading-[1.05]">Welcome Back</h1>
 
-            <p className="mt-[5px] text-[#59695d] font-['Cormorant_Garamond',Georgia,serif] text-[17px] max-[767px]:text-[16px]">
+            <p className="mt-[5px] text-[#59695d] font-['Cormorant_Garamond',Georgia,serif] text-[16px] max-[767px]:text-[15px]">
               Sign in to your account
             </p>
 

@@ -1,5 +1,6 @@
 
 import React from "react";
+import { ClipboardList, CheckCircle2, Clock3, CalendarDays, TrendingUp, Printer } from "lucide-react";
 
 export function Progress({ patients = [], treatments = [], completed }) {
   const rows = treatments || [];
@@ -75,10 +76,10 @@ export function Progress({ patients = [], treatments = [], completed }) {
 
         <div className="relative z-[2] shrink-0 self-end max-[1100px]:absolute max-[1100px]:right-[15px] max-[1100px]:bottom-[13px]">
           <button
-            className="min-h-[42px] px-[17px] border border-white/55 rounded-full bg-white/[0.94] text-[#075238] font-bold shadow-[0_4px_14px_rgba(0,0,0,.08)] cursor-pointer max-[620px]:w-full"
+            className="min-h-[42px] max-[620px]:min-h-[32px] px-[17px] max-[620px]:px-[11px] max-[620px]:py-[4px] border border-white/55 rounded-full bg-white/[0.94] text-[#075238] font-bold text-[13px] max-[620px]:text-[11px] shadow-[0_4px_14px_rgba(0,0,0,.08)] cursor-pointer w-auto max-[620px]:w-auto whitespace-nowrap flex items-center justify-center gap-[7px] max-[620px]:gap-[5px]"
             onClick={() => window.print()}
           >
-            ↓ Print summary
+            <Printer size={15} className="max-[620px]:w-[13px] max-[620px]:h-[13px] shrink-0" /> Print summary
           </button>
         </div>
       </section>
@@ -90,21 +91,21 @@ export function Progress({ patients = [], treatments = [], completed }) {
             label: "Treatment Records",
             value: rows.length,
             detail: "Plans in your care record",
-            icon: "▤",
+            icon: <ClipboardList size={24} strokeWidth={1.8} />,
             tone: "green",
           },
           {
             label: "Completed",
             value: completedCount,
             detail: "Recorded as complete",
-            icon: "✓",
+            icon: <CheckCircle2 size={24} strokeWidth={1.8} />,
             tone: "blue",
           },
           {
             label: "In Progress",
             value: statusCounts.find((x) => x.status === "Ongoing")?.count || 0,
             detail: "Currently underway",
-            icon: "◷",
+            icon: <Clock3 size={24} strokeWidth={1.8} />,
             tone: "gold",
           },
           {
@@ -112,14 +113,14 @@ export function Progress({ patients = [], treatments = [], completed }) {
             value:
               statusCounts.find((x) => x.status === "Scheduled")?.count || 0,
             detail: "Awaiting session",
-            icon: "▦",
+            icon: <CalendarDays size={24} strokeWidth={1.8} />,
             tone: "purple",
           },
           {
             label: "Overall Progress",
             value: `${pct}%`,
             detail: "Based on available records",
-            icon: "↗",
+            icon: <TrendingUp size={24} strokeWidth={1.8} />,
             tone: "sky",
           },
         ].map((item) => {
@@ -241,7 +242,7 @@ export function Progress({ patients = [], treatments = [], completed }) {
         <div className="p-[20px_22px] border-b border-[#edf1eb]">
           <div className="flex items-center gap-[11px] min-w-0">
             <div className="w-[39px] h-[39px] rounded-[12px] bg-[#edf5e9] text-[#4d7f5c] grid place-items-center text-[19px] shrink-0">
-              <span>↗</span>
+              <TrendingUp size={20} strokeWidth={1.8} />
             </div>
 
             <div>

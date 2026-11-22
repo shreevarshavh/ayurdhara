@@ -2,9 +2,10 @@ import React, { useMemo, useState } from "react";
 import {
     ArrowRight, Bell, CalendarDays, Check, ChevronDown, Clock3,
     HeartPulse, Home, LogOut, Menu, Plus, UserRound, X,
-    ChartNoAxesColumnIncreasing, Info, ClipboardList
+    ChartNoAxesColumnIncreasing, Info, ClipboardList, Sparkles, Phone, Ruler, Scale
 } from "lucide-react";
 import AyurDharaIcon from "./AyurDharaIcons";
+import AyurDharaLogo from "./AyurDharaLogo";
 import { Treatments, Sessions, Progress, Notifications, VitalsSymptoms, HelpFAQs } from "./Pages";
 
 const asDate = (value) => {
@@ -163,8 +164,8 @@ export default function PatientDashboard({
             <aside className={`fixed inset-y-0 left-0 z-20 flex flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden w-[307px] max-[1450px]:w-[270px] max-[1200px]:w-[238px] max-[760px]:w-[280px] max-[760px]:transition-transform max-[760px]:duration-200 bg-[linear-gradient(160deg,#064b34_0%,#075338_58%,#075b3e_100%)] text-white p-[20px_19px_18px] ${mobileNavOpen ? "max-[760px]:translate-x-0" : "max-[760px]:-translate-x-full"}`}>
 
                 <div className="flex items-center gap-[10px] px-[10px] pb-[20px] pt-0 border-b border-[#ffffff20] min-h-[72px]">
-                    <div className="w-[58px] h-[48px] shrink-0 text-[#e5e9a9] grid place-items-center" aria-hidden="true">
-                        <span className="font-['Playfair_Display',serif] text-[38px] font-bold text-[#e5d89b] leading-none">A</span>
+                    <div className="shrink-0" aria-hidden="true">
+                        <AyurDharaLogo size={42} variant="light" />
                     </div>
 
                     <div>
@@ -306,7 +307,7 @@ export default function PatientDashboard({
                     </div>
                 </header>
 
-                <div className="w-full p-[18px_27px_20px] max-[1450px]:p-[16px_18px] max-[760px]:p-[14px]">
+                <div key={activePage} className="page-transition w-full p-[18px_27px_20px] max-[1450px]:p-[16px_18px] max-[760px]:p-[14px]">
 
                     {activePage === "dashboard" ? (
                         <>
@@ -316,8 +317,8 @@ export default function PatientDashboard({
 
                                 <div className="max-w-[58%] max-[760px]:max-w-[92%] relative z-3 flex flex-col justify-center">
                                     <span className="font-['DM_Sans',sans-serif] text-[10px] tracking-[0.18em] font-extrabold text-[#d6e5bb]">YOUR PATIENT WORKSPACE</span>
-                                    <h1 className="font-['Playfair_Display',Georgia,serif] text-[clamp(29px,2.35vw,40px)] max-[760px]:text-[24px] font-bold leading-[1.16] m-[13px_0_8px] text-white whitespace-normal">
-                                        Patient Dashboard: {firstName} <b className="text-[#d9e8a9] text-[22px]">✦</b>
+                                    <h1 className="font-['Playfair_Display',Georgia,serif] text-[clamp(29px,2.35vw,40px)] max-[760px]:text-[24px] font-bold leading-[1.16] m-[13px_0_8px] text-white whitespace-normal flex items-center flex-wrap gap-2">
+                                        <span>Patient Dashboard: {firstName}</span> <Sparkles size={22} className="text-[#d9e8a9] shrink-0" />
                                     </h1>
                                     <p className="m-0 font-['DM_Sans',sans-serif] text-[15px] max-[760px]:text-[13px] text-[#e0eee4] leading-[1.4] max-w-[480px]">
                                         Review your Panchakarma treatment plan, sessions,
@@ -662,7 +663,7 @@ export default function PatientDashboard({
                     ) : (
                         <section className="bg-white border border-[#e6ebe3] rounded-[16px] p-[19px_20px] shadow-[0_4px_14px_#193c260a] min-h-[190px] flex flex-col items-center justify-center text-center">
                             <div className="w-[156px] h-[104px] mb-[6px] rounded-full bg-[radial-gradient(ellipse,#f0f6e6_0%,#f0f6e6_58%,transparent_59%)] text-[#72a25c] grid place-items-center">
-                                <span className="font-['Playfair_Display',Georgia,serif] text-[24px]">✦</span>
+                                <Sparkles size={28} className="text-[#72a25c]" />
                             </div>
                             <h2 className="font-['Playfair_Display',serif] text-[21px] font-bold text-[#1c3829] mb-[4px]">Care information</h2>
                             <p className="text-[13px] text-[#728076] m-0">This section will display information when it becomes available.</p>
@@ -700,10 +701,10 @@ function PatientProfilePage({ user, patient }) {
     ];
 
     const stats = [
-        { label: "Account status", value: "Registered", detail: "Your AyurDhara account", icon: "✓", tone: "green" },
-        { label: "Phone number", value: phone, detail: "Registered contact", icon: "☎", tone: "blue" },
-        { label: "Height", value: height, detail: "Patient information", icon: "↕", tone: "gold" },
-        { label: "Weight", value: weight, detail: "Patient information", icon: "⚖", tone: "purple" }
+        { label: "Account status", value: "Registered", detail: "Your AyurDhara account", icon: <Check size={20} strokeWidth={2.5} />, tone: "green" },
+        { label: "Phone number", value: phone, detail: "Registered contact", icon: <Phone size={19} strokeWidth={2} />, tone: "blue" },
+        { label: "Height", value: height, detail: "Patient information", icon: <Ruler size={19} strokeWidth={2} />, tone: "gold" },
+        { label: "Weight", value: weight, detail: "Patient information", icon: <Scale size={19} strokeWidth={2} />, tone: "purple" }
     ];
 
     return (
@@ -714,7 +715,9 @@ function PatientProfilePage({ user, patient }) {
                     <h1 className="m-[0_0_8px] text-white font-['Playfair_Display',Georgia,serif] text-[clamp(29px,2.5vw,40px)] font-bold leading-[1.12]">My Profile</h1>
                     <p className="m-0 text-[#f0f6ed] text-[14px] max-[760px]:text-[12px] leading-[1.55] max-[760px]:max-w-[85%]">View your registered details and personal information.</p>
                 </div>
-                <div className="text-[#dce9bb] text-[76px] max-[760px]:text-[54px] opacity-70 pr-[5%] max-[760px]:pr-0" aria-hidden="true">✦</div>
+                <div className="text-[#dce9bb] opacity-40 pr-[5%] max-[760px]:pr-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
+                    <Sparkles size={60} strokeWidth={1.4} />
+                </div>
             </section>
 
             <section className="grid grid-cols-4 max-[1100px]:grid-cols-2 max-[640px]:grid-cols-2 gap-[13px] max-[640px]:gap-[9px] w-full" aria-label="Profile summary">

@@ -1,5 +1,26 @@
 import React from "react";
 import { fmtDate, fmtTime, shortId } from "../utils";
+import {
+  Search,
+  X,
+  Plus,
+  Printer,
+  Download,
+  Sparkles,
+  ArrowRight,
+  Users as UsersIcon,
+  Clock3,
+  Check,
+  CheckCircle2,
+  AlertTriangle,
+  CalendarDays,
+  FileText,
+  Heart,
+  Activity,
+  HelpCircle,
+  Leaf,
+  Bell
+} from "lucide-react";
 
 export { Progress } from "./pages/Progress";
 
@@ -88,7 +109,7 @@ export function PatientPageStats({ items = [] }) {
               className={`grid place-items-center shrink-0 w-[58px] h-[58px] max-[620px]:w-[42px] max-[620px]:h-[42px] rounded-[17px] max-[620px]:rounded-[12px] text-[26px] max-[620px]:text-[20px] font-bold ${toneStyle.icon}`}
               aria-hidden="true"
             >
-              {item.icon || "✦"}
+              {item.icon || <Sparkles size={24} />}
             </span>
             <span className="flex flex-col min-w-0">
               <b className="text-[#103c2c] font-['Playfair_Display',Georgia,serif] text-[31px] max-[620px]:text-[24px] leading-[1.02] font-bold">
@@ -113,10 +134,10 @@ export function PatientPageStats({ items = [] }) {
 export function Dashboard({ user, patients, treatments, scheduled, completed, alerts, onNavigate }) {
   const pending = treatments.filter(t => !["Completed", "Missed"].includes(t.session_status || "Scheduled"));
   const metrics = [
-    { label: "Total patients", value: patients.length, detail: "Registered in the system", icon: "♧", tone: "bg-[#e3f1e5] text-[#2f7c4a]" },
-    { label: "Scheduled sessions", value: scheduled.length, detail: "Appointments with a time", icon: "◷", tone: "bg-[#e6edf9] text-[#587ab6]" },
-    { label: "Completed sessions", value: completed.length, detail: "Recorded as complete", icon: "✓", tone: "bg-[#fbf0dc] text-[#b88931]" },
-    { label: "Open alerts", value: alerts.length, detail: "Require team review", icon: "⚑", tone: "bg-[#fae8e5] text-[#bd5a50]" }
+    { label: "Total patients", value: patients.length, detail: "Registered in the system", icon: <UsersIcon size={18} strokeWidth={2} />, tone: "bg-[#e3f1e5] text-[#2f7c4a]" },
+    { label: "Scheduled sessions", value: scheduled.length, detail: "Appointments with a time", icon: <Clock3 size={18} strokeWidth={2} />, tone: "bg-[#e6edf9] text-[#587ab6]" },
+    { label: "Completed sessions", value: completed.length, detail: "Recorded as complete", icon: <CheckCircle2 size={18} strokeWidth={2} />, tone: "bg-[#fbf0dc] text-[#b88931]" },
+    { label: "Open alerts", value: alerts.length, detail: "Require team review", icon: <AlertTriangle size={18} strokeWidth={2} />, tone: "bg-[#fae8e5] text-[#bd5a50]" }
   ];
 
   return (
@@ -126,16 +147,16 @@ export function Dashboard({ user, patients, treatments, scheduled, completed, al
           <span className="text-[9px] tracking-[0.17em] text-[#b4d5b8] font-extrabold block">
             YOUR CARE WORKSPACE
           </span>
-          <h1 className="font-['Manrope',sans-serif] tracking-[-0.035em] text-[27px] mt-[12px] mb-[7px] text-white max-[600px]:text-[22px] max-[600px]:max-w-[260px] font-bold">
-            Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"}, {user.name?.split(" ")[0] || "there"}{" "}
-            <span className="text-[#d4e4b2] text-[20px]">✦</span>
+          <h1 className="font-['Manrope',sans-serif] tracking-[-0.035em] text-[27px] mt-[12px] mb-[7px] text-white max-[600px]:text-[22px] max-[600px]:max-w-[260px] font-bold flex items-center flex-wrap gap-2">
+            <span>Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"}, {user.name?.split(" ")[0] || "there"}</span>
+            <Sparkles size={20} className="text-[#d4e4b2] shrink-0" />
           </h1>
           <p className="text-[12px] text-[#d2e4d5] m-0 max-[600px]:max-w-[250px] max-[600px]:text-[10px]">
             Here’s an overview of your Panchakarma care activities.
           </p>
         </div>
-        <div className="text-[125px] leading-none text-[#d5e6c355] absolute right-[95px] -rotate-[20deg] max-[1200px]:right-[30px] max-[900px]:right-[5px] max-[900px]:opacity-70 max-[600px]:text-[80px] max-[600px]:-right-[5px] max-[600px]:bottom-[5px] pointer-events-none select-none">
-          ❧
+        <div className="absolute right-[40px] max-[900px]:right-[15px] max-[600px]:right-[5px] text-[#d5e6c3] opacity-35 pointer-events-none select-none">
+          <Leaf size={105} strokeWidth={1.3} className="rotate-12" />
         </div>
       </div>
 
@@ -173,16 +194,16 @@ export function Dashboard({ user, patients, treatments, scheduled, completed, al
               </p>
             </div>
             <button
-              className="border-0 bg-transparent text-[#276a50] text-[12px] font-bold p-[4px] cursor-pointer hover:underline max-[600px]:text-[10px]"
+              className="border-0 bg-transparent text-[#276a50] text-[12px] font-bold p-[4px] cursor-pointer hover:underline max-[600px]:text-[10px] inline-flex items-center gap-1"
               onClick={() => onNavigate("schedule")}
             >
-              Manage schedule →
+              Manage schedule <ArrowRight size={13} strokeWidth={2.2} />
             </button>
           </div>
 
           {scheduled.length === 0 ? (
             <Empty
-              icon="◷"
+              icon={<Clock3 size={28} className="text-[#83a386]" strokeWidth={1.8} />}
               title="No scheduled treatments yet"
               text="When treatments have appointment times, they will appear here."
             />
@@ -231,10 +252,10 @@ export function Dashboard({ user, patients, treatments, scheduled, completed, al
               </p>
             </div>
             <button
-              className="border-0 bg-transparent text-[#276a50] text-[12px] font-bold p-[4px] cursor-pointer hover:underline max-[600px]:text-[10px]"
+              className="border-0 bg-transparent text-[#276a50] text-[12px] font-bold p-[4px] cursor-pointer hover:underline max-[600px]:text-[10px] inline-flex items-center gap-1"
               onClick={() => onNavigate("progress")}
             >
-              View progress →
+              View progress <ArrowRight size={13} strokeWidth={2.2} />
             </button>
           </div>
 
@@ -271,7 +292,7 @@ export function Dashboard({ user, patients, treatments, scheduled, completed, al
           </div>
 
           <div className="border-t border-[#edf0eb] pt-[13px] flex items-start gap-[9px]">
-            <span className="text-[#67926d]">✦</span>
+            <Sparkles size={14} className="text-[#67926d] shrink-0 mt-0.5" strokeWidth={1.8} />
             <p className="text-[10px] leading-[1.5] text-[#849087] m-0">
               Progress reflects the session status recorded by your care team.
             </p>
@@ -293,7 +314,7 @@ export function Dashboard({ user, patients, treatments, scheduled, completed, al
             className="bg-white border border-[#e4ebe1] rounded-[10px] p-[11px_14px] grid grid-cols-[25px_auto] grid-rows-[auto_auto] items-center text-left min-w-[135px] cursor-pointer hover:border-[#a8c7aa] hover:-translate-y-px transition-[border-color,transform] duration-150 max-[600px]:w-full"
             onClick={() => onNavigate("patients")}
           >
-            <span className="row-span-2 text-[20px] text-[#528160]">♧</span>
+            <span className="row-span-2 text-[#528160]"><UsersIcon size={20} strokeWidth={1.9} /></span>
             <b className="text-[10px] font-bold">View patients</b>
             <small className="text-[9px] text-[#8b968c] mt-[3px]">
               Patient records
@@ -303,7 +324,7 @@ export function Dashboard({ user, patients, treatments, scheduled, completed, al
             className="bg-white border border-[#e4ebe1] rounded-[10px] p-[11px_14px] grid grid-cols-[25px_auto] grid-rows-[auto_auto] items-center text-left min-w-[135px] cursor-pointer hover:border-[#a8c7aa] hover:-translate-y-px transition-[border-color,transform] duration-150 max-[600px]:w-full"
             onClick={() => onNavigate("schedule")}
           >
-            <span className="row-span-2 text-[20px] text-[#528160]">▦</span>
+            <span className="row-span-2 text-[#528160]"><CalendarDays size={20} strokeWidth={1.9} /></span>
             <b className="text-[10px] font-bold">Schedule care</b>
             <small className="text-[9px] text-[#8b968c] mt-[3px]">
               Resolve time conflicts
@@ -313,7 +334,7 @@ export function Dashboard({ user, patients, treatments, scheduled, completed, al
             className="bg-white border border-[#e4ebe1] rounded-[10px] p-[11px_14px] grid grid-cols-[25px_auto] grid-rows-[auto_auto] items-center text-left min-w-[135px] cursor-pointer hover:border-[#a8c7aa] hover:-translate-y-px transition-[border-color,transform] duration-150 max-[600px]:w-full"
             onClick={() => onNavigate("alerts")}
           >
-            <span className="row-span-2 text-[20px] text-[#528160]">⚑</span>
+            <span className="row-span-2 text-[#528160]"><AlertTriangle size={20} strokeWidth={1.9} /></span>
             <b className="text-[10px] font-bold">Emergency alerts</b>
             <small className="text-[9px] text-[#8b968c] mt-[3px]">
               Review incidents
@@ -347,10 +368,10 @@ export function Status({ value }) {
   );
 }
 
-export function Empty({ icon = "✦", title, text }) {
+export function Empty({ icon, title, text }) {
   return (
     <div className="p-[42px_18px] text-center">
-      <div className="text-[28px] text-[#83a386] mb-[10px]">{icon}</div>
+      <div className="mb-[10px] grid place-items-center">{icon || <Sparkles size={28} className="text-[#83a386]" strokeWidth={1.8} />}</div>
       <b className="text-[13px] block font-bold">{title}</b>
       <p className="text-[11px] text-[#8a958b] mt-[7px] mb-0">{text}</p>
     </div>
@@ -360,7 +381,7 @@ export function Empty({ icon = "✦", title, text }) {
 export function SearchBox({ value, onChange, placeholder = "Search records…" }) {
   return (
     <div className="flex items-center gap-[8px] bg-white border border-[#e3e9e1] rounded-[9px] px-[11px] w-[min(410px,100%)] h-[39px] max-[600px]:w-full max-[600px]:min-w-0">
-      <span className="text-[21px] text-[#7f9282]">⌕</span>
+      <Search size={16} className="text-[#7f9282] shrink-0" strokeWidth={2} />
       <input
         className="border-0 outline-none bg-transparent min-w-0 flex-1 text-[11px] text-[#20372f]"
         value={value}
@@ -369,10 +390,11 @@ export function SearchBox({ value, onChange, placeholder = "Search records…" }
       />
       {value && (
         <button
-          className="border-0 bg-transparent text-[#869287] text-[17px] cursor-pointer"
+          className="border-0 bg-transparent text-[#869287] hover:text-[#334639] cursor-pointer grid place-items-center"
           onClick={() => onChange("")}
+          aria-label="Clear search"
         >
-          ×
+          <X size={15} strokeWidth={2} />
         </button>
       )}
     </div>
@@ -388,10 +410,10 @@ export function Patients({ patients, search, setSearch, onAdd }) {
         description="View and manage registered patient accounts."
         action={
           <button
-            className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[9px] transition-[transform,background] duration-150 bg-[#19563f] text-white shadow-[0_4px_10px_#19563f16] hover:bg-[#124630] hover:-translate-y-px cursor-pointer"
+            className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[7px] transition-[transform,background] duration-150 bg-[#19563f] text-white shadow-[0_4px_10px_#19563f16] hover:bg-[#124630] hover:-translate-y-px cursor-pointer"
             onClick={onAdd}
           >
-            ＋ Add patient
+            <Plus size={14} strokeWidth={2.5} /> Add patient
           </button>
         }
       />
@@ -406,7 +428,7 @@ export function Patients({ patients, search, setSearch, onAdd }) {
         </span>
       </div>
       <div className="bg-white border border-[#e7ece5] rounded-[13px] shadow-[0_3px_12px_#284c3008] min-w-0 overflow-hidden">
-        <div className="overflow-auto w-full">
+        <div className="overflow-x-auto w-full">
           <table className="border-collapse w-full min-w-[700px] text-left">
             <thead>
               <tr>
@@ -453,7 +475,7 @@ export function Patients({ patients, search, setSearch, onAdd }) {
         </div>
         {patients.length === 0 && (
           <Empty
-            icon="♧"
+            icon={<UsersIcon size={28} className="text-[#83a386]" strokeWidth={1.8} />}
             title="No patients found"
             text="Try a different search or add a patient account."
           />
@@ -472,20 +494,20 @@ export function Treatments({ treatments, search, setSearch, onSchedule, readOnly
         description="Review treatment records and schedule or reschedule your sessions."
         action={
           <button
-            className="min-h-[42px] px-[17px] border border-white/55 rounded-full bg-white/[0.94] text-[#075238] font-bold shadow-[0_4px_14px_rgba(0,0,0,.08)] cursor-pointer max-[620px]:w-full"
+            className="min-h-[42px] px-[17px] border border-white/55 rounded-full bg-white/[0.94] text-[#075238] font-bold shadow-[0_4px_14px_rgba(0,0,0,.08)] cursor-pointer max-[620px]:w-full inline-flex items-center justify-center gap-1.5"
             onClick={() => window.print()}
           >
-            ↓ Print list
+            <Printer size={15} strokeWidth={2} /> Print list
           </button>
         }
       />
       <PatientPageStats
         items={[
-          { label: "Total Plans", value: treatments.length, detail: "Prescribed care plans", icon: "▤", tone: "green" },
-          { label: "In Progress", value: treatments.filter(t => (t.session_status || "Scheduled").toLowerCase() === "ongoing").length, detail: "Currently underway", icon: "◷", tone: "blue" },
-          { label: "Scheduled", value: treatments.filter(t => (t.session_status || "Scheduled").toLowerCase() === "scheduled").length, detail: "Appointments arranged", icon: "✓", tone: "gold" },
-          { label: "Upcoming", value: treatments.filter(t => t.appointment_start && new Date(t.appointment_start) > new Date()).length, detail: "Future appointments", icon: "▥", tone: "purple" },
-          { label: "Completed", value: treatments.filter(t => (t.session_status || "").toLowerCase() === "completed").length, detail: "Recorded as complete", icon: "◎", tone: "sky" }
+          { label: "Total Plans", value: treatments.length, detail: "Prescribed care plans", icon: <FileText size={22} strokeWidth={1.8} />, tone: "green" },
+          { label: "In Progress", value: treatments.filter(t => (t.session_status || "Scheduled").toLowerCase() === "ongoing").length, detail: "Currently underway", icon: <Clock3 size={22} strokeWidth={1.8} />, tone: "blue" },
+          { label: "Scheduled", value: treatments.filter(t => (t.session_status || "Scheduled").toLowerCase() === "scheduled").length, detail: "Appointments arranged", icon: <CalendarDays size={22} strokeWidth={1.8} />, tone: "gold" },
+          { label: "Upcoming", value: treatments.filter(t => t.appointment_start && new Date(t.appointment_start) > new Date()).length, detail: "Future appointments", icon: <Activity size={22} strokeWidth={1.8} />, tone: "purple" },
+          { label: "Completed", value: treatments.filter(t => (t.session_status || "").toLowerCase() === "completed").length, detail: "Recorded as complete", icon: <CheckCircle2 size={22} strokeWidth={1.8} />, tone: "sky" }
         ]}
       />
       <div className="flex items-center justify-between gap-[14px] my-[14px] max-[620px]:flex-col max-[620px]:items-stretch">
@@ -510,7 +532,7 @@ export function Treatments({ treatments, search, setSearch, onSchedule, readOnly
               >
                 <div className="flex items-center justify-between mb-[12px]">
                   <div className="w-[39px] h-[39px] rounded-[12px] bg-[#edf5e9] text-[#4d7f5c] grid place-items-center text-[19px] shrink-0">
-                    <span>✳</span>
+                    <FileText size={18} strokeWidth={1.8} />
                   </div>
                   <Status value={t.session_status || "Scheduled"} />
                 </div>
@@ -580,7 +602,7 @@ export function Treatments({ treatments, search, setSearch, onSchedule, readOnly
                     className="w-full mt-auto flex justify-center items-center gap-[8px] border border-[#dce5dc] bg-white text-[#345b46] hover:bg-[#f3f8f3] rounded-[9px] p-[9px_12px] text-[11px] font-bold cursor-pointer transition-colors duration-150"
                     onClick={() => onSchedule?.(t)}
                   >
-                    Schedule / reschedule <span>→</span>
+                    <span>Schedule / reschedule</span> <ArrowRight size={14} strokeWidth={2} />
                   </button>
                 )}
               </article>
@@ -589,8 +611,8 @@ export function Treatments({ treatments, search, setSearch, onSchedule, readOnly
         </div>
       ) : (
         <section className="bg-white border border-[#e6ece3] rounded-[17px] min-h-[290px] p-[38px_22px] flex flex-col items-center justify-center text-center shadow-[0_5px_17px_rgba(27,68,43,.055)] min-w-0">
-          <div className="w-[68px] h-[68px] rounded-[22px] bg-[#edf5e9] text-[#528967] grid place-items-center mb-[18px] text-[27px]">
-            <span>✳</span>
+          <div className="w-[68px] h-[68px] rounded-[22px] bg-[#edf5e9] text-[#528967] grid place-items-center mb-[18px]">
+            <FileText size={30} strokeWidth={1.8} />
           </div>
           <h2 className="font-['Playfair_Display',serif] text-[20px] text-[#173f2f] m-[0_0_8px] font-bold">
             {search ? "No matching treatment plans" : "No treatment records yet"}
@@ -617,20 +639,20 @@ export function Sessions({ treatments, notes = {}, setNotes, onUpdate, readOnly 
         description="Review your scheduled Panchakarma therapies, appointment details and recorded outcomes."
         action={
           <button
-            className="min-h-[42px] px-[17px] border border-white/55 rounded-full bg-white/[0.94] text-[#075238] font-bold shadow-[0_4px_14px_rgba(0,0,0,.08)] cursor-pointer max-[620px]:w-full"
+            className="min-h-[42px] px-[17px] border border-white/55 rounded-full bg-white/[0.94] text-[#075238] font-bold shadow-[0_4px_14px_rgba(0,0,0,.08)] cursor-pointer max-[620px]:w-full inline-flex items-center justify-center gap-1.5"
             onClick={() => window.print()}
           >
-            ↓ Print sessions
+            <Printer size={15} strokeWidth={2} /> Print sessions
           </button>
         }
       />
       <PatientPageStats
         items={[
-          { label: "Total Sessions", value: rows.length, detail: "Sessions in your record", icon: "▤", tone: "green" },
-          { label: "Scheduled", value: rows.filter(t => (t.session_status || "Scheduled").toLowerCase() === "scheduled").length, detail: "Awaiting appointment", icon: "▦", tone: "blue" },
-          { label: "Ongoing", value: rows.filter(t => (t.session_status || "").toLowerCase() === "ongoing").length, detail: "Currently underway", icon: "◷", tone: "gold" },
-          { label: "Completed", value: rows.filter(t => (t.session_status || "").toLowerCase() === "completed").length, detail: "Recorded as complete", icon: "✓", tone: "purple" },
-          { label: "Other Status", value: rows.filter(t => ["missed", "interrupted"].includes((t.session_status || "").toLowerCase())).length, detail: "Missed or interrupted", icon: "!", tone: "sky" }
+          { label: "Total Sessions", value: rows.length, detail: "Sessions in your record", icon: <FileText size={22} strokeWidth={1.8} />, tone: "green" },
+          { label: "Scheduled", value: rows.filter(t => (t.session_status || "Scheduled").toLowerCase() === "scheduled").length, detail: "Awaiting appointment", icon: <CalendarDays size={22} strokeWidth={1.8} />, tone: "blue" },
+          { label: "Ongoing", value: rows.filter(t => (t.session_status || "").toLowerCase() === "ongoing").length, detail: "Currently underway", icon: <Clock3 size={22} strokeWidth={1.8} />, tone: "gold" },
+          { label: "Completed", value: rows.filter(t => (t.session_status || "").toLowerCase() === "completed").length, detail: "Recorded as complete", icon: <CheckCircle2 size={22} strokeWidth={1.8} />, tone: "purple" },
+          { label: "Other Status", value: rows.filter(t => ["missed", "interrupted"].includes((t.session_status || "").toLowerCase())).length, detail: "Missed or interrupted", icon: <AlertTriangle size={22} strokeWidth={1.8} />, tone: "sky" }
         ]}
       />
       {rows.length ? (
@@ -739,8 +761,8 @@ export function Sessions({ treatments, notes = {}, setNotes, onUpdate, readOnly 
         </div>
       ) : (
         <section className="bg-white border border-[#e6ece3] rounded-[17px] min-h-[290px] p-[38px_22px] flex flex-col items-center justify-center text-center shadow-[0_5px_17px_rgba(27,68,43,.055)] min-w-0">
-          <div className="w-[68px] h-[68px] rounded-[22px] bg-[#edf5e9] text-[#528967] grid place-items-center mb-[18px] text-[27px]">
-            <span>◷</span>
+          <div className="w-[68px] h-[68px] rounded-[22px] bg-[#edf5e9] text-[#528967] grid place-items-center mb-[18px]">
+            <Clock3 size={30} strokeWidth={1.8} />
           </div>
           <h2 className="font-['Playfair_Display',serif] text-[20px] text-[#173f2f] m-[0_0_8px] font-bold">
             No sessions scheduled
@@ -764,17 +786,17 @@ export function Alerts({ alerts, patients, treatments, onCreate, onUpdate }) {
         description="Record incidents and follow their status through resolution."
         action={
           <button
-            className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[9px] transition-[transform,background] duration-150 bg-[#a63e39] text-white hover:bg-[#8f302c] cursor-pointer"
+            className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[7px] transition-[transform,background] duration-150 bg-[#a63e39] text-white hover:bg-[#8f302c] cursor-pointer"
             onClick={onCreate}
           >
-            ＋ Record alert
+            <Plus size={14} strokeWidth={2.5} /> Record alert
           </button>
         }
       />
       <div className="grid grid-cols-3 max-[600px]:grid-cols-1 gap-[14px] mb-[18px]">
         <div className="bg-white border border-[#e7ece5] rounded-[13px] shadow-[0_3px_12px_#284c3008] p-[16px] flex items-center gap-[13px]">
-          <span className="w-[38px] h-[38px] rounded-[11px] bg-[#fbeae7] text-[#b74a44] grid place-items-center text-[18px] shrink-0 font-bold">
-            ⚑
+          <span className="w-[38px] h-[38px] rounded-[11px] bg-[#fbeae7] text-[#b74a44] grid place-items-center shrink-0">
+            <AlertTriangle size={18} strokeWidth={2} />
           </span>
           <div>
             <small className="text-[10px] text-[#879389] block">
@@ -786,8 +808,8 @@ export function Alerts({ alerts, patients, treatments, onCreate, onUpdate }) {
           </div>
         </div>
         <div className="bg-white border border-[#e7ece5] rounded-[13px] shadow-[0_3px_12px_#284c3008] p-[16px] flex items-center gap-[13px]">
-          <span className="w-[38px] h-[38px] rounded-[11px] bg-[#fdf2df] text-[#b18536] grid place-items-center text-[18px] shrink-0 font-bold">
-            ◷
+          <span className="w-[38px] h-[38px] rounded-[11px] bg-[#fdf2df] text-[#b18536] grid place-items-center shrink-0">
+            <Clock3 size={18} strokeWidth={2} />
           </span>
           <div>
             <small className="text-[10px] text-[#879389] block">
@@ -805,8 +827,8 @@ export function Alerts({ alerts, patients, treatments, onCreate, onUpdate }) {
           </div>
         </div>
         <div className="bg-white border border-[#e7ece5] rounded-[13px] shadow-[0_3px_12px_#284c3008] p-[16px] flex items-center gap-[13px]">
-          <span className="w-[38px] h-[38px] rounded-[11px] bg-[#e6f3e7] text-[#2e7a48] grid place-items-center text-[18px] shrink-0 font-bold">
-            ✓
+          <span className="w-[38px] h-[38px] rounded-[11px] bg-[#e6f3e7] text-[#2e7a48] grid place-items-center shrink-0">
+            <Check size={18} strokeWidth={2.5} />
           </span>
           <div>
             <small className="text-[10px] text-[#879389] block">
@@ -825,8 +847,8 @@ export function Alerts({ alerts, patients, treatments, onCreate, onUpdate }) {
             className="bg-white border border-[#e7ece5] rounded-[13px] shadow-[0_3px_12px_#284c3008] p-[18px] max-[600px]:p-[13px] flex items-start gap-[15px] max-[600px]:gap-[9px] max-[900px]:flex-wrap"
             key={a.id}
           >
-            <div className="w-[34px] h-[34px] rounded-[10px] bg-[#fbeae7] text-[#b74a44] grid place-items-center text-[16px] shrink-0">
-              ⚑
+            <div className="w-[34px] h-[34px] rounded-[10px] bg-[#fbeae7] text-[#b74a44] grid place-items-center shrink-0">
+              <AlertTriangle size={16} strokeWidth={2} />
             </div>
             <div className="flex-1 min-w-0 max-[600px]:w-[calc(100%-50px)]">
               <div className="flex items-center max-[600px]:items-start justify-between gap-[10px] mb-[7px]">
@@ -881,7 +903,7 @@ export function Alerts({ alerts, patients, treatments, onCreate, onUpdate }) {
       {alerts.length === 0 && (
         <div className="bg-white border border-[#e7ece5] rounded-[13px] shadow-[0_3px_12px_#284c3008] p-[21px]">
           <Empty
-            icon="✓"
+            icon={<CheckCircle2 size={28} className="text-[#83a386]" strokeWidth={1.8} />}
             title="No emergency alerts"
             text="New incidents recorded by the care team will appear here."
           />
@@ -923,17 +945,17 @@ export function Reports({ patients, treatments, alerts }) {
         description="Export the current treatment schedule and review summary indicators."
         action={
           <button
-            className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[9px] transition-[transform,background] duration-150 bg-[#19563f] text-white shadow-[0_4px_10px_#19563f16] hover:bg-[#124630] hover:-translate-y-px cursor-pointer"
+            className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[7px] transition-[transform,background] duration-150 bg-[#19563f] text-white shadow-[0_4px_10px_#19563f16] hover:bg-[#124630] hover:-translate-y-px cursor-pointer"
             onClick={exportCsv}
           >
-            ↓ Export CSV
+            <Download size={14} strokeWidth={2} /> Export CSV
           </button>
         }
       />
       <div className="grid grid-cols-4 max-[900px]:grid-cols-2 gap-[15px] mb-[21px] max-[600px]:gap-[8px]">
         <div className="bg-white border border-[#e8ede6] rounded-[13px] p-[18px_18px_16px] relative min-w-0 shadow-[0_3px_12px_#284c3010] max-[1200px]:p-[15px] max-[600px]:p-[12px]">
-          <div className="w-[35px] h-[35px] rounded-[10px] grid place-items-center text-[17px] mb-[14px] max-[600px]:w-[30px] max-[600px]:h-[30px] max-[600px]:mb-[9px] bg-[#e3f1e5] text-[#2f7c4a]">
-            ♧
+          <div className="w-[35px] h-[35px] rounded-[10px] grid place-items-center mb-[14px] max-[600px]:w-[30px] max-[600px]:h-[30px] max-[600px]:mb-[9px] bg-[#e3f1e5] text-[#2f7c4a]">
+            <UsersIcon size={18} strokeWidth={2} />
           </div>
           <div className="text-[11px] text-[#758379] font-semibold max-[600px]:text-[10px]">
             Patients
@@ -943,8 +965,8 @@ export function Reports({ patients, treatments, alerts }) {
           </div>
         </div>
         <div className="bg-white border border-[#e8ede6] rounded-[13px] p-[18px_18px_16px] relative min-w-0 shadow-[0_3px_12px_#284c3010] max-[1200px]:p-[15px] max-[600px]:p-[12px]">
-          <div className="w-[35px] h-[35px] rounded-[10px] grid place-items-center text-[17px] mb-[14px] max-[600px]:w-[30px] max-[600px]:h-[30px] max-[600px]:mb-[9px] bg-[#e6edf9] text-[#587ab6]">
-            ▦
+          <div className="w-[35px] h-[35px] rounded-[10px] grid place-items-center mb-[14px] max-[600px]:w-[30px] max-[600px]:h-[30px] max-[600px]:mb-[9px] bg-[#e6edf9] text-[#587ab6]">
+            <FileText size={18} strokeWidth={2} />
           </div>
           <div className="text-[11px] text-[#758379] font-semibold max-[600px]:text-[10px]">
             Treatment records
@@ -954,8 +976,8 @@ export function Reports({ patients, treatments, alerts }) {
           </div>
         </div>
         <div className="bg-white border border-[#e8ede6] rounded-[13px] p-[18px_18px_16px] relative min-w-0 shadow-[0_3px_12px_#284c3010] max-[1200px]:p-[15px] max-[600px]:p-[12px]">
-          <div className="w-[35px] h-[35px] rounded-[10px] grid place-items-center text-[17px] mb-[14px] max-[600px]:w-[30px] max-[600px]:h-[30px] max-[600px]:mb-[9px] bg-[#fbf0dc] text-[#b88931]">
-            ✓
+          <div className="w-[35px] h-[35px] rounded-[10px] grid place-items-center mb-[14px] max-[600px]:w-[30px] max-[600px]:h-[30px] max-[600px]:mb-[9px] bg-[#fbf0dc] text-[#b88931]">
+            <CheckCircle2 size={18} strokeWidth={2} />
           </div>
           <div className="text-[11px] text-[#758379] font-semibold max-[600px]:text-[10px]">
             Completed sessions
@@ -965,8 +987,8 @@ export function Reports({ patients, treatments, alerts }) {
           </div>
         </div>
         <div className="bg-white border border-[#e8ede6] rounded-[13px] p-[18px_18px_16px] relative min-w-0 shadow-[0_3px_12px_#284c3010] max-[1200px]:p-[15px] max-[600px]:p-[12px]">
-          <div className="w-[35px] h-[35px] rounded-[10px] grid place-items-center text-[17px] mb-[14px] max-[600px]:w-[30px] max-[600px]:h-[30px] max-[600px]:mb-[9px] bg-[#fae8e5] text-[#bd5a50]">
-            ⚑
+          <div className="w-[35px] h-[35px] rounded-[10px] grid place-items-center mb-[14px] max-[600px]:w-[30px] max-[600px]:h-[30px] max-[600px]:mb-[9px] bg-[#fae8e5] text-[#bd5a50]">
+            <AlertTriangle size={18} strokeWidth={2} />
           </div>
           <div className="text-[11px] text-[#758379] font-semibold max-[600px]:text-[10px]">
             Emergency alerts
@@ -987,13 +1009,13 @@ export function Reports({ patients, treatments, alerts }) {
             </p>
           </div>
           <button
-            className="border-0 bg-transparent text-[#276a50] text-[12px] font-bold p-[4px] cursor-pointer hover:underline max-[600px]:text-[10px]"
+            className="border-0 bg-transparent text-[#276a50] text-[12px] font-bold p-[4px] cursor-pointer hover:underline max-[600px]:text-[10px] inline-flex items-center gap-1"
             onClick={exportCsv}
           >
-            Download CSV →
+            Download CSV <ArrowRight size={13} strokeWidth={2} />
           </button>
         </div>
-        <div className="overflow-auto w-full">
+        <div className="overflow-x-auto w-full">
           <table className="border-collapse w-full min-w-[700px] text-left">
             <thead>
               <tr>
@@ -1074,10 +1096,10 @@ export function Notifications({ treatments, alerts, onNavigate }) {
       />
       <PatientPageStats
         items={[
-          { label: "Total Updates", value: items.length, detail: "Available notifications", icon: "♧", tone: "green" },
-          { label: "Appointments", value: treatmentItems.length, detail: "Scheduled care updates", icon: "▦", tone: "blue" },
-          { label: "Care Alerts", value: alertItems.length, detail: "Alerts in your record", icon: "!", tone: "gold" },
-          { label: "Latest Update", value: items.length ? fmtDate(items[0].date) : "—", detail: "Most recent activity", icon: "◷", tone: "purple" }
+          { label: "Total Updates", value: items.length, detail: "Available notifications", icon: <Bell size={22} strokeWidth={1.8} />, tone: "green" },
+          { label: "Appointments", value: treatmentItems.length, detail: "Scheduled care updates", icon: <CalendarDays size={22} strokeWidth={1.8} />, tone: "blue" },
+          { label: "Care Alerts", value: alertItems.length, detail: "Alerts in your record", icon: <AlertTriangle size={22} strokeWidth={1.8} />, tone: "gold" },
+          { label: "Latest Update", value: items.length ? fmtDate(items[0].date) : "—", detail: "Most recent activity", icon: <Clock3 size={22} strokeWidth={1.8} />, tone: "purple" }
         ]}
       />
       <section className="bg-white border border-[#e6ece3] rounded-[17px] p-0 overflow-hidden shadow-[0_5px_17px_rgba(27,68,43,.055)] min-w-0">
@@ -1095,7 +1117,7 @@ export function Notifications({ treatments, alerts, onNavigate }) {
                     : "bg-[#eaf1fb] text-[#3d72b8]"
                 }`}
               >
-                {item.kind === "Emergency alert" ? "!" : "◷"}
+                {item.kind === "Emergency alert" ? <AlertTriangle size={18} strokeWidth={2} /> : <Clock3 size={18} strokeWidth={2} />}
               </span>
               <span className="flex-1 min-w-0 flex flex-col gap-[3px]">
                 <b className="text-[12px] text-[#1c3829] font-bold">{item.title}</b>
@@ -1107,13 +1129,13 @@ export function Notifications({ treatments, alerts, onNavigate }) {
               <span className="text-[9px] font-bold text-[#7e8f83] bg-[#f3f6f1] p-[7px_9px] rounded-[20px] whitespace-nowrap max-[600px]:hidden">
                 {item.kind}
               </span>
-              <span className="text-[#4b805d] text-[18px]">→</span>
+              <ArrowRight size={16} className="text-[#4b805d] shrink-0" strokeWidth={2} />
             </button>
           ))
         ) : (
           <div className="min-h-[290px] p-[38px_22px] flex flex-col items-center justify-center text-center">
-            <div className="w-[68px] h-[68px] rounded-[22px] bg-[#edf5e9] text-[#528967] grid place-items-center mb-[18px] text-[27px]">
-              <span>♧</span>
+            <div className="w-[68px] h-[68px] rounded-[22px] bg-[#edf5e9] text-[#528967] grid place-items-center mb-[18px]">
+              <Bell size={30} strokeWidth={1.8} />
             </div>
             <h2 className="font-['Playfair_Display',serif] text-[20px] text-[#173f2f] m-[0_0_8px] font-bold">
               You're all caught up
@@ -1140,17 +1162,17 @@ export function VitalsSymptoms({ vitals = [], symptoms = [] }) {
       />
       <PatientPageStats
         items={[
-          { label: "Vital Records", value: vitals.length, detail: "Measurements recorded", icon: "♥", tone: "green" },
-          { label: "Symptom Entries", value: symptoms.length, detail: "Observations recorded", icon: "✚", tone: "blue" },
-          { label: "Total Observations", value: vitals.length + symptoms.length, detail: "Available in your record", icon: "▤", tone: "gold" },
-          { label: "Record Status", value: hasRecords ? "Available" : "No records", detail: "Based on linked entries", icon: "◎", tone: "purple" }
+          { label: "Vital Records", value: vitals.length, detail: "Measurements recorded", icon: <Heart size={22} strokeWidth={1.8} />, tone: "green" },
+          { label: "Symptom Entries", value: symptoms.length, detail: "Observations recorded", icon: <Activity size={22} strokeWidth={1.8} />, tone: "blue" },
+          { label: "Total Observations", value: vitals.length + symptoms.length, detail: "Available in your record", icon: <FileText size={22} strokeWidth={1.8} />, tone: "gold" },
+          { label: "Record Status", value: hasRecords ? "Available" : "No records", detail: "Based on linked entries", icon: <CheckCircle2 size={22} strokeWidth={1.8} />, tone: "purple" }
         ]}
       />
 
       <div className="grid grid-cols-2 max-[900px]:grid-cols-1 gap-[16px] my-[16px]">
         <article className="bg-white border border-[#e6ece3] rounded-[17px] p-[22px] max-[620px]:p-[17px] shadow-[0_5px_17px_rgba(27,68,43,.055)]">
-          <div className="w-[42px] h-[42px] rounded-[13px] bg-[#fbeae7] text-[#bd5148] grid place-items-center text-[20px] mb-[14px]">
-            ♥
+          <div className="w-[42px] h-[42px] rounded-[13px] bg-[#fbeae7] text-[#bd5148] grid place-items-center mb-[14px]">
+            <Heart size={20} strokeWidth={2} />
           </div>
           <div>
             <span className="text-[10px] tracking-[0.15em] font-extrabold text-[#78917e] block mb-[6px]">
@@ -1181,8 +1203,8 @@ export function VitalsSymptoms({ vitals = [], symptoms = [] }) {
         <div className="bg-white border border-[#e6ece3] rounded-[17px] shadow-[0_5px_17px_rgba(27,68,43,.055)] overflow-hidden">
           <div className="p-[20px_22px] border-b border-[#edf1eb]">
             <div className="flex items-center gap-[11px]">
-              <div className="w-[39px] h-[39px] rounded-[12px] bg-[#fbeae7] text-[#bd5148] grid place-items-center text-[19px] shrink-0">
-                <span>♥</span>
+              <div className="w-[39px] h-[39px] rounded-[12px] bg-[#fbeae7] text-[#bd5148] grid place-items-center shrink-0">
+                <Heart size={19} strokeWidth={2} />
               </div>
               <div>
                 <h2 className="font-['Playfair_Display',Georgia,serif] text-[20px] text-[#103c2c] m-[0_0_5px] font-bold">
@@ -1200,8 +1222,8 @@ export function VitalsSymptoms({ vitals = [], symptoms = [] }) {
         </div>
       ) : (
         <section className="bg-white border border-[#e6ece3] rounded-[17px] min-h-[290px] p-[38px_22px] flex flex-col items-center justify-center text-center shadow-[0_5px_17px_rgba(27,68,43,.055)]">
-          <div className="w-[68px] h-[68px] rounded-[22px] bg-[#edf5e9] text-[#528967] grid place-items-center mb-[18px] text-[27px]">
-            <span>♥</span>
+          <div className="w-[68px] h-[68px] rounded-[22px] bg-[#edf5e9] text-[#528967] grid place-items-center mb-[18px]">
+            <Heart size={30} strokeWidth={1.8} />
           </div>
           <h2 className="font-['Playfair_Display',serif] text-[20px] text-[#173f2f] m-[0_0_8px] font-bold">
             No vitals or symptoms recorded yet
@@ -1234,15 +1256,15 @@ export function HelpFAQs() {
       />
       <PatientPageStats
         items={[
-          { label: "Common Questions", value: faqs.length, detail: "Answers in this section", icon: "?", tone: "green" },
-          { label: "Treatment Plans", value: "Guide", detail: "Understand prescribed care", icon: "▤", tone: "blue" },
-          { label: "Sessions", value: "Guide", detail: "Appointments and updates", icon: "▦", tone: "gold" },
-          { label: "Patient Support", value: "Care team", detail: "Clinic assistance", icon: "♡", tone: "purple" }
+          { label: "Common Questions", value: faqs.length, detail: "Answers in this section", icon: <HelpCircle size={22} strokeWidth={1.8} />, tone: "green" },
+          { label: "Treatment Plans", value: "Guide", detail: "Understand prescribed care", icon: <FileText size={22} strokeWidth={1.8} />, tone: "blue" },
+          { label: "Sessions", value: "Guide", detail: "Appointments and updates", icon: <CalendarDays size={22} strokeWidth={1.8} />, tone: "gold" },
+          { label: "Patient Support", value: "Care team", detail: "Clinic assistance", icon: <Heart size={22} strokeWidth={1.8} />, tone: "purple" }
         ]}
       />
       <section className="bg-white border border-[#e6ece3] rounded-[17px] p-[24px] max-[620px]:p-[18px] shadow-[0_5px_17px_rgba(27,68,43,.055)] flex items-center gap-[18px] max-[620px]:items-start my-[16px]">
-        <div className="w-[48px] h-[48px] rounded-[14px] bg-[#edf4e8] text-[#2c7447] grid place-items-center text-[24px] font-bold shrink-0">
-          ?
+        <div className="w-[48px] h-[48px] rounded-[14px] bg-[#edf4e8] text-[#2c7447] grid place-items-center shrink-0">
+          <HelpCircle size={24} strokeWidth={2} />
         </div>
         <div>
           <span className="text-[10px] tracking-[0.15em] font-extrabold text-[#78917e] block mb-[4px]">
@@ -1275,9 +1297,9 @@ export function HelpFAQs() {
             >
               <summary className="p-[18px_20px] max-[620px]:p-[15px] text-[13px] max-[620px]:text-[11px] font-bold text-[#173d2c] flex items-center justify-between cursor-pointer list-none select-none">
                 <span>{item.q}</span>
-                <b className="text-[#487a55] text-[16px] leading-none transition-transform duration-150 group-open:rotate-45" aria-hidden="true">
-                  ＋
-                </b>
+                <span className="text-[#487a55] flex items-center transition-transform duration-150 group-open:rotate-45" aria-hidden="true">
+                  <Plus size={16} strokeWidth={2.5} />
+                </span>
               </summary>
               <p className="p-[0_20px_20px] max-[620px]:p-[0_15px_16px] m-0 text-[12px] text-[#637267] leading-[1.6]">
                 {item.a}
@@ -1313,10 +1335,10 @@ export function Users({ users, onAdd, onDelete }) {
         description="View user accounts and manage access to the care workspace."
         action={
           <button
-            className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[9px] transition-[transform,background] duration-150 bg-[#19563f] text-white shadow-[0_4px_10px_#19563f16] hover:bg-[#124630] hover:-translate-y-px cursor-pointer"
+            className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[7px] transition-[transform,background] duration-150 bg-[#19563f] text-white shadow-[0_4px_10px_#19563f16] hover:bg-[#124630] hover:-translate-y-px cursor-pointer"
             onClick={onAdd}
           >
-            ＋ Add user
+            <Plus size={14} strokeWidth={2.5} /> Add user
           </button>
         }
       />
@@ -1329,7 +1351,7 @@ export function Users({ users, onAdd, onDelete }) {
         </span>
       </div>
       <div className="bg-white border border-[#e7ece5] rounded-[13px] shadow-[0_3px_12px_#284c3008] min-w-0 overflow-hidden">
-        <div className="overflow-auto w-full">
+        <div className="overflow-x-auto w-full">
           <table className="border-collapse w-full min-w-[700px] text-left">
             <thead>
               <tr>

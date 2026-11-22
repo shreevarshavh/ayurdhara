@@ -17,6 +17,27 @@ import Login from "./components/Login";
 import Scheduling from "./components/Scheduling";
 import PatientDashboard from "./components/PatientDashboard";
 import Modal from "./components/Modal";
+import AyurDharaLogo from "./components/AyurDharaLogo";
+import {
+  Bell,
+  LogOut,
+  LayoutDashboard,
+  UserRound,
+  Users as UsersIcon,
+  ClipboardList,
+  CalendarDays,
+  ChartNoAxesColumnIncreasing,
+  HeartPulse,
+  AlertTriangle,
+  FileText,
+  HelpCircle,
+  UserCheck,
+  CalendarClock,
+  X,
+  Sparkles,
+  Check,
+  AlertCircle
+} from "lucide-react";
 
 import {
   Dashboard,
@@ -36,6 +57,22 @@ function App() {
   const location = useLocation();
 
   const page = location.pathname.replace("/", "") || "dashboard";
+
+  const NAV_ICONS = {
+    dashboard: LayoutDashboard,
+    profile: UserRound,
+    patients: UsersIcon,
+    treatments: ClipboardList,
+    schedule: CalendarClock,
+    sessions: CalendarDays,
+    progress: ChartNoAxesColumnIncreasing,
+    vitals: HeartPulse,
+    alerts: AlertTriangle,
+    reports: FileText,
+    notifications: Bell,
+    help: HelpCircle,
+    users: UserCheck
+  };
 
   const navigatePage = (nextPage) => {
     navigate(`/${nextPage}`);
@@ -516,7 +553,7 @@ function App() {
       <aside className="w-[248px] max-[1200px]:px-[10px] max-[900px]:w-[74px] max-[900px]:p-[17px_8px] max-[600px]:w-[57px] max-[600px]:p-[12px_5px] bg-white border-r border-[#e6ebe4] fixed inset-y-0 left-0 flex flex-col p-[22px_14px_14px] z-10 overflow-y-auto">
 
         <div className="flex items-center gap-[10px] p-[0_12px_23px] max-[900px]:justify-center max-[900px]:p-[0_0_20px] border-b border-[#edf0eb]">
-          <div className="w-[35px] h-[35px] rounded-[11px] bg-[#e7f2e6] text-[#286344] grid place-items-center text-[25px] shrink-0 font-bold">✺</div>
+          <AyurDharaLogo size={32} variant="dark" />
 
           <div className="max-[900px]:hidden">
             <strong className="block font-['Manrope',sans-serif] text-[14px] tracking-[0.11em] text-[#244b36] font-bold">AYURDHARA</strong>
@@ -549,25 +586,30 @@ function App() {
               <div className="pt-[14px] first:pt-[10px]" key={group}>
                 <div className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-[#829184] p-[0_12px] mb-[7px] max-[900px]:hidden">{group}</div>
 
-                {items.map((n) => (
-                  <button
-                    key={n.id}
-                    className={`w-full flex items-center gap-[10px] max-[900px]:justify-center border-0 rounded-[9px] p-[9px_12px] max-[900px]:p-[11px_6px] text-[12px] font-bold mb-[3px] transition-colors cursor-pointer ${
-                      activeNav === n.id ? "bg-[#e4f1e6] text-[#19563f]" : "bg-transparent text-[#4b6154] hover:bg-[#f1f6f0] hover:text-[#19563f]"
-                    }`}
-                    onClick={() => navigatePage(n.id)}
-                  >
-                    <span className="text-[16px] max-[900px]:text-[18px] w-[20px] text-center shrink-0">{n.icon}</span>
-                    <span className="max-[900px]:hidden">{n.label}</span>
+                {items.map((n) => {
+                  const IconComp = NAV_ICONS[n.id] || LayoutDashboard;
+                  return (
+                    <button
+                      key={n.id}
+                      className={`w-full flex items-center gap-[10px] max-[900px]:justify-center border-0 rounded-[9px] p-[9px_12px] max-[900px]:p-[11px_6px] text-[12px] font-bold mb-[3px] transition-colors cursor-pointer ${
+                        activeNav === n.id ? "bg-[#e4f1e6] text-[#19563f]" : "bg-transparent text-[#4b6154] hover:bg-[#f1f6f0] hover:text-[#19563f]"
+                      }`}
+                      onClick={() => navigatePage(n.id)}
+                    >
+                      <span className="w-[20px] grid place-items-center shrink-0">
+                        <IconComp size={17} strokeWidth={1.8} />
+                      </span>
+                      <span className="max-[900px]:hidden">{n.label}</span>
 
-                    {n.id === "alerts" &&
-                      openAlerts.length > 0 && (
-                        <em className="ml-auto text-[9px] bg-[#d85c54] text-white rounded-[20px] p-[3px_6px] not-italic max-[900px]:hidden">
-                          {openAlerts.length}
-                        </em>
-                      )}
-                  </button>
-                ))}
+                      {n.id === "alerts" &&
+                        openAlerts.length > 0 && (
+                          <em className="ml-auto text-[9px] bg-[#d85c54] text-white rounded-[20px] p-[3px_6px] not-italic max-[900px]:hidden">
+                            {openAlerts.length}
+                          </em>
+                        )}
+                    </button>
+                  );
+                })}
               </div>
             );
           }
@@ -575,7 +617,7 @@ function App() {
 
         <div className="mt-auto pt-[16px]">
           <div className="bg-[#f4f8f2] border border-[#e7efe4] rounded-[12px] p-[13px] mb-[12px] max-[900px]:hidden">
-            <span className="text-[#588e63] text-[16px]">✦</span>
+            <Sparkles size={16} strokeWidth={1.8} className="text-[#588e63]" />
             <b className="block text-[11px] m-[4px_0_2px] font-bold">Care, in balance.</b>
             <p className="text-[10px] text-[#7f8e82] leading-[1.4] m-0">
               Every session is a step toward better wellbeing.
@@ -586,7 +628,7 @@ function App() {
             className="w-full flex items-center gap-[10px] max-[900px]:justify-center border-0 rounded-[9px] p-[9px_12px] max-[900px]:p-[11px_6px] text-[12px] font-bold mb-[3px] text-[#b04a44] hover:bg-[#faeae8] transition-colors cursor-pointer"
             onClick={logout}
           >
-            <span className="text-[16px] max-[900px]:text-[18px] w-[20px] text-center shrink-0">↪</span>
+            <LogOut size={16} strokeWidth={1.8} className="shrink-0" />
             <span className="max-[900px]:hidden">Sign out</span>
           </button>
         </div>
@@ -599,7 +641,7 @@ function App() {
         {/* Topbar */}
         <header className="h-[70px] max-[600px]:h-[58px] bg-white border-b border-[#e6ebe5] flex items-center justify-between px-[32px] max-[1200px]:px-[20px] max-[600px]:px-[13px] sticky top-0 z-[9]">
 
-          <div className="text-[10px] max-[600px]:text-[8px] font-extrabold tracking-[0.14em] text-[#869588] uppercase [&>span]:text-[#b3c1b6] [&>span]:px-[6px]">
+          <div className="text-[10px] max-[600px]:text-[8px] font-extrabold tracking-[0.14em] text-[#869588] uppercase [&>span]:text-[#b3c1b6] [&>span]:px-[6px] truncate mr-2">
             AYURDHARA <span>/</span>{" "}
             {visibleNav.find((n) => n.id === activeNav)?.label ||
               "Dashboard"}
@@ -617,11 +659,11 @@ function App() {
             </div>
 
             <button
-              className="relative border border-[#e6ebe5] bg-white rounded-[10px] w-[38px] h-[38px] text-[18px] text-[#476a54] grid place-items-center cursor-pointer"
+              className="relative border border-[#e6ebe5] bg-white rounded-[10px] w-[38px] h-[38px] text-[#476a54] grid place-items-center cursor-pointer hover:bg-[#f6f8f5] transition-colors"
               onClick={() => navigatePage("notifications")}
               title="Notifications"
             >
-              ♧
+              <Bell size={18} strokeWidth={1.8} />
               {openAlerts.length > 0 && <i className="absolute right-[7px] top-[6px] w-[7px] h-[7px] rounded-full bg-[#c9554d] border border-white" />}
             </button>
 
@@ -638,18 +680,19 @@ function App() {
         </header>
 
         {/* Page content */}
-        <div className="p-[27px_32px] max-[1200px]:p-[22px_20px] max-[600px]:p-[19px_12px] min-h-[calc(100vh-120px)] max-[600px]:min-h-[calc(100vh-110px)] flex-1">
+        <div className="p-[27px_32px] max-[1200px]:p-[22px_20px] max-[600px]:p-[16px_12px] max-[380px]:p-[12px_8px] min-h-[calc(100vh-120px)] max-[600px]:min-h-[calc(100vh-110px)] flex-1 flex flex-col">
+          <div key={location.pathname} className="page-transition min-w-0 flex-1 flex flex-col">
 
           {notice && (
             <div className={`fixed right-[24px] bottom-[24px] z-40 p-[12px_18px] rounded-[10px] flex items-center gap-[10px] text-[12px] font-bold shadow-[0_10px_30px_#08211422] ${notice.type === "success" ? "bg-[#19563f] text-white" : "bg-[#b13b35] text-white"}`}>
-              <span>
-                {notice.type === "success" ? "✓" : "!"}
+              <span className="flex items-center">
+                {notice.type === "success" ? <Check size={15} strokeWidth={2.5} /> : <AlertCircle size={15} strokeWidth={2.5} />}
               </span>
 
               {notice.message}
 
-              <button className="border-0 bg-transparent text-white text-[16px] cursor-pointer ml-[6px]" onClick={() => setNotice(null)}>
-                ×
+              <button className="border-0 bg-transparent text-white cursor-pointer ml-[6px] grid place-items-center opacity-85 hover:opacity-100" onClick={() => setNotice(null)} aria-label="Dismiss notice">
+                <X size={15} />
               </button>
             </div>
           )}
@@ -811,12 +854,12 @@ function App() {
             />
 
           </Routes>
-
+          </div>
         </div>
 
         {/* Footer */}
         <footer className="p-[18px_32px] max-[600px]:p-[14px] max-[600px]:text-[9px] border-t border-[#e7ece5] text-[11px] text-[#8a968d] flex items-center gap-[7px] bg-[#f7f9f5] mt-auto">
-          <span>✦</span> AyurDhara <span>·</span>
+          <Sparkles size={12} strokeWidth={1.8} className="text-[#649472]" /> AyurDhara <span>·</span>
           Panchakarma care, organized for better healing
 
           <span className="ml-auto max-[600px]:hidden">

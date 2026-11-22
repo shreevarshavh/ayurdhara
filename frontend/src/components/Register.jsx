@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { UserRound, Mail, Phone, Mars, Droplet, LockKeyhole, Ruler, Weight, MapPin, Camera, Upload, Trash2, Eye, EyeOff, Heart, CalendarDays, ShieldCheck, Leaf, CheckCircle2, Home } from 'lucide-react';
+import { UserRound, Mail, Phone, Mars, Droplet, LockKeyhole, Ruler, Weight, MapPin, Camera, Upload, Trash2, Eye, EyeOff, Heart, CalendarDays, ShieldCheck, Leaf, CheckCircle2, Home, Sparkles, Plus, ArrowRight, Check } from 'lucide-react';
 import api from '../services/api';
+import AyurDharaLogo from './AyurDharaLogo';
 
 const initialForm = { name: '', email: '', password: '', confirmPassword: '', phone_number: '', gender: '', blood_group: '', height: '', weight: '', address: '' };
 
@@ -64,9 +65,7 @@ export default function Register({ onBackToLogin }) {
                 <div className="absolute -z-1 border border-[#b5d368]/32 rounded-full w-[470px] h-[470px] -left-[275px] -bottom-[215px] pointer-events-none" aria-hidden="true" />
 
                 <div className="flex items-center gap-[13px]">
-                    <div className="w-[52px] h-[52px] border-2 border-[#d6e7a0] rounded-full grid place-items-center text-[#e4f2ad] text-[35px] shrink-0">
-                        <span>✺</span>
-                    </div>
+                    <AyurDharaLogo size={46} variant="light" />
                     <div>
                         <strong className="block font-['Cormorant_Garamond',serif] font-bold text-[clamp(20px,1.7vw,30px)] tracking-[2px]">AYURDHARA</strong>
                         <small className="block text-center text-[13px] mt-[1px]">Panchakarma Care</small>
@@ -82,7 +81,7 @@ export default function Register({ onBackToLogin }) {
                 <div className="relative z-2">
                     <span className="text-[12px] font-bold tracking-[2px] text-[#e0edbf] uppercase">BEGIN YOUR WELLNESS JOURNEY</span>
                     <h1 className="font-['Cormorant_Garamond',serif] font-bold text-[clamp(36px,3vw,55px)] max-[1100px]:text-[39px] leading-[0.96] tracking-[-0.5px] my-[22px_16px] text-white">
-                        Care that is<br />thoughtfully<br />coordinated.<span className="text-[#d6ec76] text-[32px] font-sans ml-[12px]">✦</span>
+                        Care that is<br />thoughtfully<br />coordinated.<Sparkles size={24} className="inline text-[#d6ec76] ml-[10px] align-middle" />
                     </h1>
                     <p className="text-[clamp(13px,1vw,17px)] max-[1100px]:text-[13px] leading-[1.55] text-[#edf5e9] max-w-[390px] m-0">
                         Create your patient profile to keep your Panchakarma care, treatment schedule and progress together in one place.
@@ -136,13 +135,15 @@ export default function Register({ onBackToLogin }) {
                         <div className="flex items-center gap-[17px] relative mb-[14px]">
                             <div className="w-[62px] h-[62px] rounded-[16px] bg-[#edf5d9] text-[#064e32] grid place-items-center relative shrink-0">
                                 <UserRound size={32} />
-                                <span className="absolute text-[19px] right-[8px] bottom-[6px] bg-[#edf5d9] leading-none">＋</span>
+                                <span className="absolute right-[5px] bottom-[5px] bg-[#edf5d9] rounded-full p-[2px] leading-none text-[#064e32]"><Plus size={13} strokeWidth={3} /></span>
                             </div>
                             <div>
                                 <h2 className="font-['Cormorant_Garamond',serif] font-bold text-[clamp(28px,2.5vw,40px)] max-[1100px]:text-[30px] max-[430px]:text-[24px] leading-none m-[0_0_4px] text-[#071a13]">Create Your Patient Account</h2>
                                 <p className="text-[14px] text-[#293b55] m-0">Enter your details below. Fields marked <b className="text-[#df2626]">*</b> are required.</p>
                             </div>
-                            <div className="absolute right-0 -top-[14px] font-['Cormorant_Garamond',serif] text-[88px] text-[#c8dfa2] -rotate-25 opacity-80 pointer-events-none select-none max-[760px]:hidden">❧</div>
+                            <div className="absolute right-0 -top-[14px] text-[#c8dfa2] opacity-60 pointer-events-none select-none max-[760px]:hidden">
+                                <Leaf size={68} strokeWidth={1.5} className="rotate-12" />
+                            </div>
                         </div>
 
                         <form onSubmit={submit}>
@@ -243,8 +244,13 @@ export default function Register({ onBackToLogin }) {
                                     ))}
                                 </ul>
                                 {form.confirmPassword && (
-                                    <p className={`col-span-2 max-[430px]:col-span-1 m-[3px_0] font-semibold ${form.password === form.confirmPassword ? 'text-[#14833c]' : 'text-[#bd302b]'}`}>
-                                        {form.password === form.confirmPassword ? '✓ Passwords match.' : 'Passwords do not match.'}
+                                    <p className={`col-span-2 max-[430px]:col-span-1 m-[3px_0] font-semibold flex items-center gap-1 ${form.password === form.confirmPassword ? 'text-[#14833c]' : 'text-[#bd302b]'}`}>
+                                        {form.password === form.confirmPassword ? (
+                                            <>
+                                                <Check size={14} strokeWidth={2.5} />
+                                                <span>Passwords match.</span>
+                                            </>
+                                        ) : 'Passwords do not match.'}
                                     </p>
                                 )}
                             </div>
@@ -271,8 +277,9 @@ export default function Register({ onBackToLogin }) {
                             {error && <div className="p-[9px_12px] rounded-[8px] text-[13px] my-[8px] mx-[10px] bg-[#fff0ee] text-[#b3261e]" role="alert">{error}</div>}
                             {success && <div className="p-[9px_12px] rounded-[8px] text-[13px] my-[8px] mx-[10px] bg-[#edf8ed] text-[#176b35]" role="status">{success}</div>}
 
-                            <button className="h-[43px] w-full border-0 rounded-[13px] bg-[linear-gradient(100deg,#087445,#00482f)] text-white font-['Cormorant_Garamond',serif] font-bold text-[18px] shadow-[0_6px_14px_#00533325] flex items-center justify-center gap-[16px] mt-[13px] cursor-pointer hover:brightness-105 transition-all disabled:opacity-65 disabled:cursor-wait" type="submit" disabled={busy}>
-                                {busy ? 'Creating Account…' : 'Create Patient Account'} <span className="font-['DM_Sans',sans-serif] text-[25px]">→</span>
+                            <button className="h-[43px] w-full border-0 rounded-[13px] bg-[linear-gradient(100deg,#087445,#00482f)] text-white font-['Cormorant_Garamond',serif] font-bold text-[18px] shadow-[0_6px_14px_#00533325] flex items-center justify-center gap-[12px] mt-[13px] cursor-pointer hover:brightness-105 transition-all disabled:opacity-65 disabled:cursor-wait" type="submit" disabled={busy}>
+                                <span>{busy ? 'Creating Account…' : 'Create Patient Account'}</span>
+                                <ArrowRight size={18} strokeWidth={2.2} />
                             </button>
                         </form>
 

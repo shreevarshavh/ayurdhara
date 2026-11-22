@@ -1,4 +1,5 @@
 import React from "react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { fmtDate, fmtTime, shortId } from "../utils";
 import { PageHeading } from "./Pages";
 
@@ -138,7 +139,7 @@ export default function Scheduling({
               </b>
             </div>
             <div className="flex gap-[10px] p-[12px] bg-[#f5f8f2] rounded-[9px] my-[8px]">
-              <span className="text-[#5c8a61] text-[17px]">✦</span>
+              <Sparkles size={16} className="text-[#5c8a61] shrink-0 mt-[2px]" />
               <div>
                 <b className="text-[11px]">Constraint scheduler</b>
                 <p className="text-[10px] leading-[1.5] text-[#829085] m-[4px_0_0]">
@@ -152,7 +153,11 @@ export default function Scheduling({
               className="border border-transparent rounded-[9px] p-[10px_14px] text-[12px] font-bold inline-flex items-center justify-center gap-[9px] transition-[transform,background] duration-150 bg-[#19563f] text-white shadow-[0_4px_10px_#19563f16] hover:bg-[#124630] hover:-translate-y-px cursor-pointer w-full disabled:opacity-60 disabled:cursor-not-allowed"
               disabled={busy || !treatments.length || !therapists.length}
             >
-              {busy ? "Calculating schedule…" : "Calculate & save schedule →"}
+              {busy ? "Calculating schedule…" : (
+                <>
+                  Calculate & save schedule <ArrowRight size={15} />
+                </>
+              )}
             </button>
           </form>
         </section>
