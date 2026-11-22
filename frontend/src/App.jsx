@@ -1,22 +1,26 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./styles/therapist-theme.css";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import api from "./services/api";
 import { fmtDate, fmtTime, shortId } from "./utils";
 import { getRolePageIds, normalizeRole } from "./config/navigation";
 import Login from "./components/Login";
+import Register from "./components/Register";
+import LandingPage from "./components/LandingPage";
 import Scheduling from "./components/Scheduling";
 import PatientDashboard from "./components/PatientDashboard";
 import Modal from "./components/Modal";
+import Progress from "./components/pages/Progress";
 import "./styles/ui-consistency.css";
 import {
   Dashboard,
   Patients,
   Treatments,
   Sessions,
-  Progress,
   Alerts,
   Reports,
+  PatientProfile,
   Notifications,
   Users
 } from "./components/Pages";
@@ -30,14 +34,21 @@ function App() {
     }
   });
 
-  const [page, setPage] = useState("dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const page = location.pathname.replace("/", "") || "dashboard";
+
+  const setPage = (nextPage) => {
+    navigate(`/${nextPage}`);
+  };
   const [patients, setPatients] = useState([]);
   const [treatments, setTreatments] = useState([]);
   const [users, setUsers] = useState([]);
   const [therapists, setTherapists] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [alerts, setAlerts] = useState([]);
-
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState(null);
   const [search, setSearch] = useState("");
@@ -55,7 +66,7 @@ function App() {
   const [treatmentForm, setTreatmentForm] = useState({
     patient_id: "",
     treatment_name: "",
-    treatment_requirements: "",
+    clinical_notes: "",
     duration_minutes: 60,
     priority: 2,
     doctor_id: ""
@@ -191,12 +202,18 @@ function App() {
   const roleKey = normalizeRole(user?.role);
   const allowedPageIds = [
     ...getRolePageIds(roleKey),
-    ...(roleKey === "doctor" ? ["schedule"] : [])
+    ...(roleKey === "doctor" ? ["schedule"] : []),
+    ...(["admin", "doctor"].includes(roleKey) ? ["patient-profile"] : [])
   ];
 
   const activeNav = allowedPageIds.includes(page)
     ? page
     : "dashboard";
+  useEffect(() => {
+    if (user && !allowedPageIds.includes(page)) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, page, roleKey, navigate]);
 
   const isPatient = roleKey === "patient";
 
@@ -231,7 +248,7 @@ function App() {
     localStorage.removeItem("ayurdhara_user");
 
     setUser(null);
-    setPage("dashboard");
+    navigate("/login", { replace: true });
   }
 
   // =====================================================
@@ -290,23 +307,12 @@ function App() {
       return;
     }
 
-    if (
-      !Number.isInteger(duration) ||
-      duration < 15 ||
-      duration > 480
-    ) {
-      flash(
-        "error",
-        "Treatment duration must be between 15 and 480 minutes."
-      );
+    if (!Number.isInteger(duration) || duration < 15 || duration > 480) {
+      flash("error", "Treatment duration must be between 15 and 480 minutes.");
       return;
     }
 
-    if (
-      !Number.isInteger(priority) ||
-      priority < 1 ||
-      priority > 5
-    ) {
+    if (!Number.isInteger(priority) || priority < 1 || priority > 5) {
       flash("error", "Priority must be between 1 and 5.");
       return;
     }
@@ -314,10 +320,7 @@ function App() {
     const isAdmin = roleKey === "admin";
 
     if (isAdmin && !treatmentForm.doctor_id) {
-      flash(
-        "error",
-        "Choose the doctor responsible for this treatment."
-      );
+      flash("error", "Choose the doctor responsible for this treatment.");
       return;
     }
 
@@ -326,15 +329,20 @@ function App() {
     try {
       const payload = {
         patient_id: treatmentForm.patient_id,
+
+        // Selected Panchakarma procedure
         treatment_name: treatmentForm.treatment_name,
-        treatment_requirements:
-          treatmentForm.treatment_requirements,
+
+        // Used by therapist expertise matching and OR-Tools
+        treatment_requirements: treatmentForm.treatment_name,
+
+        // Doctor's clinical observations
+        clinical_notes: treatmentForm.clinical_notes.trim(),
+
         duration_minutes: duration,
         priority
       };
 
-      // Admin selects the responsible doctor.
-      // Doctor is assigned automatically by the backend.
       if (isAdmin) {
         payload.doctor_id = treatmentForm.doctor_id;
       }
@@ -349,7 +357,7 @@ function App() {
       setTreatmentForm({
         patient_id: "",
         treatment_name: "",
-        treatment_requirements: "",
+        clinical_notes: "",
         duration_minutes: 60,
         priority: 2,
         doctor_id: ""
@@ -361,6 +369,7 @@ function App() {
       );
 
       await loadData();
+
     } catch (error) {
       console.error("Create treatment plan error:", error);
 
@@ -368,11 +377,11 @@ function App() {
         "error",
         error.message || "Failed to create treatment plan."
       );
+
     } finally {
       setBusy(false);
     }
   }
-
   // =====================================================
   // CREATE USER
   // =====================================================
@@ -636,7 +645,31 @@ function App() {
   // =====================================================
 
   if (!user) {
-    return <Login onLogin={setUser} />;
+    if (location.pathname === "/login") {
+      return (
+        <Login
+          onLogin={(loggedInUser) => {
+            setUser(loggedInUser);
+            navigate("/dashboard", { replace: true });
+          }}
+        />
+      );
+    }
+
+    if (location.pathname === "/register") {
+      return <Register onBackToLogin={() => navigate("/login")} />;
+    }
+
+    return (
+      <LandingPage
+        onLogin={() => navigate("/login")}
+        onSignUp={() => navigate("/register")}
+      />
+    );
+  }
+
+  if (["/", "/login", "/register"].includes(location.pathname)) {
+    navigate("/dashboard", { replace: true });
   }
 
   // =====================================================
@@ -939,9 +972,20 @@ function App() {
             search={search}
             setSearch={setSearch}
             onAdd={() => setModal("patient")}
+            onSelect={(patient) => {
+              setSelectedPatient(patient);
+              setPage("patient-profile");
+            }}
           />
         )
       }
+      {/* PATIENT PROFILE */}
+      {activeNav === "patient-profile" && (
+        <PatientProfile
+          patient={selectedPatient}
+          onBack={() => setPage("patients")}
+        />
+      )}
 
       {/* TREATMENT PLANS */}
 
@@ -1127,9 +1171,7 @@ function App() {
                   }
                   required
                 >
-                  <option value="">
-                    Select patient
-                  </option>
+                  <option value="">Select patient</option>
 
                   {patients.map(patient => (
                     <option
@@ -1141,7 +1183,7 @@ function App() {
                   ))}
                 </select>
 
-                <label>Treatment name</label>
+                <label>Panchakarma treatment</label>
 
                 <select
                   value={treatmentForm.treatment_name}
@@ -1153,9 +1195,7 @@ function App() {
                   }
                   required
                 >
-                  <option value="">
-                    Select treatment
-                  </option>
+                  <option value="">Select treatment</option>
 
                   {[
                     "Abhyanga",
@@ -1175,18 +1215,18 @@ function App() {
                   ))}
                 </select>
 
-                <label>Required therapist expertise</label>
+                <label>Clinical notes and observations</label>
 
-                <input
-                  type="text"
-                  value={treatmentForm.treatment_requirements}
+                <textarea
+                  rows="4"
+                  value={treatmentForm.clinical_notes}
                   onChange={event =>
                     setTreatmentForm({
                       ...treatmentForm,
-                      treatment_requirements: event.target.value
+                      clinical_notes: event.target.value
                     })
                   }
-                  placeholder="Example: Abhyanga"
+                  placeholder="Record the patient's symptoms, medical observations, condition and relevant clinical details..."
                 />
 
                 <label>Duration (minutes)</label>
@@ -1195,7 +1235,7 @@ function App() {
                   type="number"
                   min="15"
                   max="480"
-                  step="1"
+                  step="5"
                   value={treatmentForm.duration_minutes}
                   onChange={event =>
                     setTreatmentForm({
@@ -1224,8 +1264,6 @@ function App() {
                   <option value="5">5 — Critical</option>
                 </select>
 
-                {/* ADMIN SELECTS RESPONSIBLE DOCTOR */}
-
                 {roleKey === "admin" && (
                   <>
                     <label>Responsible doctor</label>
@@ -1240,9 +1278,7 @@ function App() {
                       }
                       required
                     >
-                      <option value="">
-                        Select doctor
-                      </option>
+                      <option value="">Select doctor</option>
 
                       {doctors.map(doctor => (
                         <option
@@ -1277,9 +1313,7 @@ function App() {
                     (roleKey === "admin" && doctors.length === 0)
                   }
                 >
-                  {busy
-                    ? "Creating…"
-                    : "Create treatment plan"}
+                  {busy ? "Creating…" : "Create treatment plan"}
                 </button>
               </form>
             )}

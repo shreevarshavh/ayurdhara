@@ -137,18 +137,14 @@ export default function DashboardLayout({
                     )}
 
                     {isDashboard ? (
-
-                        /* DARK HERO FOR THE FOUR MAIN DASHBOARDS */
-
+                        /* DARK HERO FOR DASHBOARDS */
                         <section className="patient-hero">
                             <div className="patient-hero-copy">
                                 <span>
                                     YOUR {roleLabel.toUpperCase()} WORKSPACE
                                 </span>
 
-                                <h1>
-                                    {roleLabel} Dashboard ✦
-                                </h1>
+                                <h1>{roleLabel} Dashboard ✦</h1>
 
                                 <p>
                                     Manage Panchakarma care, treatment
@@ -163,31 +159,20 @@ export default function DashboardLayout({
                                 aria-hidden="true"
                             />
                         </section>
-
                     ) : (
-
-                        /* LIGHT HERO FOR ALL OTHER PAGES */
-
+                        /* STANDARD LIGHT HERO FOR ALL OTHER PAGES */
                         <section className="patient-page-hero patient-page-hero-light">
-
                             <div className="patient-page-hero-copy">
-
                                 <span>{hero.eyebrow}</span>
-
                                 <h1>{hero.title}</h1>
-
                                 <p>{hero.description}</p>
-
                             </div>
-
                         </section>
-
                     )}
 
                     {children}
-
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }

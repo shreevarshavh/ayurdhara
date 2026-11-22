@@ -1,17 +1,17 @@
 import React, { useMemo, useState } from "react";
 import {
     ArrowRight, Bell, CalendarDays, Check, ChevronDown, Clock3,
-    HeartPulse, Home, LogOut, Menu, Plus, UserRound, X,
-    ChartNoAxesColumnIncreasing, Info, ClipboardList
+    Home, LogOut, Menu, Plus, UserRound, X,
+    ChartNoAxesColumnIncreasing, Info, ClipboardList, Sparkles, Phone, Ruler, Scale
 } from "lucide-react";
 import "../styles/patient-dashboard.css";
 import AyurDharaIcon from "./AyurDharaIcons";
+import AyurDharaLogo from "./AyurDharaLogo";
+import PatientProgress from "./pages/Progress";
 import {
     Treatments,
     Sessions,
-    Progress,
     Notifications,
-    VitalsSymptoms,
     HelpFAQs
 } from "./Pages";
 
@@ -144,7 +144,6 @@ export default function PatientDashboard({
                 { label: "Treatment Plans", icon: ClipboardList, page: "treatments" },
                 { label: "Sessions", icon: CalendarDays, page: "sessions" },
                 { label: "Progress Tracking", icon: ChartNoAxesColumnIncreasing, page: "progress" },
-                { label: "Vitals & Symptoms", icon: HeartPulse, page: "vitals" }
             ]
         },
         {
@@ -172,14 +171,7 @@ export default function PatientDashboard({
             <aside className={`patient-sidebar ${mobileNavOpen ? "is-open" : ""}`}>
 
                 <div className="patient-brand">
-                    <div className="patient-brand-mark" aria-hidden="true">
-                        <span className="brand-letter">A</span>
-                    </div>
-
-                    <div>
-                        <strong>AYURDHARA</strong>
-                        <span>Panchakarma Care</span>
-                    </div>
+                    <AyurDharaLogo size={46} variant="light" withText />
 
                     <button
                         className="patient-mobile-close"
@@ -276,7 +268,7 @@ export default function PatientDashboard({
                     </button>
 
                     <div className="patient-breadcrumb">
-                        AYURDHARA <span>/</span> <b>{({ dashboard: "Patient Dashboard", treatments: "Treatment plans", sessions: "Sessions", progress: "Progress tracking", vitals: "Vitals & Symptoms", notifications: "Notifications", help: "Help & FAQs", profile: "My Profile" })[activePage] || "Patient Dashboard"}</b>
+                        AYURDHARA <span>/</span> <b>{({ dashboard: "Patient Dashboard", treatments: "Treatment plans", sessions: "Sessions", progress: "Progress tracking", notifications: "Notifications", help: "Help & FAQs", profile: "My Profile" })[activePage] || "Patient Dashboard"}</b>
                     </div>
 
                     <div className="patient-top-actions">
@@ -331,7 +323,6 @@ export default function PatientDashboard({
                                         treatments: "Treatment Plans",
                                         sessions: "My Sessions",
                                         progress: "Progress Tracking",
-                                        vitals: "Vitals & Symptoms",
                                         notifications: "Notifications",
                                         help: "Help & FAQs",
                                         profile: "My Profile"
@@ -684,9 +675,7 @@ export default function PatientDashboard({
                     ) : activePage === "sessions" ? (
                         <Sessions treatments={patientTreatments.filter(t => t.appointment_start)} notes={sessionNotes} setNotes={setSessionNotes} onUpdate={onUpdateSession} readOnly />
                     ) : activePage === "progress" ? (
-                        <Progress patients={patient?.patient_id ? [patient] : []} treatments={patientTreatments} completed={completed.filter(t => patientTreatments.some(p => String(p.uuid) === String(t.uuid)))} />
-                    ) : activePage === "vitals" ? (
-                        <VitalsSymptoms />
+                        <PatientProgress patients={patient?.patient_id ? [patient] : []} treatments={patientTreatments} completed={completed.filter(t => patientTreatments.some(p => String(p.uuid) === String(t.uuid)))} />
                     ) : activePage === "notifications" ? (
                         <Notifications treatments={patientTreatments} alerts={alerts} onNavigate={onNavigate} />
                     ) : activePage === "help" ? (
@@ -728,65 +717,65 @@ function PatientProfilePage({ user, patient }) {
     ];
 
     const stats = [
-        { label: "Account status", value: "Registered", detail: "Your AyurDhara account", icon: "✓", tone: "green" },
-        { label: "Phone number", value: phone, detail: "Registered contact", icon: "☎", tone: "blue" },
-        { label: "Height", value: height, detail: "Patient information", icon: "↕", tone: "gold" },
-        { label: "Weight", value: weight, detail: "Patient information", icon: "⚖", tone: "purple" }
+        { label: "Account status", value: "Registered", detail: "Your AyurDhara account", icon: <Check size={20} strokeWidth={2.5} />, tone: "green" },
+        { label: "Phone number", value: phone, detail: "Registered contact", icon: <Phone size={19} strokeWidth={2} />, tone: "blue" },
+        { label: "Height", value: height, detail: "Patient information", icon: <Ruler size={19} strokeWidth={2} />, tone: "gold" },
+        { label: "Weight", value: weight, detail: "Patient information", icon: <Scale size={19} strokeWidth={2} />, tone: "purple" }
     ];
 
     return (
-        <div className="patient-profile-page">
-            <section className="patient-profile-hero">
-                <div>
-                    <span className="patient-profile-eyebrow">YOUR AYURDHARA ACCOUNT</span>
-                    <h1>My Profile</h1>
-                    <p>View your registered details and personal information.</p>
-                </div>
-                <div className="patient-profile-hero-mark" aria-hidden="true">✦</div>
-            </section>
+        <div className="flex flex-col w-full gap-[16px]">
 
-            <section className="patient-profile-stats" aria-label="Profile summary">
+
+            <section className="grid grid-cols-4 max-[1100px]:grid-cols-2 max-[640px]:grid-cols-2 gap-[13px] max-[640px]:gap-[9px] w-full" aria-label="Profile summary">
                 {stats.map((stat) => (
-                    <article className={`patient-profile-stat ${stat.tone}`} key={stat.label}>
-                        <span className="patient-profile-stat-icon" aria-hidden="true">{stat.icon}</span>
-                        <div>
-                            <small>{stat.label}</small>
-                            <strong>{stat.value}</strong>
-                            <span>{stat.detail}</span>
+                    <article className="flex items-center max-[420px]:flex-col max-[420px]:items-start gap-[13px] max-[640px]:gap-[9px] min-w-0 min-h-[94px] max-[640px]:min-h-[82px] p-[14px_15px] max-[640px]:p-[11px] border border-[#e7ece4] rounded-[15px] bg-white shadow-[0_4px_15px_rgba(30,66,43,.055)]" key={stat.label}>
+                        <span className={`grid place-items-center shrink-0 w-[48px] h-[48px] max-[640px]:w-[42px] max-[640px]:h-[42px] rounded-[15px] max-[640px]:rounded-[13px] text-[22px] max-[640px]:text-[20px] font-bold ${stat.tone === "green"
+                            ? "bg-[#e5f2df] text-[#347c4b]"
+                            : stat.tone === "blue"
+                                ? "bg-[#e5efff] text-[#3977c9]"
+                                : stat.tone === "gold"
+                                    ? "bg-[#fff0d7] text-[#b77b18]"
+                                    : "bg-[#f0e5ff] text-[#8750c5]"
+                            }`} aria-hidden="true">{stat.icon}</span>
+                        <div className="flex flex-col gap-[4px] min-w-0 max-[420px]:w-full">
+                            <small className="text-[#4f665b] text-[11px] font-bold">{stat.label}</small>
+                            <strong className="text-[#123d2d] font-['Playfair_Display',Georgia,serif] text-[clamp(14px,1.25vw,20px)] max-[640px]:text-[15px] font-bold leading-[1.2] [overflow-wrap:anywhere]">{stat.value}</strong>
+                            <span className="text-[#87948c] text-[10px]">{stat.detail}</span>
                         </div>
                     </article>
                 ))}
             </section>
 
-            <section className="patient-card patient-profile-card">
-                <div className="patient-profile-summary">
+            <section className="bg-white border border-[#e6ebe3] rounded-[16px] p-[27px_30px_30px] max-[640px]:p-[19px_16px] shadow-[0_4px_14px_#193c260a]">
+                <div className="flex items-center gap-[22px] max-[640px]:gap-[14px] pt-[3px] px-0 pb-[25px] border-b border-[#e9eee7]">
                     {patient?.profile_photo ? (
-                        <img className="patient-profile-avatar-large" src={patient.profile_photo} alt={`${name} profile`} />
+                        <img className="grid place-items-center w-[112px] h-[112px] max-[640px]:w-[82px] max-[640px]:h-[82px] shrink-0 rounded-[22px] max-[640px]:rounded-[17px] object-cover border border-[#e3ebdf] shadow-[0_5px_16px_rgba(24,66,43,.08)]" src={patient.profile_photo} alt={`${name} profile`} />
                     ) : (
-                        <div className="patient-profile-avatar-large patient-profile-avatar-fallback" aria-label={`${name} initials`}>{initials || "P"}</div>
+                        <div className="grid place-items-center w-[112px] h-[112px] max-[640px]:w-[82px] max-[640px]:h-[82px] shrink-0 rounded-[22px] max-[640px]:rounded-[17px] border border-[#e3ebdf] shadow-[0_5px_16px_rgba(24,66,43,.08)] bg-[linear-gradient(145deg,#e8f2e2,#d9e9d5)] text-[#176143] font-['Playfair_Display',Georgia,serif] text-[38px] max-[640px]:text-[29px] font-bold" aria-label={`${name} initials`}>{initials || "P"}</div>
                     )}
-                    <div className="patient-profile-identity">
-                        <span className="patient-profile-eyebrow">AYURDHARA PATIENT</span>
-                        <h2>{name}</h2>
-                        <p>{email}</p>
-                        <span className="patient-profile-registered"><i /> Registered patient</span>
+                    <div className="min-w-0">
+                        <span className="block mb-[8px] text-[#769080] text-[10px] font-extrabold tracking-[0.19em] uppercase">AYURDHARA PATIENT</span>
+                        <h2 className="m-[0_0_5px] text-[#123d2d] font-['Playfair_Display',Georgia,serif] text-[29px] max-[640px]:text-[23px] font-bold leading-[1.2]">{name}</h2>
+                        <p className="m-[0_0_12px] text-[#7d8c82] text-[13px] [overflow-wrap:anywhere]">{email}</p>
+                        <span className="inline-flex items-center gap-[7px] px-[11px] py-[6px] rounded-full bg-[#e8f4e8] text-[#287447] text-[11px] font-bold"><i className="w-[7px] h-[7px] rounded-full bg-[#39a566] not-italic" /> Registered patient</span>
                     </div>
                 </div>
 
-                <div className="patient-profile-section-heading">
+                <div className="flex justify-between items-end max-[760px]:items-start max-[760px]:gap-[10px] pt-[24px] pb-[16px]">
                     <div>
-                        <span className="patient-profile-eyebrow">ACCOUNT INFORMATION</span>
-                        <h2>Personal details</h2>
-                        <p>Your information as recorded in your patient account.</p>
+                        <span className="block mb-[5px] text-[#769080] text-[10px] font-extrabold tracking-[0.19em] uppercase">ACCOUNT INFORMATION</span>
+                        <h2 className="m-[0_0_4px] text-[#143e2e] font-['Playfair_Display',Georgia,serif] text-[23px] font-bold">Personal details</h2>
+                        <p className="m-0 text-[#87948c] text-[12px]">Your information as recorded in your patient account.</p>
                     </div>
-                    <span className="patient-profile-detail-count">{details.length} details</span>
+                    <span className="text-[12px] font-bold text-[#456d54] bg-[#edf5e8] px-[10px] py-[4px] rounded-full">{details.length} details</span>
                 </div>
 
-                <div className="patient-profile-details">
+                <div className="grid grid-cols-2 max-[640px]:grid-cols-1 [column-gap:28px]">
                     {details.map(([label, value]) => (
-                        <div className="patient-profile-detail" key={label}>
-                            <span>{label}</span>
-                            <strong>{value || "Not provided"}</strong>
+                        <div className="min-w-0 min-h-[72px] p-[14px_4px] border-b border-[#edf0eb] flex flex-col justify-center gap-[7px]" key={label}>
+                            <span className="text-[#829087] text-[10px] font-extrabold tracking-[0.09em] uppercase">{label}</span>
+                            <strong className="text-[#244638] text-[13px] font-bold [overflow-wrap:anywhere]">{value || "Not provided"}</strong>
                         </div>
                     ))}
                 </div>
@@ -802,16 +791,38 @@ function LeafNavIcon() {
 
 /* METRIC CARD */
 function Metric({ icon, tone, label, value, detail }) {
+    const toneStyles = {
+        green: {
+            card: "bg-[linear-gradient(120deg,#fff,#f4f8ed)]",
+            icon: "bg-[#e7f2df] text-[#3b7b4b]"
+        },
+        blue: {
+            card: "bg-[linear-gradient(120deg,#fff,#f1f6ff)]",
+            icon: "bg-[#e4edfc] text-[#3d75c4]"
+        },
+        gold: {
+            card: "bg-[linear-gradient(120deg,#fff,#fff8ec)]",
+            icon: "bg-[#fff0d8] text-[#b88735]"
+        },
+        rose: {
+            card: "bg-[linear-gradient(120deg,#fff,#fff2f1)]",
+            icon: "bg-[#fde8e5] text-[#c35c50]"
+        }
+    }[tone] || {
+        card: "bg-white",
+        icon: "bg-[#e7f2df] text-[#3b7b4b]"
+    };
+
     return (
-        <article className={`patient-metric ${tone}`}>
-            <div className="patient-metric-icon">
+        <article className={`h-[130px] min-h-[130px] max-[760px]:min-h-[112px] max-[760px]:h-auto p-[17px_20px] max-[1450px]:p-[15px_13px] max-[760px]:p-[12px] gap-[14px] max-[1450px]:gap-[10px] max-[760px]:gap-[9px] rounded-[15px] flex items-start relative overflow-hidden border border-[#e6ebe3] shadow-[0_4px_12px_#193c2610] ${toneStyles.card}`}>
+            <div className={`w-[55px] h-[55px] shrink-0 max-[1450px]:w-[46px] max-[1450px]:h-[46px] max-[760px]:w-[38px] max-[760px]:h-[38px] rounded-[16px] max-[760px]:rounded-[12px] grid place-items-center ${toneStyles.icon}`}>
                 <AyurDharaIcon name={icon} size={29} />
             </div>
 
-            <div className="patient-metric-copy">
-                <span>{label}</span>
-                <b>{value}</b>
-                <small>{detail}</small>
+            <div className="flex flex-col gap-[5px] pt-[2px] min-w-0">
+                <span className="text-[14px] max-[1350px]:text-[12px] max-[760px]:text-[10px] font-bold text-[#263c30] whitespace-nowrap max-[1350px]:whitespace-normal leading-[1.25]">{label}</span>
+                <b className="font-['Playfair_Display',Georgia,serif] text-[36px] max-[1350px]:text-[31px] max-[760px]:text-[26px] font-extrabold text-[#073d2a] leading-[1.05] mt-[1px]">{value}</b>
+                <small className="font-['DM_Sans',sans-serif] text-[11px] max-[760px]:text-[9px] text-[#78867d] leading-[1.35] max-w-[205px]">{detail}</small>
             </div>
         </article>
     );
@@ -826,20 +837,19 @@ function CardHeading({
     onAction
 }) {
     return (
-        <div className="patient-card-heading">
-            <div className="patient-card-title">
-
-                <div className="patient-card-icon">
+        <div className="flex items-center justify-between gap-[12px] mb-[17px]">
+            <div className="flex items-center gap-[11px] min-w-0">
+                <div className="w-[39px] h-[39px] rounded-[12px] bg-[#eaf3e2] text-[#347448] grid place-items-center shrink-0">
                     <AyurDharaIcon name={icon} size={22} />
                 </div>
 
                 <div>
-                    <h2>{title}</h2>
-                    <p>{subtitle}</p>
+                    <h2 className="font-['Playfair_Display',serif] text-[21px] max-[420px]:text-[16px] font-bold m-[0_0_3px] text-[#1c3829]">{title}</h2>
+                    <p className="m-0 text-[12px] max-[420px]:text-[9px] text-[#869289]">{subtitle}</p>
                 </div>
             </div>
 
-            <button onClick={onAction}>
+            <button onClick={onAction} className="flex items-center gap-[5px] border-0 bg-transparent text-[#17613d] font-['DM_Sans',sans-serif] text-[10px] max-[420px]:text-[9px] font-bold whitespace-nowrap cursor-pointer hover:underline">
                 {action}
                 <ArrowRight size={16} />
             </button>

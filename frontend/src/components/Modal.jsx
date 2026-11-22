@@ -1,34 +1,45 @@
-import React from "react";
+﻿import React from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 export default function Modal({ title, onClose, children }) {
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 bg-[#14291dcc] z-30 grid place-items-center p-[18px] max-[420px]:p-[10px] overflow-y-auto"
+      className="fixed inset-0 z-[9999] grid place-items-center bg-[#14291dcc] p-4"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-[min(480px,100%)] bg-white rounded-[16px] p-[23px] max-[600px]:p-[17px] max-[420px]:p-[14px] max-[360px]:p-[10px] shadow-[0_24px_80px_#07190f55] max-h-[calc(100vh-36px)] overflow-y-auto">
-        <div className="flex justify-between items-start border-b border-[#edf0eb] pb-[16px] mb-[14px]">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className="w-full max-w-[480px] max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl"
+      >
+        <div className="mb-5 flex items-center justify-between border-b border-gray-200 pb-4">
           <div>
-            <div className="text-[10px] font-extrabold tracking-[0.15em] text-[#77917f] mb-[8px]">
+            <div className="mb-1 text-xs font-bold tracking-widest text-green-700">
               AYURDHARA
             </div>
-            <h2 className="font-['Manrope',sans-serif] tracking-[-0.035em] text-[21px] max-[600px]:text-[18px] m-0 font-bold">
+
+            <h2 id="modal-title" className="text-xl font-bold text-gray-900">
               {title}
             </h2>
           </div>
+
           <button
-            className="w-[30px] h-[30px] border-0 bg-[#f0f4ee] hover:bg-[#e4ece2] rounded-[8px] text-[#6f7d70] hover:text-[#2d4734] cursor-pointer grid place-items-center transition-colors"
+            type="button"
             onClick={onClose}
             aria-label="Close modal"
+            className="grid h-9 w-9 place-items-center rounded-lg bg-gray-100 hover:bg-gray-200"
           >
-            <X size={18} strokeWidth={2} />
+            <X size={18} />
           </button>
         </div>
+
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

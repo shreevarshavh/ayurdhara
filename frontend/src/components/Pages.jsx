@@ -1,6 +1,15 @@
 import React from "react";
 import { fmtDate, fmtTime, shortId } from "../utils";
 
+import {
+  ClipboardList,
+  CalendarDays,
+  TrendingUp,
+  ShieldCheck,
+  HelpCircle,
+  ChevronDown,
+  MessageCircle,
+} from "lucide-react";
 export function PageHeading({ action }) {
   if (!action) return null;
 
@@ -1239,8 +1248,8 @@ export function Progress({
                 <span
                   style={{
                     width: `${rows.length
-                        ? (s.count / rows.length) * 100
-                        : 0
+                      ? (s.count / rows.length) * 100
+                      : 0
                       }%`
                   }}
                 />
@@ -1980,58 +1989,32 @@ export function Users({
 
 export function HelpFAQs() {
   const faqs = [
-    {
-      question: "How can I view my treatment plan?",
-      answer:
-        "Open the Treatments section to view your prescribed Panchakarma treatments."
-    },
-    {
-      question: "How can I check my appointments?",
-      answer:
-        "Open the Sessions section to view your scheduled and completed sessions."
-    },
-    {
-      question: "How can I track my progress?",
-      answer:
-        "Open the Progress section to review your treatment progress and completed sessions."
-    },
-    {
-      question: "Who should I contact if I have a problem?",
-      answer:
-        "Contact your doctor or the AyurDhara administrator for assistance."
-    }
+    { category: "TREATMENT", question: "How can I view my treatment plan?", answer: "Open Treatment Plans from the My Care menu to review the therapies prescribed by your practitioner, including the planned sequence and session details.", icon: ClipboardList },
+    { category: "APPOINTMENTS", question: "Where can I check my appointments?", answer: "Visit Sessions to see your upcoming appointments, completed therapies and session history. If a time needs to change, contact your care team.", icon: CalendarDays },
+    { category: "PROGRESS", question: "How do I track my treatment progress?", answer: "Your Progress Tracking page brings together completed sessions and the progress updates recorded by your care team.", icon: TrendingUp },
+    { category: "HEALTH & SAFETY", question: "What should I do if I feel unwell during therapy?", answer: "Inform your therapist or practitioner immediately. For urgent symptoms, seek medical assistance rather than waiting for an account update.", icon: ShieldCheck }
   ];
 
   return (
-    <div className="panel">
-      <h2>Help & FAQs</h2>
-      <p>Frequently asked questions about your AyurDhara account.</p>
-
-      {faqs.map((faq, index) => (
-        <div
-          key={index}
-          style={{
-            padding: "14px 0",
-            borderBottom: "1px solid #e5e7eb"
-          }}
-        >
-          <h3>{faq.question}</h3>
-          <p>{faq.answer}</p>
+    <section className="patient-page-content patient-help-page">
+      <div className="patient-help-intro">
+        <div className="patient-help-intro-icon"><HelpCircle size={25} /></div>
+        <div><span className="patient-content-kicker">WE ARE HERE TO HELP</span><h2>How can we help you today?</h2><p>Quick answers to common questions about your AyurDhara care journey.</p></div>
+      </div>
+      <div className="patient-help-layout">
+        <div className="patient-help-main">
+          <div className="patient-content-heading"><div><span className="patient-content-kicker">HELP CENTRE</span><h2>Frequently asked questions</h2></div><span className="patient-help-count">{faqs.length} topics</span></div>
+          <div className="patient-help-faq-list">
+            {faqs.map(({ category, question, answer, icon: Icon }) => (
+              <details className="patient-help-faq" key={question}>
+                <summary><span className="patient-faq-icon"><Icon size={18} /></span><span className="patient-faq-copy"><small>{category}</small><strong>{question}</strong></span><span className="patient-faq-toggle"><ChevronDown size={17} /></span></summary>
+                <p>{answer}</p>
+              </details>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  );
-}
-
-export function VitalsSymptoms() {
-  return (
-    <div className="panel">
-      <h2>Vitals & Symptoms</h2>
-      <p>View your recorded health details and symptoms.</p>
-      <p>
-        Your doctor can help update or review your health information
-        during your consultation.
-      </p>
-    </div>
+        <aside className="patient-help-contact-card"><div className="patient-contact-icon"><MessageCircle size={22} /></div><span className="patient-content-kicker">PERSONAL SUPPORT</span><h3>Need a little more help?</h3><p>Your practitioner or AyurDhara care team can guide you with treatment-related questions.</p><div className="patient-contact-divider" /><strong>Speak to your care team</strong><span>Bring your questions to your next consultation.</span></aside>
+      </div>
+    </section>
   );
 }

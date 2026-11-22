@@ -39,7 +39,9 @@ ALTER TABLE public.treatment
   ADD COLUMN IF NOT EXISTS duration_minutes INTEGER NOT NULL DEFAULT 60,
   ADD COLUMN IF NOT EXISTS priority INTEGER NOT NULL DEFAULT 2,
   ADD COLUMN IF NOT EXISTS session_status VARCHAR(30) NOT NULL DEFAULT 'Scheduled',
+    ADD COLUMN IF NOT EXISTS clinical_notes TEXT NOT NULL DEFAULT '',
   ADD COLUMN IF NOT EXISTS session_notes TEXT NOT NULL DEFAULT '';
+  
 
 -- Keep the current API and the original p1-p5 design in sync.
 UPDATE public.treatment

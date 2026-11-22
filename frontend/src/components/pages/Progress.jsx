@@ -1,6 +1,6 @@
-
+﻿
 import React from "react";
-import { ClipboardList, CheckCircle2, Clock3, CalendarDays, TrendingUp, Printer } from "lucide-react";
+import { ClipboardList, CheckCircle2, Clock3, CalendarDays, TrendingUp } from "lucide-react";
 
 export function Progress({ patients = [], treatments = [], completed }) {
   const rows = treatments || [];
@@ -59,30 +59,6 @@ export function Progress({ patients = [], treatments = [], completed }) {
 
   return (
     <div className="flex flex-col gap-[16px] w-full">
-      {/* Page heading */}
-      <section className="relative flex items-center justify-between gap-[22px] min-h-[184px] max-[1100px]:min-h-[165px] max-[620px]:min-h-[155px] p-[28px_42px] max-[1100px]:p-[23px_22px] max-[620px]:p-[18px] overflow-hidden isolate rounded-[18px] bg-[#075238] bg-[linear-gradient(90deg,rgba(2,65,43,.98)_0%,rgba(2,76,49,.91)_40%,rgba(2,76,49,.26)_72%,rgba(2,76,49,.08)_100%),url('/ayurdhara-panchakarma-hero.png')] bg-cover bg-[center_56%] max-[1100px]:bg-[64%_center] shadow-[0_7px_20px_rgba(18,64,42,.08)]">
-        <div className="relative z-[1] max-w-[72%] max-[1100px]:max-w-full">
-          <span className="block mb-[13px] text-[#dce9bb] text-[10px] max-[620px]:text-[8px] font-extrabold tracking-[0.2em] uppercase">
-            OUTCOME MONITORING
-          </span>
-          <h1 className="m-[0_0_8px] text-white font-['Playfair_Display',Georgia,serif] text-[clamp(29px,2.5vw,40px)] max-[1100px]:text-[29px] max-[620px]:text-[25px] font-bold leading-[1.12] tracking-[-0.025em] max-[1100px]:max-w-[75%] max-[620px]:max-w-[85%]">
-            Progress Tracking
-          </h1>
-          <p className="m-0 text-[#f0f6ed] text-[14px] max-[1100px]:text-[12px] max-[620px]:text-[10px] leading-[1.55] max-[1100px]:max-w-[78%] max-[620px]:max-w-[90%]">
-            Follow your Panchakarma treatment progress and review completed
-            care activities.
-          </p>
-        </div>
-
-        <div className="relative z-[2] shrink-0 self-end max-[1100px]:absolute max-[1100px]:right-[15px] max-[1100px]:bottom-[13px]">
-          <button
-            className="min-h-[42px] max-[620px]:min-h-[32px] px-[17px] max-[620px]:px-[11px] max-[620px]:py-[4px] border border-white/55 rounded-full bg-white/[0.94] text-[#075238] font-bold text-[13px] max-[620px]:text-[11px] shadow-[0_4px_14px_rgba(0,0,0,.08)] cursor-pointer w-auto max-[620px]:w-auto whitespace-nowrap flex items-center justify-center gap-[7px] max-[620px]:gap-[5px]"
-            onClick={() => window.print()}
-          >
-            <Printer size={15} className="max-[620px]:w-[13px] max-[620px]:h-[13px] shrink-0" /> Print summary
-          </button>
-        </div>
-      </section>
 
       {/* Summary cards */}
       <section className="grid grid-cols-5 max-[1100px]:grid-cols-3 max-[768px]:grid-cols-2 max-[420px]:grid-cols-1 gap-[13px] max-[1100px]:gap-[10px] mb-[2px]">
@@ -209,7 +185,7 @@ export function Progress({ patients = [], treatments = [], completed }) {
 
         <section className="bg-white border border-[#e6ece3] rounded-[17px] shadow-[0_5px_17px_rgba(27,68,43,.055)] p-[22px] max-[620px]:p-[16px]">
           <h2 className="font-['Playfair_Display',serif] text-[20px] text-[#173f2f] m-[0_0_5px] font-bold">
-            Session status
+            Treatment status
           </h2>
           <p className="text-[11px] text-[#89968d] m-[0_0_18px]">
             Current status of your treatment records
@@ -226,9 +202,8 @@ export function Progress({ patients = [], treatments = [], completed }) {
                 <i
                   className="block h-full bg-[linear-gradient(90deg,#3e8b5c,#9dc58a)] rounded-[20px] not-italic"
                   style={{
-                    width: `${
-                      rows.length ? (item.count / rows.length) * 100 : 0
-                    }%`,
+                    width: `${rows.length ? (item.count / rows.length) * 100 : 0
+                      }%`,
                   }}
                 />
               </div>
