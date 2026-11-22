@@ -1,0 +1,575 @@
+/* =========================================
+   AYURDHARA GLOBAL UI DESIGN SYSTEM
+   Shared across Patient, Therapist, Practitioner and Admin
+========================================= */
+
+.patient-workspace {
+    --ui-green: #14583d;
+    --ui-dark: #173d2d;
+    --ui-muted: #819087;
+    --ui-border: #e5ebe3;
+    --ui-background: #f6f8f3;
+    --ui-sage: #f2f6ee;
+    --ui-radius: 14px;
+    --ui-shadow: 0 4px 15px rgba(24, 64, 43, 0.045);
+}
+
+/* =========================================
+   PAGE LAYOUT AND SPACING
+========================================= */
+
+.patient-workspace .patient-page {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+}
+
+.patient-workspace .patient-page-hero-light {
+    margin: 0 !important;
+}
+
+/* =========================================
+   PANELS AND CARDS
+========================================= */
+
+.patient-workspace .panel {
+    min-width: 0;
+    background: #ffffff;
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius);
+    box-shadow: var(--ui-shadow);
+}
+
+.patient-workspace .table-panel {
+    margin-top: 0 !important;
+    overflow: hidden;
+    border: 1px solid var(--ui-border);
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: var(--ui-shadow);
+}
+
+/* =========================================
+   PANEL HEADERS
+========================================= */
+
+.patient-workspace .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    min-height: 72px;
+    box-sizing: border-box;
+    padding: 18px 22px;
+    border-bottom: 1px solid #edf0eb;
+}
+
+.patient-workspace .panel-header>div {
+    flex: 1;
+    min-width: 0;
+}
+
+.patient-workspace .panel-header h2 {
+    margin: 0 0 5px;
+    padding: 0;
+    color: var(--ui-dark);
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.patient-workspace .panel-header p {
+    margin: 0;
+    padding: 0;
+    color: var(--ui-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.patient-workspace .panel-header button {
+    flex-shrink: 0;
+}
+
+/* =========================================
+   STANDARD TOOLBAR
+   Search and result count
+========================================= */
+
+.patient-workspace .toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+    margin: 0;
+}
+
+.patient-workspace .search-box {
+    display: flex;
+    align-items: center;
+    width: min(100%, 490px);
+    min-height: 46px;
+    box-sizing: border-box;
+    padding: 0 14px;
+    border: 1px solid var(--ui-border);
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.patient-workspace .search-box input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px;
+}
+
+.patient-workspace .results-count {
+    flex-shrink: 0;
+    color: var(--ui-muted);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* =========================================
+   UNIFIED PAGE TOOLBAR
+   Search and count on the left;
+   action buttons on the far right.
+========================================= */
+
+.patient-workspace .page-toolbar {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    column-gap: 20px !important;
+    width: 100% !important;
+    min-width: 0;
+    margin: 0 !important;
+}
+
+.patient-workspace .page-toolbar .toolbar-left {
+    display: flex !important;
+    align-items: center !important;
+    flex-flow: row nowrap !important;
+    gap: 12px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.patient-workspace .page-toolbar .search-box {
+    flex: 0 1 490px !important;
+    width: 490px !important;
+    max-width: 100% !important;
+    min-width: 180px !important;
+}
+
+.patient-workspace .page-toolbar .results-count {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+}
+
+.patient-workspace .page-toolbar .toolbar-actions {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    flex-flow: row nowrap !important;
+    gap: 10px !important;
+    justify-self: end !important;
+    margin: 0 !important;
+    min-width: max-content;
+}
+
+.patient-workspace .page-toolbar-actions-only {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+}
+
+.patient-workspace .page-toolbar-actions-only>div {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+/* =========================================
+   INPUTS AND FILTERS
+========================================= */
+
+.patient-workspace input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.patient-workspace select,
+.patient-workspace textarea {
+    font-family: "DM Sans", sans-serif;
+}
+
+.patient-workspace .inline-select,
+.patient-workspace .notes-input {
+    min-height: 36px;
+    padding: 7px 10px;
+    border: 1px solid var(--ui-border);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--ui-dark);
+    font-size: 12px;
+}
+
+.patient-workspace input:focus,
+.patient-workspace select:focus,
+.patient-workspace textarea:focus {
+    outline: none;
+    border-color: #8eae91;
+    box-shadow: 0 0 0 3px rgba(111, 157, 112, 0.12);
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.patient-workspace .primary-btn,
+.patient-workspace .outline-btn,
+.patient-workspace .danger-btn,
+.patient-workspace .small-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    box-sizing: border-box;
+    padding: 9px 15px;
+    border-radius: 10px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+}
+
+.patient-workspace .primary-btn,
+.patient-workspace .small-btn {
+    border: 1px solid var(--ui-green);
+    background: var(--ui-green);
+    color: #ffffff;
+}
+
+.patient-workspace .primary-btn:hover,
+.patient-workspace .small-btn:hover {
+    transform: translateY(-1px);
+    background: #0c4931;
+}
+
+.patient-workspace .outline-btn {
+    border: 1px solid #dce7da;
+    background: #ffffff;
+    color: var(--ui-green);
+}
+
+.patient-workspace .outline-btn:hover {
+    background: #f3f7ef;
+}
+
+.patient-workspace .danger-btn {
+    border: 1px solid #b83d37;
+    background: #b83d37;
+    color: #ffffff;
+}
+
+.patient-workspace button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* =========================================
+   TABLES
+========================================= */
+
+.patient-workspace .table-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.patient-workspace table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+.patient-workspace table thead th {
+    padding: 15px 18px;
+    border-bottom: 1px solid var(--ui-border);
+    background: #f5f8f2;
+    color: #718477;
+    font-family: "DM Sans", sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.patient-workspace table tbody td {
+    padding: 15px 18px;
+    border-bottom: 1px solid #edf0eb;
+    color: #34483b;
+    font-size: 12px;
+    font-weight: 500;
+    vertical-align: middle;
+}
+
+.patient-workspace table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.patient-workspace table tbody tr:hover {
+    background: #f8faf6;
+}
+
+.patient-workspace .person-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.patient-workspace .person-cell b {
+    color: var(--ui-dark);
+    font-weight: 700;
+}
+
+.patient-workspace .table-avatar {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 50%;
+    background: #e9f0d9;
+    color: var(--ui-green);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+/* =========================================
+   STATUS BADGES
+========================================= */
+
+.patient-workspace .status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 30px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* =========================================
+   EMPTY STATES
+========================================= */
+
+.patient-workspace .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 130px;
+    box-sizing: border-box;
+    padding: 24px 20px;
+    text-align: center;
+}
+
+.patient-workspace .empty-state>div {
+    margin-bottom: 12px;
+    color: #83a58a;
+    font-size: 30px;
+}
+
+.patient-workspace .empty-state b {
+    color: var(--ui-dark);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.patient-workspace .empty-state p {
+    margin: 7px 0 0;
+    color: var(--ui-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* =========================================
+   TREATMENT CARDS
+========================================= */
+
+.patient-workspace .treatment-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.patient-workspace .treatment-card {
+    padding: 20px;
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius);
+    background: #ffffff;
+    box-shadow: var(--ui-shadow);
+}
+
+.patient-workspace .treatment-card h3 {
+    color: var(--ui-dark);
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 19px;
+}
+
+/* =========================================
+   PROGRESS AND ALERT CARDS
+========================================= */
+
+.patient-workspace .progress-top-grid,
+.patient-workspace .alert-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.patient-workspace .alert-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.patient-workspace .alert-summary-card,
+.patient-workspace .alert-card {
+    border-radius: var(--ui-radius);
+}
+
+/* =========================================
+   NOTIFICATIONS
+========================================= */
+
+.patient-workspace .notifications-list {
+    overflow: hidden;
+}
+
+.patient-workspace .notification-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    padding: 17px 20px;
+    border: 0;
+    border-bottom: 1px solid #edf0eb;
+    background: #ffffff;
+    text-align: left;
+}
+
+.patient-workspace .notification-row:hover {
+    background: #f7faf5;
+}
+
+/* =========================================
+   RESPONSIVE: TABLET
+========================================= */
+
+@media (max-width: 900px) {
+
+    .patient-workspace .treatment-grid,
+    .patient-workspace .progress-top-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .patient-workspace .patient-page {
+        gap: 15px;
+    }
+
+    .patient-workspace .page-toolbar {
+        column-gap: 12px !important;
+    }
+
+    .patient-workspace .page-toolbar .search-box {
+        flex-basis: 320px !important;
+        width: 320px !important;
+    }
+}
+
+/* =========================================
+   RESPONSIVE: MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+    .patient-workspace .page-toolbar {
+        grid-template-columns: 1fr !important;
+        row-gap: 12px !important;
+    }
+
+    .patient-workspace .page-toolbar .toolbar-left {
+        flex-flow: row wrap !important;
+        width: 100% !important;
+    }
+
+    .patient-workspace .page-toolbar .search-box {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .patient-workspace .page-toolbar .results-count {
+        white-space: normal !important;
+    }
+
+    .patient-workspace .page-toolbar .toolbar-actions {
+        justify-self: start !important;
+        justify-content: flex-start !important;
+        flex-flow: row wrap !important;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .patient-workspace .page-toolbar-actions-only {
+        justify-content: flex-start;
+    }
+
+    .patient-workspace .page-toolbar-actions-only>div {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .patient-workspace .panel-header {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        padding: 15px;
+    }
+
+    .patient-workspace .toolbar {
+        align-items: stretch;
+    }
+
+    .patient-workspace .search-box {
+        width: 100%;
+    }
+
+    .patient-workspace .table-scroll table {
+        min-width: 650px;
+    }
+
+    .patient-workspace .patient-page {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 600px) {
+    .patient-workspace .alert-summary {
+        grid-template-columns: 1fr;
+    }
+}

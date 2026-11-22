@@ -1,0 +1,939 @@
+/* AyurDhara therapist workspace — scoped so patient/doctor/admin views stay unchanged. */
+.therapist-shell {
+    background: #f4f7f1;
+    color: #153c2d;
+}
+
+.therapist-shell .sidebar {
+    width: 292px;
+    padding: 22px 14px 14px;
+    color: #f4f8ee;
+    background: linear-gradient(180deg, #064b35 0%, #07553c 70%, #06452f 100%);
+    border-right: 0;
+    box-shadow: 5px 0 22px rgba(8, 55, 37, .08);
+}
+
+.therapist-shell .sidebar-brand {
+    padding: 0 12px 24px;
+    border-bottom: 1px solid rgba(231, 244, 222, .18);
+}
+
+.therapist-shell .brand-symbol {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: #e7f0d5;
+    color: #0c5a3c;
+    font-size: 27px;
+}
+
+.therapist-shell .sidebar-brand strong {
+    color: #fff;
+    font-family: Georgia, serif;
+    font-size: 20px;
+    letter-spacing: .035em;
+}
+
+.therapist-shell .sidebar-brand small {
+    color: #c4d9c8;
+    font-size: 11px;
+}
+
+.therapist-shell .side-user {
+    margin-top: 14px;
+    padding: 14px 12px;
+    border: 1px solid rgba(226, 243, 222, .24);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .055);
+}
+
+.therapist-shell .avatar {
+    width: 44px;
+    height: 44px;
+    background: #e7efd9;
+    color: #15573c;
+    font-size: 15px;
+}
+
+.therapist-shell .side-user-text b {
+    color: #fff;
+    font-size: 13px;
+}
+
+.therapist-shell .side-user-text span {
+    color: #c4d9c8;
+    font-size: 11px;
+}
+
+.therapist-shell .online-dot {
+    background: #72d18b;
+}
+
+.therapist-shell .nav-group {
+    padding-top: 19px;
+}
+
+.therapist-shell .nav-heading {
+    color: #a9cbbb;
+    padding-left: 15px;
+    font-size: 10px;
+    letter-spacing: .15em;
+}
+
+.therapist-shell .nav-item {
+    color: #edf5ed;
+    padding: 12px 14px;
+    border-radius: 11px;
+    font-size: 13px;
+    gap: 13px;
+    margin: 3px 0;
+}
+
+.therapist-shell .nav-item:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, .10);
+}
+
+.therapist-shell .nav-item.active {
+    color: #124b34;
+    background: #e1edc6;
+    box-shadow: inset 4px 0 #8bbd82;
+    font-weight: 800;
+}
+
+.therapist-shell .nav-icon {
+    color: #c4dfc7;
+    font-size: 18px;
+}
+
+.therapist-shell .nav-item.active .nav-icon {
+    color: #14583b;
+}
+
+.therapist-shell .nav-count {
+    margin-left: auto;
+}
+
+.therapist-shell .sidebar-bottom {
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.therapist-shell .wellness-card {
+    margin: 10px 3px 12px;
+    background: linear-gradient(135deg, #e6efda, #f3f5e7);
+    border-radius: 15px;
+    padding: 17px;
+    color: #173f2e;
+}
+
+.therapist-shell .wellness-card p {
+    color: #6b8374;
+    font-size: 11px;
+}
+
+.therapist-shell .nav-item.logout {
+    border: 1px solid rgba(229, 243, 225, .25);
+    color: #fff;
+    padding: 13px 14px;
+}
+
+.therapist-shell .nav-item.logout:hover {
+    background: rgba(255, 255, 255, .1);
+}
+
+.therapist-shell .main-area {
+    margin-left: 292px;
+}
+
+.therapist-shell .topbar {
+    height: 76px;
+    padding: 0 clamp(24px, 3.2vw, 48px);
+}
+
+.therapist-shell .crumb {
+    color: #315d47;
+    font-size: 11px;
+    letter-spacing: .12em;
+}
+
+.therapist-shell .topbar-right {
+    gap: 14px;
+}
+
+.therapist-shell .icon-button {
+    border: 1px solid #e1e9df;
+    border-radius: 13px;
+    width: 44px;
+    height: 44px;
+    background: #fff;
+    color: #226443;
+}
+
+.therapist-shell .top-avatar {
+    width: 42px;
+    height: 42px;
+    background: #f1e9d8;
+    color: #896f42;
+}
+
+.therapist-shell .page-content {
+    max-width: 1680px;
+    padding: 27px clamp(24px, 3.2vw, 48px) 30px;
+}
+
+.therapist-shell .welcome-banner {
+    min-height: 228px;
+    border-radius: 22px;
+    padding: 38px 42px;
+    margin-bottom: 22px;
+    background: linear-gradient(110deg, #064b35 0%, #00623d 58%, #168052 100%);
+    box-shadow: 0 12px 28px rgba(12, 74, 47, .10);
+}
+
+.therapist-shell .welcome-banner:before {
+    content: "";
+    position: absolute;
+    inset: auto -2% -45% 0;
+    height: 65%;
+    background: radial-gradient(ellipse at 38% 0%, rgba(157, 204, 84, .28), transparent 52%), linear-gradient(170deg, transparent 40%, rgba(180, 214, 101, .25) 41%, transparent 42%);
+    pointer-events: none;
+}
+
+.therapist-shell .welcome-banner:after {
+    width: 340px;
+    height: 340px;
+    right: 30px;
+    top: -185px;
+    border-color: #ffffff20;
+    box-shadow: 0 0 0 45px #ffffff08, 0 0 0 90px #ffffff05;
+}
+
+.therapist-shell .banner-kicker {
+    color: #d8e9a9;
+    font-size: 10px;
+    letter-spacing: .19em;
+}
+
+.therapist-shell .welcome-banner h1 {
+    font-family: Georgia, serif;
+    font-size: clamp(27px, 2.2vw, 38px);
+    margin: 16px 0 9px;
+}
+
+.therapist-shell .welcome-banner p {
+    color: #e2efe5;
+    font-size: 14px;
+    max-width: 650px;
+}
+
+.therapist-shell .banner-art {
+    right: 8%;
+    font-size: 150px;
+    color: rgba(210, 233, 174, .25);
+}
+
+.therapist-shell .metrics-grid {
+    gap: 17px;
+    margin-bottom: 22px;
+}
+
+.therapist-shell .metric-card {
+    min-height: 150px;
+    border-radius: 18px;
+    padding: 20px 20px 17px;
+    box-shadow: 0 7px 20px rgba(28, 66, 42, .055);
+}
+
+.therapist-shell .metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+    font-size: 21px;
+    float: left;
+    margin: 0 14px 8px 0;
+}
+
+.therapist-shell .metric-label {
+    padding-top: 4px;
+    font-size: 13px;
+    color: #294b39;
+}
+
+.therapist-shell .metric-value {
+    font-family: Georgia, serif;
+    font-size: 34px;
+    color: #073f2c;
+    margin: 7px 0 2px;
+}
+
+.therapist-shell .metric-detail {
+    clear: both;
+    padding-top: 5px;
+    font-size: 11px;
+    color: #819086;
+}
+
+.therapist-shell .dashboard-grid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(330px, .9fr);
+    gap: 20px;
+}
+
+.therapist-shell .panel {
+    border: 1px solid #e5ece2;
+    border-radius: 19px;
+    box-shadow: 0 6px 20px rgba(28, 66, 42, .045);
+}
+
+.therapist-shell .panel-header h2,
+.therapist-shell .panel h2 {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    color: #143d2c;
+}
+
+.therapist-shell .panel-header p {
+    font-size: 12px;
+}
+
+.therapist-shell .link-button {
+    color: #126342;
+    font-weight: 800;
+}
+
+.therapist-shell .progress-circle {
+    border-color: #dce9d2;
+}
+
+.therapist-shell .progress-circle strong {
+    font-family: Georgia, serif;
+    color: #075238;
+    font-size: 32px;
+}
+
+.therapist-shell .quick-actions {
+    border: 1px solid #e2ebdd;
+    border-radius: 18px;
+    background: #edf3e8;
+    padding: 22px;
+    margin-top: 20px;
+}
+
+.therapist-shell .quick-actions h2 {
+    font-family: Georgia, serif;
+    font-size: 22px;
+}
+
+.therapist-shell .quick-action-list button {
+    border: 1px solid #e2eadd;
+    border-radius: 13px;
+    background: #fff;
+    padding: 13px 15px;
+}
+
+.therapist-shell .page-heading {
+    margin-bottom: 22px;
+}
+
+.therapist-shell .page-heading h1 {
+    font-family: Georgia, serif;
+    font-size: 32px;
+    color: #123d2b;
+}
+
+.therapist-shell .eyebrow {
+    color: #72917a;
+}
+
+.therapist-shell .toolbar {
+    gap: 14px;
+}
+
+.therapist-shell .search-box {
+    border-radius: 12px;
+    border-color: #e2e9df;
+    background: #fff;
+    min-height: 46px;
+}
+
+.therapist-shell .treatment-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 17px;
+}
+
+.therapist-shell .treatment-card {
+    padding: 21px;
+    border-radius: 17px;
+}
+
+.therapist-shell .treatment-card h3 {
+    font-family: Georgia, serif;
+    font-size: 19px;
+    color: #153e2d;
+}
+
+.therapist-shell .table-panel {
+    overflow: hidden;
+}
+
+.therapist-shell table th {
+    background: #f3f7f0;
+    color: #718678;
+    font-size: 10px;
+    letter-spacing: .09em;
+}
+
+.therapist-shell table td {
+    font-size: 12px;
+}
+
+.therapist-shell .status {
+    border-radius: 30px;
+    padding: 5px 10px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.therapist-shell .primary-btn,
+.therapist-shell .small-btn {
+    border-radius: 11px;
+    background: #0c5a3b;
+}
+
+.therapist-shell .outline-btn {
+    border-radius: 11px;
+    border-color: #dce7da;
+    color: #14583b;
+    background: #fff;
+}
+
+.therapist-shell .danger-btn {
+    border-radius: 11px;
+}
+
+.therapist-shell .alert-summary-card {
+    border-radius: 16px;
+}
+
+.therapist-shell .alert-card {
+    border-radius: 16px;
+}
+
+.therapist-shell .notification-row {
+    padding: 18px 20px;
+}
+
+.therapist-shell .app-footer {
+    background: #f4f7f1;
+    border-color: #e4ebe1;
+    padding: 18px clamp(24px, 3.2vw, 48px);
+}
+
+@media(max-width:1100px) {
+    .therapist-shell .sidebar {
+        width: 245px
+    }
+
+    .therapist-shell .main-area {
+        margin-left: 245px
+    }
+
+    .therapist-shell .dashboard-grid {
+        grid-template-columns: 1fr
+    }
+
+    .therapist-shell .metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+}
+
+@media(max-width:700px) {
+    .therapist-shell .sidebar {
+        width: 76px;
+        padding: 16px 8px
+    }
+
+    .therapist-shell .sidebar-brand {
+        justify-content: center;
+        padding: 0 0 18px
+    }
+
+    .therapist-shell .sidebar-brand>div:last-child,
+    .therapist-shell .side-user-text,
+    .therapist-shell .online-dot,
+    .therapist-shell .nav-heading,
+    .therapist-shell .nav-item>span:not(.nav-icon),
+    .therapist-shell .wellness-card {
+        display: none
+    }
+
+    .therapist-shell .side-user {
+        justify-content: center;
+        padding: 12px 0
+    }
+
+    .therapist-shell .nav-item {
+        justify-content: center;
+        padding: 12px 4px
+    }
+
+    .therapist-shell .nav-icon {
+        font-size: 20px
+    }
+
+    .therapist-shell .main-area {
+        margin-left: 76px
+    }
+
+    .therapist-shell .page-content {
+        padding: 18px 14px
+    }
+
+    .therapist-shell .topbar {
+        padding: 0 14px
+    }
+
+    .therapist-shell .today,
+    .therapist-shell .top-username {
+        display: none
+    }
+
+    .therapist-shell .welcome-banner {
+        padding: 27px 22px;
+        min-height: 190px
+    }
+
+    .therapist-shell .metrics-grid,
+    .therapist-shell .treatment-grid {
+        grid-template-columns: 1fr
+    }
+
+    .therapist-shell .page-heading {
+        align-items: flex-start;
+        flex-direction: column
+    }
+
+    .therapist-shell .quick-action-list {
+        display: grid;
+        grid-template-columns: 1fr
+    }
+
+    .therapist-shell .table-scroll {
+        overflow-x: auto
+    }
+
+    /* ==========================================
+   AYURDHARA – REFERENCE TABLE DESIGN
+========================================== */
+
+    .table-panel {
+        background: #ffffff !important;
+        border: 1px solid #e5ebe3 !important;
+        border-radius: 15px !important;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(25, 65, 43, 0.04) !important;
+    }
+
+    .table-scroll {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .table-panel table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff;
+    }
+
+    /* Table headings */
+
+    .table-panel thead th {
+        background: #f6f8f4 !important;
+        color: #718477 !important;
+        font-family: "DM Sans", sans-serif;
+        font-size: 10px !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        padding: 16px 18px !important;
+        border-bottom: 1px solid #e7ece5 !important;
+        white-space: nowrap;
+    }
+
+    /* Table rows */
+
+    .table-panel tbody tr {
+        background: #ffffff;
+        transition: background 0.2s ease;
+    }
+
+    .table-panel tbody tr:hover {
+        background: #f7faf5 !important;
+    }
+
+    .table-panel tbody td {
+        color: #34483b !important;
+        font-family: "DM Sans", sans-serif;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        padding: 16px 18px !important;
+        border-bottom: 1px solid #edf0eb !important;
+        vertical-align: middle;
+    }
+
+    .table-panel tbody tr:last-child td {
+        border-bottom: none !important;
+    }
+
+    /* Patient names */
+
+    .person-cell {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .person-cell b {
+        color: #183e2e !important;
+        font-size: 13px;
+        font-weight: 700 !important;
+    }
+
+    /* Patient avatar */
+
+    .table-avatar {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #e9f0d9;
+        color: #24583c;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    /* Secondary information */
+
+    .cell-sub {
+        display: block;
+        margin-top: 4px;
+        color: #89968c;
+        font-size: 10px;
+        font-weight: 400;
+    }
+
+    /* Status badges */
+
+    .status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* Search bar */
+
+    .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin: 16px 0 18px;
+    }
+
+    .search-box {
+        min-height: 44px;
+        border: 1px solid #e1e9df;
+        border-radius: 10px;
+        background: #ffffff;
+    }
+
+    .search-box input {
+        font-family: "DM Sans", sans-serif;
+        font-size: 12px;
+    }
+
+    .results-count {
+        color: #829187;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    /* Action buttons */
+
+    .table-panel button,
+    .table-panel select {
+        font-family: "DM Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    /* Empty state */
+
+    .table-panel .empty-state {
+        padding: 55px 20px;
+        text-align: center;
+    }
+
+    .table-panel .empty-state b {
+        color: #183e2e;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .table-panel .empty-state p {
+        color: #849188;
+        font-size: 12px;
+    }
+
+    .toast {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 10000;
+        width: min(480px, calc(100vw - 40px));
+        padding: 18px 20px;
+        border-radius: 12px;
+        background: #ffffff;
+        color: #26352e;
+        border: 1px solid #d8e5dc;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.14);
+        white-space: pre-line;
+        line-height: 1.6;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .toast.success {
+        border-left: 5px solid #278653;
+    }
+
+    .toast.error {
+        border-left: 5px solid #d94848;
+    }
+
+    .toast button {
+        margin-left: auto;
+        border: none;
+        background: transparent;
+        font-size: 20px;
+        cursor: pointer;
+        color: inherit;
+    }
+
+    /* Popup overlay */
+    .popup-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: rgba(20, 35, 27, 0.45);
+        backdrop-filter: blur(3px);
+    }
+
+    /* Popup card */
+    .popup-card {
+        width: min(420px, calc(100% - 40px));
+        padding: 35px 30px;
+
+        background: #ffffff;
+        border-radius: 20px;
+
+        text-align: center;
+
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+
+        animation: popupAppear 0.25s ease;
+    }
+
+    .popup-icon {
+        width: 65px;
+        height: 65px;
+
+        margin: 0 auto 18px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: #e5f4e9;
+        color: #278653;
+
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    .popup-card.error .popup-icon {
+        background: #fdeaea;
+        color: #d94848;
+    }
+
+    .popup-card h2 {
+        margin-bottom: 12px;
+        color: #244b38;
+        font-size: 22px;
+    }
+
+    .popup-card p {
+        color: #68776d;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .popup-button {
+        margin-top: 20px;
+        padding: 12px 35px;
+
+        border: none;
+        border-radius: 9px;
+
+        background: #278653;
+        color: white;
+
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .popup-card.error .popup-button {
+        background: #d94848;
+    }
+
+    @keyframes popupAppear {
+        from {
+            opacity: 0;
+            transform: scale(0.92);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* =====================================
+   AYURDHARA - PREMIUM SCHEDULING POPUP
+===================================== */
+
+    .popup-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 999999 !important;
+
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+
+        background: rgba(18, 35, 26, 0.58) !important;
+        backdrop-filter: blur(5px);
+        padding: 20px;
+    }
+
+    .popup-card {
+        position: relative !important;
+        width: 100% !important;
+        max-width: 440px !important;
+
+        padding: 38px 34px 32px !important;
+
+        background: #ffffff !important;
+        border: 1px solid #e4eee6 !important;
+        border-radius: 22px !important;
+
+        text-align: center !important;
+
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2) !important;
+
+        animation: ayurPopupIn 0.3s ease-out;
+    }
+
+    .popup-icon {
+        width: 76px !important;
+        height: 76px !important;
+
+        margin: 0 auto 22px !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        border-radius: 50% !important;
+
+        background: #e8f5eb !important;
+        color: #28784c !important;
+
+        font-size: 38px !important;
+        font-weight: 600 !important;
+    }
+
+    .popup-card.error .popup-icon {
+        background: #fff0ed !important;
+        color: #d9534f !important;
+    }
+
+    .popup-card h2 {
+        margin: 0 0 12px !important;
+
+        color: #244b38 !important;
+        font-size: 23px !important;
+        font-weight: 700 !important;
+    }
+
+    .popup-card p {
+        margin: 0 !important;
+
+        color: #718078 !important;
+        font-size: 15px !important;
+        line-height: 1.7 !important;
+    }
+
+    .popup-button {
+        width: 100% !important;
+        margin-top: 28px !important;
+        padding: 14px !important;
+
+        border: none !important;
+        border-radius: 11px !important;
+
+        background: #285c40 !important;
+        color: #ffffff !important;
+
+        font-size: 15px !important;
+        font-weight: 600 !important;
+
+        cursor: pointer !important;
+        transition: background 0.2s ease;
+    }
+
+    .popup-button:hover {
+        background: #1c4630 !important;
+    }
+
+    .popup-card.error .popup-button {
+        background: #c94b46 !important;
+    }
+
+    @keyframes ayurPopupIn {
+        from {
+            opacity: 0;
+            transform: translateY(15px) scale(0.96);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+}

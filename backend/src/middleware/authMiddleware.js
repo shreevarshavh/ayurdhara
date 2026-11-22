@@ -1,9 +1,20 @@
 const jwt = require("jsonwebtoken");
 
 const JWT_SECRET =
-  process.env.JWT_SECRET || "ayurdhara-local-development-secret";
+  process.env.JWT_SECRET ||
+  "ayurdhara-local-development-secret";
 
-// Verify the user's login token
+function normalizeRole(role) {
+  const value = String(role || "").trim().toLowerCase();
+
+  // Treat Practitioner as Doctor throughout backend authorization.
+  if (value === "practitioner") {
+    return "doctor";
+  }
+
+  return value;
+}
+
 function authenticateToken(req, res, next) {
   const header = req.headers.authorization || "";
   const [scheme, token] = header.split(" ");
@@ -16,6 +27,10 @@ function authenticateToken(req, res, next) {
 
   try {
     req.user = jwt.verify(token, JWT_SECRET);
+
+    // Normalize role before checking permissions.
+    req.user.role = normalizeRole(req.user.role);
+
     return next();
   } catch (error) {
     return res.status(401).json({
@@ -24,16 +39,13 @@ function authenticateToken(req, res, next) {
   }
 }
 
-// Check whether the user's role is permitted
 function authorizeRoles(...allowedRoles) {
+  const normalizedAllowedRoles = allowedRoles.map(normalizeRole);
+
   return (req, res, next) => {
-    const userRole = String(req.user?.role || "").toLowerCase();
+    const userRole = normalizeRole(req.user?.role);
 
-    const permittedRoles = allowedRoles.map(role =>
-      String(role).toLowerCase()
-    );
-
-    if (!req.user || !permittedRoles.includes(userRole)) {
+    if (!req.user || !normalizedAllowedRoles.includes(userRole)) {
       return res.status(403).json({
         message: "You do not have permission to access this resource."
       });
