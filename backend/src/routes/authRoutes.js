@@ -2,40 +2,56 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const pool = require("../config/db");
+require("../config/firebaseAdmin");
+const { getAuth } = require("firebase-admin/auth");
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
-
-
 // Return the identity encoded in a valid login token.
 router.get("/me", async (req, res) => {
-  const jwt = require("jsonwebtoken");
   const header = req.headers.authorization || "";
   const [scheme, token] = header.split(" ");
+
   if (scheme !== "Bearer" || !token) {
     return res.status(401).json({ message: "Authentication required" });
   }
+
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "ayurdhara-local-development-secret");
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "ayurdhara-local-development-secret"
+    );
+
     const result = await pool.query(
-      `SELECT user_id, name, email, role, phone_number FROM users WHERE user_id = $1`,
+      `SELECT user_id, name, email, role, phone_number
+       FROM users WHERE user_id = $1`,
       [decoded.user_id]
     );
-    if (!result.rows[0]) return res.status(401).json({ message: "User account not found" });
+
+    if (!result.rows[0]) {
+      return res.status(401).json({ message: "User account not found" });
+    }
+
     return res.json({ user: result.rows[0] });
   } catch (error) {
-    return res.status(401).json({ message: "Your login session is invalid or expired" });
+    return res.status(401).json({
+      message: "Your login session is invalid or expired"
+    });
   }
 });
 
-// Login with email and password
+// Login with email and password.
 router.post("/login", async (req, res) => {
   try {
     const email = String(req.body.email || "").trim().toLowerCase();
     const password = String(req.body.password || "");
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return res.status(400).json({
+        message: "Email and password are required"
+      });
     }
 
     const result = await pool.query(
@@ -46,18 +62,30 @@ router.post("/login", async (req, res) => {
     );
 
     const user = result.rows[0];
+
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({
+        message: "Invalid email or password"
+      });
     }
 
-    const validPassword = await bcrypt.compare(password, user.password_hash);
+    const validPassword = await bcrypt.compare(
+      password,
+      user.password_hash
+    );
+
     if (!validPassword) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({
+        message: "Invalid email or password"
+      });
     }
 
-    const jwt = require("jsonwebtoken");
     const token = jwt.sign(
-      { user_id: user.user_id, role: user.role, email: user.email },
+      {
+        user_id: user.user_id,
+        role: user.role,
+        email: user.email
+      },
       process.env.JWT_SECRET || "ayurdhara-local-development-secret",
       { expiresIn: "8h" }
     );
@@ -79,13 +107,205 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// Firebase login.
+// Firebase verifies the identity; the backend issues its existing JWT.
+router.post("/firebase/login", async (req, res) => {
+  try {
+    const idToken = req.body.idToken;
+
+    if (!idToken) {
+      return res.status(400).json({
+        message: "Firebase ID token is required"
+      });
+    }
+
+    const decodedToken = await getAuth().verifyIdToken(idToken);
+
+    if (!decodedToken.email || decodedToken.email_verified !== true) {
+      return res.status(401).json({
+        message: "Please verify your email before signing in"
+      });
+    }
+
+    const email = decodedToken.email.trim().toLowerCase();
+
+    const result = await pool.query(
+      `SELECT user_id, name, email, role, phone_number
+       FROM users
+       WHERE LOWER(email) = $1`,
+      [email]
+    );
+
+    const user = result.rows[0];
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Account not found. Please register first."
+      });
+    }
+
+    if (String(user.role).toLowerCase() !== "patient") {
+      return res.status(403).json({
+        message: "Please use your staff login"
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        user_id: user.user_id,
+        role: user.role,
+        email: user.email
+      },
+      process.env.JWT_SECRET || "ayurdhara-local-development-secret",
+      { expiresIn: "8h" }
+    );
+
+    return res.json({
+      message: "Firebase login successful",
+      token,
+      user
+    });
+
+  } catch (error) {
+    console.error("Firebase login error:", error.message);
+
+    return res.status(401).json({
+      message: "Firebase authentication failed"
+    });
+  }
+});
+
+// Firebase patient registration.
+router.post("/firebase/register", async (req, res) => {
+  const {
+    idToken,
+    name,
+    phone_number,
+    height,
+    weight,
+    address,
+    blood_group,
+    profile_photo
+  } = req.body || {};
+
+  if (!idToken || !name) {
+    return res.status(400).json({
+      message: "Firebase ID token and name are required"
+    });
+  }
+
+  if (
+    profile_photo &&
+    (
+      typeof profile_photo !== "string" ||
+      profile_photo.length > 4_000_000 ||
+      !/^data:image\/(png|jpeg|jpg|webp|gif);base64,/i.test(profile_photo)
+    )
+  ) {
+    return res.status(400).json({
+      message: "Profile photo must be a valid image smaller than 2 MB"
+    });
+  }
+
+  let client;
+
+  try {
+    const decodedToken = await getAuth().verifyIdToken(idToken);
+
+    if (!decodedToken.email) {
+      return res.status(401).json({
+        message: "A valid email is required for registration"
+      });
+    }
+
+    const email = decodedToken.email.trim().toLowerCase();
+
+    client = await pool.connect();
+    await client.query("BEGIN");
+
+    const existingUser = await client.query(
+      `SELECT user_id FROM users WHERE LOWER(email) = $1`,
+      [email]
+    );
+
+    if (existingUser.rows.length > 0) {
+      await client.query("ROLLBACK");
+
+      return res.status(409).json({
+        message: "An account with this email already exists"
+      });
+    }
+
+    // Generate a random password hash to satisfy the existing
+    // PostgreSQL password_hash requirement.
+    const randomPassword = crypto.randomBytes(48).toString("hex");
+    const passwordHash = await bcrypt.hash(randomPassword, 12);
+
+    const userResult = await client.query(
+      `INSERT INTO users (name, email, password_hash, role, phone_number)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING user_id, name, email, role, phone_number, created_at`,
+      [
+        name.trim(),
+        email,
+        passwordHash,
+        "patient",
+        phone_number || null
+      ]
+    );
+
+    const user = userResult.rows[0];
+
+    await client.query(
+      `INSERT INTO patients
+       (user_id, height_cm, weight_kg, address, blood_group, profile_photo)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [
+        user.user_id,
+        height === "" || height == null ? null : Number(height),
+        weight === "" || weight == null ? null : Number(weight),
+        address || null,
+        blood_group || null,
+        profile_photo || null
+      ]
+    );
+
+    await client.query("COMMIT");
+
+    return res.status(201).json({
+      message: "Patient registered successfully. Verify your email before signing in.",
+      user
+    });
+
+  } catch (error) {
+    if (client) {
+      try {
+        await client.query("ROLLBACK");
+      } catch (_) {}
+    }
+
+    if (error.code === "23505") {
+      return res.status(409).json({
+        message: "An account with this email already exists"
+      });
+    }
+
+    console.error("Firebase registration error:", error.message);
+
+    return res.status(500).json({
+      message: "Firebase registration failed"
+    });
+  } finally {
+    if (client) {
+      client.release();
+    }
+  }
+});
 
 // Google sign-in is restricted to PATIENT accounts.
-// Google ID tokens are verified server-side; never trust profile data sent by the browser.
+// Google ID tokens are verified server-side.
 router.post("/google", async (req, res) => {
   const { OAuth2Client } = require("google-auth-library");
-  const crypto = require("crypto");
-  const jwt = require("jsonwebtoken");
 
   const credential = String(req.body?.credential || "");
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -97,16 +317,21 @@ router.post("/google", async (req, res) => {
   }
 
   if (!credential) {
-    return res.status(400).json({ message: "Google credential is required." });
+    return res.status(400).json({
+      message: "Google credential is required."
+    });
   }
 
   let client;
+
   try {
     const googleClient = new OAuth2Client(clientId);
+
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
       audience: clientId
     });
+
     const profile = ticket.getPayload();
 
     if (!profile?.sub || !profile?.email || profile.email_verified !== true) {
@@ -136,6 +361,7 @@ router.post("/google", async (req, res) => {
 
     if (user && String(user.role).toLowerCase() !== "patient") {
       await client.query("ROLLBACK");
+
       return res.status(403).json({
         message: "Google sign-in is available for patient accounts only. Please use your staff login."
       });
@@ -149,10 +375,8 @@ router.post("/google", async (req, res) => {
     }
 
     if (!user) {
-      // Google-authenticated accounts do not use a locally chosen password.
-      // Store a random, one-way password hash to satisfy the existing users schema.
       const randomPassword = crypto.randomBytes(48).toString("hex");
-      const passwordHash = await require("bcrypt").hash(randomPassword, 12);
+      const passwordHash = await bcrypt.hash(randomPassword, 12);
 
       const created = await client.query(
         `INSERT INTO users (name, email, password_hash, role, google_sub)
@@ -165,7 +389,7 @@ router.post("/google", async (req, res) => {
 
       await client.query(
         `INSERT INTO patients
-           (user_id, height_cm, weight_kg, address, blood_group, profile_photo)
+         (user_id, height_cm, weight_kg, address, blood_group, profile_photo)
          VALUES ($1, NULL, NULL, NULL, NULL, NULL)`,
         [user.user_id]
       );
@@ -188,46 +412,77 @@ router.post("/google", async (req, res) => {
       token,
       user
     });
+
   } catch (error) {
     if (client) {
-      try { await client.query("ROLLBACK"); } catch (_) { }
+      try {
+        await client.query("ROLLBACK");
+      } catch (_) {}
     }
 
     if (error.code === "23505") {
-      // A concurrent first-time sign-in may have created the same email.
       try {
         const existing = await pool.query(
           `SELECT user_id, name, email, role, phone_number
            FROM users WHERE LOWER(email) = LOWER($1)`,
           [String(req.body?.email || "")]
         );
-        if (existing.rows[0] && String(existing.rows[0].role).toLowerCase() === "patient") {
+
+        if (
+          existing.rows[0] &&
+          String(existing.rows[0].role).toLowerCase() === "patient"
+        ) {
           const user = existing.rows[0];
+
           const token = jwt.sign(
-            { user_id: user.user_id, role: user.role, email: user.email },
+            {
+              user_id: user.user_id,
+              role: user.role,
+              email: user.email
+            },
             process.env.JWT_SECRET || "ayurdhara-local-development-secret",
             { expiresIn: "8h" }
           );
-          return res.json({ message: "Google sign-in successful", token, user });
+
+          return res.json({
+            message: "Google sign-in successful",
+            token,
+            user
+          });
         }
-      } catch (_) { }
+      } catch (_) {}
     }
 
     console.error("Google sign-in error:", error.message);
+
     return res.status(401).json({
       message: "Google sign-in could not be verified. Please try again."
     });
   } finally {
-    if (client) client.release();
+    if (client) {
+      client.release();
+    }
   }
 });
 
 // Public registration creates patient accounts only.
 router.post("/register", async (req, res) => {
-  const { name, email, password, phone_number, height, weight, address, blood_group, profile_photo } = req.body || {};
+  const {
+    name,
+    email,
+    password,
+    phone_number,
+    height,
+    weight,
+    address,
+    blood_group,
+    profile_photo
+  } = req.body || {};
 
   if (!name || !email || !password) {
-    return res.status(400).json({ message: "Name, email, and password are required" });
+    return res.status(400).json({
+      message: "Name, email, and password are required"
+    });
   }
 
   if (String(password).length < 8) {
@@ -236,8 +491,17 @@ router.post("/register", async (req, res) => {
     });
   }
 
-  if (profile_photo && (typeof profile_photo !== "string" || profile_photo.length > 4_000_000 || !/^data:image\/(png|jpeg|jpg|webp|gif);base64,/i.test(profile_photo))) {
-    return res.status(400).json({ message: "Profile photo must be a valid image smaller than 2 MB" });
+  if (
+    profile_photo &&
+    (
+      typeof profile_photo !== "string" ||
+      profile_photo.length > 4_000_000 ||
+      !/^data:image\/(png|jpeg|jpg|webp|gif);base64,/i.test(profile_photo)
+    )
+  ) {
+    return res.status(400).json({
+      message: "Profile photo must be a valid image smaller than 2 MB"
+    });
   }
 
   const client = await pool.connect();
@@ -254,6 +518,7 @@ router.post("/register", async (req, res) => {
 
     if (existingUser.rows.length > 0) {
       await client.query("ROLLBACK");
+
       return res.status(409).json({
         message: "An account with this email already exists"
       });
@@ -265,13 +530,20 @@ router.post("/register", async (req, res) => {
       `INSERT INTO users (name, email, password_hash, role, phone_number)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING user_id, name, email, role, phone_number, created_at`,
-      [name.trim(), normalizedEmail, passwordHash, "patient", phone_number || null]
+      [
+        name.trim(),
+        normalizedEmail,
+        passwordHash,
+        "patient",
+        phone_number || null
+      ]
     );
 
     const user = userResult.rows[0];
 
     await client.query(
-      `INSERT INTO patients (user_id, height_cm, weight_kg, address, blood_group, profile_photo)
+      `INSERT INTO patients
+       (user_id, height_cm, weight_kg, address, blood_group, profile_photo)
        VALUES ($1, $2, $3, $4, $5, $6)`,
       [
         user.user_id,
@@ -289,6 +561,7 @@ router.post("/register", async (req, res) => {
       message: "Patient registered successfully",
       user
     });
+
   } catch (error) {
     await client.query("ROLLBACK");
 
@@ -308,6 +581,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// Doctor registration.
 router.post("/register-doctor", async (req, res) => {
   const {
     name,
@@ -319,7 +593,9 @@ router.post("/register-doctor", async (req, res) => {
     license_number,
     phone
   } = req.body || {};
+
   console.log("Received body:", req.body);
+
   console.log("Required fields:", {
     name,
     email,
@@ -329,8 +605,14 @@ router.post("/register-doctor", async (req, res) => {
     license_number
   });
 
-  if (!name || !email || !password || !degree ||
-    !specialization || !license_number) {
+  if (
+    !name ||
+    !email ||
+    !password ||
+    !degree ||
+    !specialization ||
+    !license_number
+  ) {
     return res.status(400).json({
       message: "Name, email, password, degree, specialization, and license number are required"
     });
@@ -341,7 +623,6 @@ router.post("/register-doctor", async (req, res) => {
       message: "Password must be at least 8 characters"
     });
   }
-
 
   const client = await pool.connect();
 
@@ -357,6 +638,7 @@ router.post("/register-doctor", async (req, res) => {
 
     if (existing.rows.length > 0) {
       await client.query("ROLLBACK");
+
       return res.status(409).json({
         message: "An account with this email already exists"
       });
@@ -375,8 +657,7 @@ router.post("/register-doctor", async (req, res) => {
 
     await client.query(
       `INSERT INTO doctors
-       (user_id, degree, date_of_birth, specialization,
-        license_number, phone)
+       (user_id, degree, date_of_birth, specialization, license_number, phone)
        VALUES ($1, $2, $3, $4, $5, $6)`,
       [
         user.user_id,
@@ -394,6 +675,7 @@ router.post("/register-doctor", async (req, res) => {
       message: "Doctor registered successfully. Admin approval is required before access is granted.",
       user
     });
+
   } catch (error) {
     await client.query("ROLLBACK");
 
@@ -403,8 +685,11 @@ router.post("/register-doctor", async (req, res) => {
       });
     }
 
-    if (error.code === "23514" || error.code === "22P02" ||
-      error.code === "22007") {
+    if (
+      error.code === "23514" ||
+      error.code === "22P02" ||
+      error.code === "22007"
+    ) {
       return res.status(400).json({
         message: "One or more supplied fields have an invalid value"
       });
@@ -419,6 +704,5 @@ router.post("/register-doctor", async (req, res) => {
     client.release();
   }
 });
-
 
 module.exports = router;
