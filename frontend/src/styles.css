@@ -20,6 +20,33 @@
     --rose: #b94e4a
 }
 
+/* =========================================
+   Smooth Professional Page Transitions
+   Subtle, ~180ms duration, zero layout shift
+   ========================================= */
+@keyframes pageFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: pageFadeIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none;
+    transform: none;
+  }
+}
+
 * {
     box-sizing: border-box
 }
@@ -222,14 +249,6 @@ h3 {
     transform: translateX(-50%) rotate(-16deg);
     text-shadow: 12px 10px 0 #77997828
 }
-
-
-
-
-
-
-
-
 
 
 

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useState } from 'react';
 
 import {
   Mail,
@@ -8,6 +9,9 @@ import {
   ArrowRight,
   Leaf
 } from 'lucide-react';
+
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 
 import api from '../services/api';
 import '../styles/Login.css';
@@ -41,15 +45,43 @@ export default function Login({ onLogin }) {
     setLoading(true);
 
     try {
+      let response;
 
-      const response = await api('/api/auth/login', {
-        method: 'POST',
-
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
+      try {
+        // Firebase email/password authentication
+        const credential = await signInWithEmailAndPassword(
+          auth,
+          email.trim().toLowerCase(),
           password
-        })
-      });
+        );
+
+        // Get Firebase ID token
+        const idToken = await credential.user.getIdToken();
+
+        // Verify Firebase identity with backend
+        response = await api('/api/auth/firebase/login', {
+          method: 'POST',
+          body: JSON.stringify({ idToken })
+        });
+
+      } catch (firebaseError) {
+
+        // Fallback for existing accounts not yet migrated to Firebase
+        if (
+          firebaseError.code === 'auth/user-not-found' ||
+          firebaseError.code === 'auth/invalid-credential'
+        ) {
+          response = await api('/api/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({
+              email: email.trim().toLowerCase(),
+              password
+            })
+          });
+        } else {
+          throw firebaseError;
+        }
+      }
 
       if (!response.token || !response.user) {
         throw new Error('Invalid login response from server.');
@@ -83,95 +115,72 @@ export default function Login({ onLogin }) {
   };
 
 
-  // GOOGLE SIGN-IN: Google Identity Services returns an ID token.
-  // The backend verifies that token and creates/logs in PATIENT accounts only.
-  useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    const container = document.getElementById('google-signin-container');
+  // GOOGLE LOGIN
+  const handleGoogleLogin = async () => {
+    setError('');
 
-    if (!clientId || !container) return;
+    setGoogleLoading(true);
 
-    let cancelled = false;
+    try {
 
-    const initializeGoogle = () => {
-      if (cancelled || !window.google?.accounts?.id) return;
+      // Sign in with Google using Firebase
+      const { GoogleAuthProvider, signInWithPopup } =
+        await import('firebase/auth');
 
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: async (googleResponse) => {
-          if (!googleResponse?.credential) {
-            setError('Google sign-in could not be completed. Please try again.');
-            return;
-          }
+      const provider = new GoogleAuthProvider();
 
-          setError('');
-          setGoogleLoading(true);
+      const credential = await signInWithPopup(auth, provider);
 
-          try {
-            const response = await api('/api/auth/google', {
-              method: 'POST',
-              body: JSON.stringify({ credential: googleResponse.credential })
-            });
+      // Get Firebase ID token
+      const idToken = await credential.user.getIdToken();
 
-            if (!response.token || !response.user || response.user.role !== 'patient') {
-              throw new Error('Google sign-in is available for patient accounts only.');
-            }
-
-            localStorage.setItem('ayurdhara_token', response.token);
-            localStorage.setItem('ayurdhara_user', JSON.stringify(response.user));
-            onLogin(response.user);
-          } catch (err) {
-            setError(err.message || 'Google sign-in failed. Please try again.');
-          } finally {
-            setGoogleLoading(false);
-          }
-        },
-        auto_select: false,
-        context: 'signin'
+      // Verify Google/Firebase token with backend
+      const response = await api('/api/auth/firebase/login', {
+        method: 'POST',
+        body: JSON.stringify({ idToken })
       });
 
-      container.innerHTML = '';
-      window.google.accounts.id.renderButton(container, {
-        type: 'standard',
-        theme: 'outline',
-        size: 'large',
-        text: 'continue_with',
-        shape: 'rectangular',
-        logo_alignment: 'left',
-        width: Math.min(container.clientWidth || 380, 420)
-      });
-    };
-
-    if (window.google?.accounts?.id) {
-      initializeGoogle();
-    } else {
-      let script = document.querySelector('script[data-google-identity="true"]');
-      if (!script) {
-        script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.async = true;
-        script.defer = true;
-        script.dataset.googleIdentity = 'true';
-        document.head.appendChild(script);
+      if (!response.token || !response.user) {
+        throw new Error('Invalid login response from server.');
       }
-      script.addEventListener('load', initializeGoogle);
-      script.addEventListener('error', () => {
-        if (!cancelled) setError('Could not load Google sign-in. Check your internet connection.');
-      });
-    }
 
-    return () => {
-      cancelled = true;
-    };
-  }, [onLogin]);
+      if (response.user.role !== 'patient') {
+        throw new Error(
+          'Google sign-in is available for patient accounts only.'
+        );
+      }
 
-  const handleGoogleLogin = () => {
-    if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) {
-      setError('Google sign-in setup is incomplete. Add VITE_GOOGLE_CLIENT_ID to frontend/.env.');
-      return;
+      // Store authentication details
+      localStorage.setItem(
+        'ayurdhara_token',
+        response.token
+      );
+
+      localStorage.setItem(
+        'ayurdhara_user',
+        JSON.stringify(response.user)
+      );
+
+      // Navigate to dashboard
+      onLogin(response.user);
+
+    } catch (err) {
+
+      if (err.code === 'auth/popup-closed-by-user') {
+        setError('Google sign-in window was closed.');
+      } else if (err.code === 'auth/popup-blocked') {
+        setError('The Google sign-in popup was blocked by your browser.');
+      } else {
+        setError(
+          err.message || 'Google sign-in failed. Please try again.'
+        );
+      }
+
+    } finally {
+
+      setGoogleLoading(false);
+
     }
-    if (googleLoading) return;
-    setError('Please use the Google button below to continue.');
   };
 
 
@@ -426,19 +435,51 @@ export default function Login({ onLogin }) {
           </div>
 
 
-          {/* GOOGLE SIGN-IN — rendered securely by Google Identity Services */}
-          <div className="google-signin-area">
-            <div
-              id="google-signin-container"
-              className="google-signin-container"
-              aria-label="Continue with Google"
-            />
-            {googleLoading && (
-              <p className="google-signin-status" role="status">
-                Signing in with Google…
-              </p>
-            )}
-          </div>
+          {/* GOOGLE LOGIN */}
+          <button
+            type="button"
+            className="google-login-btn"
+            onClick={handleGoogleLogin}
+            disabled={googleLoading}
+          >
+
+            {/* GOOGLE LOGO */}
+            <svg
+              className="google-logo"
+              viewBox="0 0 48 48"
+              aria-hidden="true"
+            >
+
+              <path
+                fill="#EA4335"
+                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z"
+              />
+
+              <path
+                fill="#4285F4"
+                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.73 7.18l7.2 5.59c4.2-3.88 6.57-9.6 6.57-17.24Z"
+              />
+
+              <path
+                fill="#FBBC05"
+                d="M10.53 28.59a14.4 14.4 0 0 1 0-9.18l-7.98-6.19a23.96 23.96 0 0 a 0 21.56l7.98-6.19Z"
+              />
+
+              <path
+                fill="#34A853"
+                d="M24 48c6.48 0 11.94-2.13 15.91-5.79l-7.2-5.59c-2 1.35-4.55 2.15-8.71 2.15-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.69 14.62 48 24 48Z"
+              />
+
+            </svg>
+
+            <span>
+              {googleLoading
+                ? 'Signing in...'
+                : 'Continue with Google'
+              }
+            </span>
+
+          </button>
 
 
           {/* CREATE PATIENT ACCOUNT */}
