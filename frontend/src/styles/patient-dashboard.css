@@ -5335,3 +5335,16 @@ h3,
         font-size: 23px
     }
 }
+
+.patient-progress-legend .gold-dot {
+    background: #e5ae50;
+}
+
+.patient-progress-legend .red-dot {
+    background: #d36c64;
+}
+
+.patient-donut {
+    flex-shrink: 0;
+    transition: background 0.3s ease;
+}

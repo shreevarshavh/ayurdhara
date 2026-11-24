@@ -191,15 +191,16 @@ export default function Scheduling({
                   <input
                     className={`${inputClass} pr-11`}
                     type="number"
-                    min="1"
+                    min="15"
+                    max="480"
                     step="5"
-                    value={form.duration_minutes}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
+                    value={form.duration_minutes ?? ""}
+                    onChange={(e) => {
+                      setForm((prev) => ({
+                        ...prev,
                         duration_minutes: e.target.value,
-                      })
-                    }
+                      }));
+                    }}
                     required
                   />
                 </div>

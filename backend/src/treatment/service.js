@@ -118,6 +118,7 @@ async function getDoctorId(user_id) {
 }
 
 // Create a treatment plan
+// Create a treatment plan
 async function createTreatmentPlan({
   patient_id,
   treatment_name,
@@ -129,18 +130,29 @@ async function createTreatmentPlan({
   therapist_id = null,
   appointment_start = null
 }, currentUser) {
+
   const name = String(treatment_name || "").trim();
   const duration = Number(duration_minutes);
   const treatmentPriority = Number(priority);
 
+  // Validate required fields
   if (!patient_id || !name) {
     throw new Error("Patient and treatment name are required");
   }
 
-  if (!Number.isInteger(duration) || duration < 15 || duration > 480) {
-    throw new Error("Treatment duration must be between 15 and 480 minutes");
+  // Validate duration
+  if (
+    !Number.isInteger(duration) ||
+    duration < 15 ||
+    duration > 480 ||
+    duration % 5 !== 0
+  ) {
+    throw new Error(
+      "Treatment duration must be between 15 and 480 minutes and in multiples of 5"
+    );
   }
 
+  // Validate priority
   if (
     !Number.isInteger(treatmentPriority) ||
     treatmentPriority < 1 ||
@@ -150,13 +162,17 @@ async function createTreatmentPlan({
   }
 
   const role = String(currentUser.role || "").toLowerCase();
+
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
 
+    // Verify patient
     const patient = await client.query(
-      "SELECT patient_id FROM patients WHERE patient_id = $1",
+      `SELECT patient_id
+       FROM patients
+       WHERE patient_id = $1`,
       [patient_id]
     );
 
@@ -164,11 +180,14 @@ async function createTreatmentPlan({
       throw new Error("Patient record not found");
     }
 
+    // Resolve doctor
     let assignedDoctorId = doctor_id || null;
 
     if (role === "doctor") {
       const doctor = await client.query(
-        "SELECT doctor_id FROM doctors WHERE user_id = $1",
+        `SELECT doctor_id
+         FROM doctors
+         WHERE user_id = $1`,
         [currentUser.user_id]
       );
 
@@ -180,14 +199,19 @@ async function createTreatmentPlan({
     }
 
     if (role === "admin" && !assignedDoctorId) {
-      throw new Error("Choose the doctor responsible for this treatment");
+      throw new Error(
+        "Choose the doctor responsible for this treatment"
+      );
     }
 
-    let chosenTherapistId = therapist_id || null;
+    // Verify therapist if supplied
+    const chosenTherapistId = therapist_id || null;
 
     if (chosenTherapistId) {
       const therapistCheck = await client.query(
-        "SELECT therapist_id FROM therapists WHERE therapist_id = $1",
+        `SELECT therapist_id
+         FROM therapists
+         WHERE therapist_id = $1`,
         [chosenTherapistId]
       );
 
@@ -196,6 +220,7 @@ async function createTreatmentPlan({
       }
     }
 
+    // Validate optional appointment date
     let parsedStart = null;
 
     if (appointment_start) {
@@ -205,13 +230,26 @@ async function createTreatmentPlan({
         throw new Error("Invalid appointment date or time");
       }
 
+      if (startCandidate.getTime() <= Date.now()) {
+        throw new Error("Choose a future appointment time");
+      }
+
+      if (!chosenTherapistId) {
+        throw new Error(
+          "A therapist must be assigned when providing an appointment time"
+        );
+      }
+
       parsedStart = startCandidate;
     }
 
-    const initialStatus = parsedStart
-      ? "Scheduled"
-      : "Awaiting Therapist Scheduling";
+    // A plan is scheduled only when BOTH therapist and appointment exist.
+    const initialStatus =
+      chosenTherapistId && parsedStart
+        ? "Scheduled"
+        : "Awaiting Therapist Scheduling";
 
+    // Create treatment plan
     const result = await client.query(
       `INSERT INTO treatment
       (
@@ -258,18 +296,19 @@ async function createTreatmentPlan({
 
     const plan = result.rows[0];
 
+    // Create session only when an actual appointment is assigned.
     if (chosenTherapistId && parsedStart) {
       await client.query(
         `INSERT INTO treatment_sessions
-          (
-            treatment_uuid,
-            therapist_id,
-            appointment_start,
-            duration_minutes,
-            priority,
-            session_status
-          )
-          VALUES ($1, $2, $3, $4, $5, 'Scheduled')`,
+        (
+          treatment_uuid,
+          therapist_id,
+          appointment_start,
+          duration_minutes,
+          priority,
+          session_status
+        )
+        VALUES ($1, $2, $3, $4, $5, 'Scheduled')`,
         [
           plan.uuid,
           chosenTherapistId,
@@ -281,11 +320,13 @@ async function createTreatmentPlan({
     }
 
     await client.query("COMMIT");
+
     return plan;
 
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
+
   } finally {
     client.release();
   }
@@ -308,6 +349,7 @@ async function scheduleTreatment({
     !Number.isInteger(duration) ||
     duration < 15 ||
     duration > 480 ||
+    duration % 5 !== 0 ||
     (requestedPriority !== null &&
       (!Number.isInteger(requestedPriority) ||
         requestedPriority < 1 ||
@@ -321,10 +363,21 @@ async function scheduleTreatment({
   if (Number.isNaN(requestedStart.getTime())) {
     throw new Error("Invalid appointment date or time");
   }
+  const now = new Date();
 
-  if (requestedStart.getTime() < Date.now() - 60000) {
-    throw new Error("Choose a future appointment time");
-  }
+  const earliestStart = new Date(
+    Math.max(requestedStart.getTime(), now.getTime())
+  );
+
+  const latestStart = new Date(earliestStart);
+  latestStart.setDate(latestStart.getDate() + 14);
+
+  const dayStart = new Date(earliestStart);
+  dayStart.setHours(0, 0, 0, 0);
+
+  const nextDay = new Date(latestStart);
+  nextDay.setDate(nextDay.getDate() + 1);
+  nextDay.setHours(0, 0, 0, 0);
 
   const role = String(currentUser.role || "").toLowerCase();
 
@@ -338,27 +391,6 @@ async function scheduleTreatment({
 
   const formatLocalDateTime = (date) =>
     `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-
-  const dayStart = new Date(
-    requestedStart.getFullYear(),
-    requestedStart.getMonth(),
-    requestedStart.getDate(),
-    0, 0, 0, 0
-  );
-
-  const nextDay = new Date(
-    requestedStart.getFullYear(),
-    requestedStart.getMonth(),
-    requestedStart.getDate() + 1,
-    0, 0, 0, 0
-  );
-
-  const latestStart = new Date(
-    requestedStart.getFullYear(),
-    requestedStart.getMonth(),
-    requestedStart.getDate(),
-    23, 45, 0, 0
-  );
 
   const client = await pool.connect();
 
@@ -401,7 +433,6 @@ async function scheduleTreatment({
     const plan = owned.rows[0];
 
     const requirements = String(
-      plan.treatment_requirements ||
       plan.treatment_name ||
       plan.p1 ||
       ""
@@ -498,6 +529,7 @@ async function scheduleTreatment({
          COALESCE(duration_minutes, 60) AS duration_minutes
        FROM treatment_sessions
        WHERE therapist_id = ANY($1::uuid[])
+         AND session_status IN ('Scheduled', 'Ongoing')
          AND appointment_start >= $2
          AND appointment_start < $3
          AND ($4::bigint IS NULL OR session_id <> $4::bigint)`,
@@ -517,6 +549,7 @@ async function scheduleTreatment({
     let solverResponse;
 
     try {
+
       solverResponse = await fetch(
         process.env.ORTOOLS_SOLVER_URL ||
         "http://127.0.0.1:8000/schedule",
@@ -530,7 +563,7 @@ async function scheduleTreatment({
             treatment_name: requirements,
             duration_minutes: duration,
             priority: treatmentPriority,
-            earliest_start: formatLocalDateTime(requestedStart),
+            earliest_start: formatLocalDateTime(earliestStart),
             latest_start: formatLocalDateTime(latestStart),
 
             therapists: therapists.map(therapist => ({
@@ -605,7 +638,7 @@ async function scheduleTreatment({
 
     if (
       Number.isNaN(chosenSlot.getTime()) ||
-      chosenSlot < requestedStart ||
+      chosenSlot < earliestStart ||
       chosenSlot > latestStart
     ) {
       throw new Error(
@@ -617,16 +650,7 @@ async function scheduleTreatment({
       chosenSlot.getTime() + duration * 60000
     );
 
-    if (
-      chosenSlot.getFullYear() !== requestedStart.getFullYear() ||
-      chosenSlot.getMonth() !== requestedStart.getMonth() ||
-      chosenSlot.getDate() !== requestedStart.getDate() ||
-      chosenEnd > nextDay
-    ) {
-      throw new Error(
-        "The solver returned an appointment outside the requested day"
-      );
-    }
+
 
     const conflictResult = await client.query(
       `SELECT session_id
@@ -906,55 +930,64 @@ async function updateTreatmentSession(
   try {
     await client.query("BEGIN");
 
-    const access = await client.query(`
-      SELECT s.session_id, s.treatment_uuid
-      FROM treatment_sessions s
-      JOIN treatment t ON t.uuid = s.treatment_uuid
-      LEFT JOIN doctors d ON d.doctor_id = t.doctor_id
-      LEFT JOIN therapists th ON th.therapist_id = s.therapist_id
-      WHERE s.session_id = $1
-        AND (
-          $2 = 'admin'
-          OR ($2 = 'doctor' AND d.user_id = $3)
-          OR ($2 = 'therapist' AND th.user_id = $3)
-        )
-      FOR UPDATE OF s
-    `, [
-      sessionId,
-      role,
-      currentUser.user_id
-    ]);
+    const access = await client.query(
+      `
+  SELECT
+    s.session_id,
+    s.treatment_uuid
+  FROM treatment_sessions s
+  JOIN treatment t ON t.uuid = s.treatment_uuid
+  LEFT JOIN doctors d ON d.doctor_id = t.doctor_id
+  LEFT JOIN therapists th ON th.therapist_id = s.therapist_id
+  WHERE s.session_id = $1::bigint
+    AND (
+      $2::text = 'admin'
+      OR ($2::text = 'doctor' AND d.user_id = $3::uuid)
+      OR ($2::text = 'therapist' AND th.user_id = $3::uuid)
+    )
+  FOR UPDATE OF s
+  `,
+      [
+        sessionId,
+        role,
+        currentUser.user_id
+      ]
+    );
 
     if (!access.rowCount) {
       await client.query("ROLLBACK");
       return null;
     }
 
-    const updated = await client.query(`
-      UPDATE treatment_sessions
-      SET
-        session_status = $1,
-        session_notes = $2,
-        outcome = $3,
-        completed_at = CASE
-          WHEN $1 = 'Completed' THEN COALESCE(completed_at, NOW())
-          ELSE NULL
-        END,
-        updated_at = NOW()
-      WHERE session_id = $4
-      RETURNING
-        session_id,
-        treatment_uuid,
+    const updated = await client.query(
+      `
+  UPDATE treatment_sessions
+  SET
+    session_status = $1::varchar,
+    session_notes = $2::text,
+    outcome = $3::text,
+    completed_at = CASE
+      WHEN $1::varchar = 'Completed'
+        THEN COALESCE(completed_at, NOW())
+      ELSE NULL
+    END,
+    updated_at = NOW()
+  WHERE session_id = $4::bigint
+  RETURNING
+    session_id,
+    treatment_uuid,
+    session_status,
+    session_notes,
+    outcome,
+    completed_at
+  `,
+      [
         session_status,
-        session_notes,
-        outcome,
-        completed_at
-    `, [
-      session_status,
-      String(session_notes || ""),
-      String(outcome || ""),
-      sessionId
-    ]);
+        String(session_notes || ""),
+        String(outcome || ""),
+        sessionId
+      ]
+    );
 
     // Synchronize therapist session notes only.
     // Doctor-entered clinical_notes are deliberately not changed.

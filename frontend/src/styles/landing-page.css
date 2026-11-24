@@ -1,70 +1,992 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
 
-.landing-page{--lp-green:#174d38;--lp-deep:#103b2c;--lp-olive:#71834b;--lp-cream:#f7f6ed;--lp-ink:#20362b;--lp-muted:#6e7b70;color:var(--lp-ink);background:#fffefa;font-family:'DM Sans',sans-serif;overflow:hidden}
-.landing-page button,.landing-page a{font:inherit}
-.landing-header{height:88px;padding:0 clamp(22px,7vw,112px);display:flex;align-items:center;justify-content:space-between;background:#fffefa;position:relative;z-index:5;border-bottom:1px solid #e9ecdf}
-.landing-brand{text-decoration:none}
-.landing-nav{display:flex;align-items:center;gap:clamp(18px,2.7vw,40px)}
-.landing-nav>a{color:#526357;text-decoration:none;font-size:13px;font-weight:600;transition:color .2s}
-.landing-nav>a:hover{color:var(--lp-green)}
-.landing-login-link,.landing-nav-cta{border:0;background:none;color:var(--lp-green);font-weight:700;font-size:13px;padding:10px 0}
-.landing-nav-cta{display:flex;align-items:center;gap:10px;padding:13px 19px;border-radius:5px;background:var(--lp-green);color:white}
-.landing-menu-toggle{display:none;border:0;background:transparent;color:var(--lp-green)}
-.landing-hero{min-height:620px;position:relative;display:flex;align-items:center;padding:80px clamp(22px,9vw,145px);background:#f1f4df;isolation:isolate}
-.landing-hero-image{position:absolute;inset:0;z-index:-1;background-image:linear-gradient(90deg,rgba(247,248,235,.98) 0%,rgba(247,248,235,.93) 34%,rgba(247,248,235,.55) 55%,rgba(247,248,235,.04) 100%),url('/ayurdhara-light-hero.png');background-size:cover;background-position:center right}
-.landing-hero-content{max-width:610px}
-.landing-kicker,.landing-section-label{display:flex;align-items:center;gap:11px;color:#75864c;font-size:10px;font-weight:700;letter-spacing:.19em}
-.landing-kicker span{width:27px;height:1px;background:#82965a}
-.landing-hero h1,.landing-intro h2,.landing-section-heading h2,.landing-journey h2,.landing-cta h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;letter-spacing:-.025em}
-.landing-hero h1{font-size:clamp(52px,6vw,82px);line-height:.98;color:#173f30;margin:28px 0 20px}
-.landing-hero h1 em,.landing-intro h2 em,.landing-section-heading h2 em,.landing-journey h2 em{font-weight:500;color:#7c8b50}
-.landing-hero-copy{max-width:510px;color:#5e6d60;font-size:15px;line-height:1.85;margin-bottom:29px}
-.landing-hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.landing-primary-btn,.landing-secondary-btn{display:inline-flex;align-items:center;justify-content:center;gap:15px;min-height:51px;padding:0 22px;border-radius:4px;font-size:13px;font-weight:700;transition:transform .2s,background .2s}
-.landing-primary-btn{border:1px solid var(--lp-green);background:var(--lp-green);color:#fff}
-.landing-primary-btn:hover,.landing-nav-cta:hover{background:#236347;transform:translateY(-1px)}
-.landing-secondary-btn{border:1px solid #aab69c;background:rgba(255,255,255,.55);color:var(--lp-green)}
-.landing-secondary-btn:hover{background:#fff}
-.landing-trust-line{display:flex;align-items:center;gap:9px;color:#74816f;font-size:11px;margin-top:25px}
-.landing-trust-line svg{color:#748b4f}
-.landing-hero-note{position:absolute;right:clamp(22px,7vw,110px);bottom:32px;display:flex;align-items:center;gap:9px;color:#61764c;font-family:'Cormorant Garamond',serif;font-size:17px}
-.landing-intro{padding:110px clamp(22px,12vw,190px);background:#fffefa}
-.landing-intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(35px,8vw,120px);align-items:start;margin-top:24px}
-.landing-intro h2,.landing-section-heading h2,.landing-journey h2{font-size:clamp(42px,4.5vw,61px);line-height:1.02;color:#1a4734;margin:0}
-.landing-intro-grid p{font-size:14px;line-height:1.9;color:#68776b;margin:0 0 15px}
-.landing-text-link{display:inline-flex;align-items:center;gap:12px;margin-top:8px;padding:0 0 7px;border:0;border-bottom:1px solid #8a9b65;background:transparent;color:#24563c;font-size:13px;font-weight:700}
-.landing-features{padding:100px clamp(22px,9vw,145px);background:#f5f6ed}
-.landing-section-heading{text-align:center;max-width:720px;margin:0 auto 48px}
-.landing-section-heading .landing-section-label{justify-content:center}
-.landing-section-heading h2{margin:19px 0 12px}
-.landing-section-heading>p{color:#748075;font-size:14px;line-height:1.7}
-.landing-feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.landing-feature-card{min-height:245px;padding:26px 23px;background:#fffefa;border:1px solid #e7eadf;display:flex;flex-direction:column}
-.landing-feature-top{display:flex;align-items:center;justify-content:space-between;color:#66834d}
-.landing-feature-top span{font-size:10px;letter-spacing:.12em;color:#a1aa91}
-.landing-feature-card h3{font-family:'Cormorant Garamond',Georgia,serif;font-size:25px;line-height:1.05;color:#1d4935;margin:28px 0 11px;font-weight:700}
-.landing-feature-card p{font-size:12px;line-height:1.8;color:#748075;margin:0}
-.landing-feature-rule{height:2px;width:34px;background:#9baa6d;margin-top:auto;padding-top:0;transform:translateY(18px)}
-.landing-journey{padding:110px clamp(22px,12vw,190px);display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(40px,9vw,130px);background:#fffefa}
-.landing-journey h2{margin:21px 0 18px}
-.landing-journey-copy>p{max-width:390px;color:#718075;font-size:14px;line-height:1.85;margin-bottom:26px}
-.landing-steps{border-top:1px solid #e4e9df}
-.landing-step{display:flex;gap:20px;padding:22px 0;border-bottom:1px solid #e4e9df}
-.landing-step-icon{width:43px;height:43px;flex:0 0 43px;display:grid;place-items:center;background:#eff3e4;color:#557746;border-radius:50%}
-.landing-step span{font-size:9px;font-weight:700;letter-spacing:.15em;color:#89976a}
-.landing-step h3{font-family:'Cormorant Garamond',Georgia,serif;font-size:23px;color:#244c38;margin:4px 0}
-.landing-step p{font-size:12px;color:#778278;margin:0;line-height:1.6}
-.landing-cta{margin:0 clamp(22px,9vw,145px) 70px;padding:37px clamp(24px,4vw,58px);background:#174b36;color:#fff;display:flex;align-items:center;gap:25px}
-.landing-cta-mark{width:55px;height:55px;flex:0 0 55px;display:grid;place-items:center;border:1px solid #8ba66b;border-radius:50%;color:#d5e4ae}
-.landing-cta>div:nth-child(2){flex:1}
-.landing-cta>div:nth-child(2)>span{font-size:9px;letter-spacing:.17em;color:#c1d39c}
-.landing-cta h2{font-size:35px;line-height:1;margin:8px 0 5px;color:#fff}
-.landing-cta p{font-size:12px;color:#d0ddcf;margin:0}
-.landing-cta-button{display:flex;align-items:center;gap:13px;white-space:nowrap;padding:14px 18px;border:1px solid #d4e0bd;background:transparent;color:white;font-size:12px;font-weight:700}
-.landing-cta-button:hover{background:#ffffff16}
-.landing-footer{min-height:95px;padding:20px clamp(22px,7vw,112px);display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid #e9ecdf}
-.landing-footer>span{font-size:11px;color:#849087}
-.landing-footer>button{display:flex;align-items:center;gap:8px;border:0;background:transparent;color:#315e42;font-size:11px;font-weight:700}
-@media(max-width:900px){.landing-header{height:76px}.landing-nav{gap:17px}.landing-hero{min-height:580px;padding-top:70px;padding-bottom:70px}.landing-hero-image{background-position:58% center}.landing-feature-grid{grid-template-columns:repeat(2,1fr)}.landing-journey{gap:45px;padding-top:85px;padding-bottom:85px}.landing-cta{margin-left:22px;margin-right:22px}}
-@media(max-width:680px){.landing-header{padding:0 20px}.landing-menu-toggle{display:block}.landing-nav{display:none;position:absolute;top:75px;left:0;right:0;padding:18px 22px 24px;background:#fffefa;border-bottom:1px solid #e6eadf;box-shadow:0 14px 25px #183a2410;align-items:stretch;flex-direction:column;gap:5px}.landing-nav.is-open{display:flex}.landing-nav>a,.landing-login-link{padding:12px 0;text-align:left}.landing-nav-cta{justify-content:center;margin-top:8px}.landing-hero{min-height:650px;align-items:flex-start;padding:76px 24px 100px}.landing-hero-image{background-image:linear-gradient(180deg,rgba(247,248,235,.98) 0%,rgba(247,248,235,.94) 47%,rgba(247,248,235,.35) 100%),url('/ayurdhara-light-hero.png');background-position:65% bottom}.landing-hero h1{font-size:clamp(48px,13vw,67px);margin-top:25px}.landing-hero-copy{font-size:13px;max-width:430px}.landing-hero-note{right:24px;bottom:22px}.landing-intro,.landing-features,.landing-journey{padding:76px 24px}.landing-intro-grid,.landing-journey{grid-template-columns:1fr;gap:24px}.landing-intro h2,.landing-section-heading h2,.landing-journey h2{font-size:47px}.landing-feature-grid{grid-template-columns:1fr}.landing-feature-card{min-height:205px}.landing-section-heading{margin-bottom:32px}.landing-cta{margin:0 18px 45px;padding:28px 23px;align-items:flex-start;flex-wrap:wrap;gap:17px}.landing-cta>div:nth-child(2){flex:1 1 calc(100% - 75px)}.landing-cta h2{font-size:31px}.landing-cta-button{margin-left:72px}.landing-footer{padding:24px;align-items:flex-start;flex-direction:column}.landing-footer>span{order:3}.landing-footer>button{padding:0}}
-@media(prefers-reduced-motion:reduce){.landing-page *{scroll-behavior:auto!important;transition:none!important}}
+.landing-page {
+    --lp-green: #174d38;
+    --lp-deep: #103b2c;
+    --lp-olive: #71834b;
+    --lp-cream: #f7f6ed;
+    --lp-ink: #20362b;
+    --lp-muted: #6e7b70;
+    color: var(--lp-ink);
+    background: #fffefa;
+    font-family: 'DM Sans', sans-serif;
+    overflow: hidden
+}
+
+.landing-page button,
+.landing-page a {
+    font: inherit
+}
+
+.landing-header {
+    height: 88px;
+    padding: 0 clamp(22px, 7vw, 112px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fffefa;
+    position: relative;
+    z-index: 5;
+    border-bottom: 1px solid #e9ecdf
+}
+
+.landing-brand {
+    text-decoration: none
+}
+
+.landing-nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(18px, 2.7vw, 40px)
+}
+
+.landing-nav>a {
+    color: #526357;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: color .2s
+}
+
+.landing-nav>a:hover {
+    color: var(--lp-green)
+}
+
+.landing-login-link,
+.landing-nav-cta {
+    border: 0;
+    background: none;
+    color: var(--lp-green);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 10px 0
+}
+
+.landing-nav-cta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 19px;
+    border-radius: 5px;
+    background: var(--lp-green);
+    color: white
+}
+
+.landing-menu-toggle {
+    display: none;
+    border: 0;
+    background: transparent;
+    color: var(--lp-green)
+}
+
+.landing-hero {
+    min-height: 620px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 80px clamp(22px, 9vw, 145px);
+    background: #f1f4df;
+    isolation: isolate
+}
+
+.landing-hero-image {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: linear-gradient(90deg, rgba(247, 248, 235, .98) 0%, rgba(247, 248, 235, .93) 34%, rgba(247, 248, 235, .55) 55%, rgba(247, 248, 235, .04) 100%), url('/ayurdhara-light-hero.png');
+    background-size: cover;
+    background-position: center right
+}
+
+.landing-hero-content {
+    max-width: 610px
+}
+
+.landing-kicker,
+.landing-section-label {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: #75864c;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .19em
+}
+
+.landing-kicker span {
+    width: 27px;
+    height: 1px;
+    background: #82965a
+}
+
+.landing-hero h1,
+.landing-intro h2,
+.landing-section-heading h2,
+.landing-journey h2,
+.landing-cta h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -.025em
+}
+
+.landing-hero h1 {
+    font-size: clamp(52px, 6vw, 82px);
+    line-height: .98;
+    color: #173f30;
+    margin: 28px 0 20px
+}
+
+.landing-hero h1 em,
+.landing-intro h2 em,
+.landing-section-heading h2 em,
+.landing-journey h2 em {
+    font-weight: 500;
+    color: #7c8b50
+}
+
+.landing-hero-copy {
+    max-width: 510px;
+    color: #5e6d60;
+    font-size: 15px;
+    line-height: 1.85;
+    margin-bottom: 29px
+}
+
+.landing-hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap
+}
+
+.landing-primary-btn,
+.landing-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    min-height: 51px;
+    padding: 0 22px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: transform .2s, background .2s
+}
+
+.landing-primary-btn {
+    border: 1px solid var(--lp-green);
+    background: var(--lp-green);
+    color: #fff
+}
+
+.landing-primary-btn:hover,
+.landing-nav-cta:hover {
+    background: #236347;
+    transform: translateY(-1px)
+}
+
+.landing-secondary-btn {
+    border: 1px solid #aab69c;
+    background: rgba(255, 255, 255, .55);
+    color: var(--lp-green)
+}
+
+.landing-secondary-btn:hover {
+    background: #fff
+}
+
+.landing-trust-line {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #74816f;
+    font-size: 11px;
+    margin-top: 25px
+}
+
+.landing-trust-line svg {
+    color: #748b4f
+}
+
+.landing-hero-note {
+    position: absolute;
+    right: clamp(22px, 7vw, 110px);
+    bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #61764c;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px
+}
+
+.landing-intro {
+    padding: 110px clamp(22px, 12vw, 190px);
+    background: #fffefa
+}
+
+.landing-intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(35px, 8vw, 120px);
+    align-items: start;
+    margin-top: 24px
+}
+
+.landing-intro h2,
+.landing-section-heading h2,
+.landing-journey h2 {
+    font-size: clamp(42px, 4.5vw, 61px);
+    line-height: 1.02;
+    color: #1a4734;
+    margin: 0
+}
+
+.landing-intro-grid p {
+    font-size: 14px;
+    line-height: 1.9;
+    color: #68776b;
+    margin: 0 0 15px
+}
+
+.landing-text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 0 0 7px;
+    border: 0;
+    border-bottom: 1px solid #8a9b65;
+    background: transparent;
+    color: #24563c;
+    font-size: 13px;
+    font-weight: 700
+}
+
+.landing-features {
+    padding: 100px clamp(22px, 9vw, 145px);
+    background: #f5f6ed
+}
+
+.landing-section-heading {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 48px
+}
+
+.landing-section-heading .landing-section-label {
+    justify-content: center
+}
+
+.landing-section-heading h2 {
+    margin: 19px 0 12px
+}
+
+.landing-section-heading>p {
+    color: #748075;
+    font-size: 14px;
+    line-height: 1.7
+}
+
+.landing-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px
+}
+
+.landing-feature-card {
+    min-height: 245px;
+    padding: 26px 23px;
+    background: #fffefa;
+    border: 1px solid #e7eadf;
+    display: flex;
+    flex-direction: column
+}
+
+.landing-feature-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #66834d
+}
+
+.landing-feature-top span {
+    font-size: 10px;
+    letter-spacing: .12em;
+    color: #a1aa91
+}
+
+.landing-feature-card h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 25px;
+    line-height: 1.05;
+    color: #1d4935;
+    margin: 28px 0 11px;
+    font-weight: 700
+}
+
+.landing-feature-card p {
+    font-size: 12px;
+    line-height: 1.8;
+    color: #748075;
+    margin: 0
+}
+
+.landing-feature-rule {
+    height: 2px;
+    width: 34px;
+    background: #9baa6d;
+    margin-top: auto;
+    padding-top: 0;
+    transform: translateY(18px)
+}
+
+.landing-journey {
+    padding: 110px clamp(22px, 12vw, 190px);
+    display: grid;
+    grid-template-columns: .9fr 1.1fr;
+    gap: clamp(40px, 9vw, 130px);
+    background: #fffefa
+}
+
+.landing-journey h2 {
+    margin: 21px 0 18px
+}
+
+.landing-journey-copy>p {
+    max-width: 390px;
+    color: #718075;
+    font-size: 14px;
+    line-height: 1.85;
+    margin-bottom: 26px
+}
+
+.landing-steps {
+    border-top: 1px solid #e4e9df
+}
+
+.landing-step {
+    display: flex;
+    gap: 20px;
+    padding: 22px 0;
+    border-bottom: 1px solid #e4e9df
+}
+
+.landing-step-icon {
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+    display: grid;
+    place-items: center;
+    background: #eff3e4;
+    color: #557746;
+    border-radius: 50%
+}
+
+.landing-step span {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    color: #89976a
+}
+
+.landing-step h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 23px;
+    color: #244c38;
+    margin: 4px 0
+}
+
+.landing-step p {
+    font-size: 12px;
+    color: #778278;
+    margin: 0;
+    line-height: 1.6
+}
+
+.landing-cta {
+    margin: 0 clamp(22px, 9vw, 145px) 70px;
+    padding: 37px clamp(24px, 4vw, 58px);
+    background: #174b36;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 25px
+}
+
+.landing-cta-mark {
+    width: 55px;
+    height: 55px;
+    flex: 0 0 55px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #8ba66b;
+    border-radius: 50%;
+    color: #d5e4ae
+}
+
+.landing-cta>div:nth-child(2) {
+    flex: 1
+}
+
+.landing-cta>div:nth-child(2)>span {
+    font-size: 9px;
+    letter-spacing: .17em;
+    color: #c1d39c
+}
+
+.landing-cta h2 {
+    font-size: 35px;
+    line-height: 1;
+    margin: 8px 0 5px;
+    color: #fff
+}
+
+.landing-cta p {
+    font-size: 12px;
+    color: #d0ddcf;
+    margin: 0
+}
+
+.landing-cta-button {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    white-space: nowrap;
+    padding: 14px 18px;
+    border: 1px solid #d4e0bd;
+    background: transparent;
+    color: white;
+    font-size: 12px;
+    font-weight: 700
+}
+
+.landing-cta-button:hover {
+    background: #ffffff16
+}
+
+.landing-footer {
+    min-height: 95px;
+    padding: 20px clamp(22px, 7vw, 112px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border-top: 1px solid #e9ecdf
+}
+
+.landing-footer>span {
+    font-size: 11px;
+    color: #849087
+}
+
+.landing-footer>button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    background: transparent;
+    color: #315e42;
+    font-size: 11px;
+    font-weight: 700
+}
+
+@media(max-width:900px) {
+    .landing-header {
+        height: 76px
+    }
+
+    .landing-nav {
+        gap: 17px
+    }
+
+    .landing-hero {
+        min-height: 580px;
+        padding-top: 70px;
+        padding-bottom: 70px
+    }
+
+    .landing-hero-image {
+        background-position: 58% center
+    }
+
+    .landing-feature-grid {
+        grid-template-columns: repeat(2, 1fr)
+    }
+
+    .landing-journey {
+        gap: 45px;
+        padding-top: 85px;
+        padding-bottom: 85px
+    }
+
+    .landing-cta {
+        margin-left: 22px;
+        margin-right: 22px
+    }
+}
+
+@media(max-width:680px) {
+    .landing-header {
+        padding: 0 20px
+    }
+
+    .landing-menu-toggle {
+        display: block
+    }
+
+    .landing-nav {
+        display: none;
+        position: absolute;
+        top: 75px;
+        left: 0;
+        right: 0;
+        padding: 18px 22px 24px;
+        background: #fffefa;
+        border-bottom: 1px solid #e6eadf;
+        box-shadow: 0 14px 25px #183a2410;
+        align-items: stretch;
+        flex-direction: column;
+        gap: 5px
+    }
+
+    .landing-nav.is-open {
+        display: flex
+    }
+
+    .landing-nav>a,
+    .landing-login-link {
+        padding: 12px 0;
+        text-align: left
+    }
+
+    .landing-nav-cta {
+        justify-content: center;
+        margin-top: 8px
+    }
+
+    .landing-hero {
+        min-height: 650px;
+        align-items: flex-start;
+        padding: 76px 24px 100px
+    }
+
+    .landing-hero-image {
+        background-image: linear-gradient(180deg, rgba(247, 248, 235, .98) 0%, rgba(247, 248, 235, .94) 47%, rgba(247, 248, 235, .35) 100%), url('/ayurdhara-light-hero.png');
+        background-position: 65% bottom
+    }
+
+    .landing-hero h1 {
+        font-size: clamp(48px, 13vw, 67px);
+        margin-top: 25px
+    }
+
+    .landing-hero-copy {
+        font-size: 13px;
+        max-width: 430px
+    }
+
+    .landing-hero-note {
+        right: 24px;
+        bottom: 22px
+    }
+
+    .landing-intro,
+    .landing-features,
+    .landing-journey {
+        padding: 76px 24px
+    }
+
+    .landing-intro-grid,
+    .landing-journey {
+        grid-template-columns: 1fr;
+        gap: 24px
+    }
+
+    .landing-intro h2,
+    .landing-section-heading h2,
+    .landing-journey h2 {
+        font-size: 47px
+    }
+
+    .landing-feature-grid {
+        grid-template-columns: 1fr
+    }
+
+    .landing-feature-card {
+        min-height: 205px
+    }
+
+    .landing-section-heading {
+        margin-bottom: 32px
+    }
+
+    .landing-cta {
+        margin: 0 18px 45px;
+        padding: 28px 23px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 17px
+    }
+
+    .landing-cta>div:nth-child(2) {
+        flex: 1 1 calc(100% - 75px)
+    }
+
+    .landing-cta h2 {
+        font-size: 31px
+    }
+
+    .landing-cta-button {
+        margin-left: 72px
+    }
+
+    .landing-footer {
+        padding: 24px;
+        align-items: flex-start;
+        flex-direction: column
+    }
+
+    .landing-footer>span {
+        order: 3
+    }
+
+    .landing-footer>button {
+        padding: 0
+    }
+}
+
+@media(prefers-reduced-motion:reduce) {
+    .landing-page * {
+        scroll-behavior: auto !important;
+        transition: none !important
+    }
+}
+
+/* Ayurvedic product showcase */
+.landing-products {
+    padding: 100px clamp(22px, 9vw, 145px);
+    background: #f7f8f3
+}
+
+.landing-products-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 35px
+}
+
+.landing-products-heading h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(40px, 4.5vw, 59px);
+    line-height: 1.02;
+    letter-spacing: -.025em;
+    color: #1a4734;
+    margin: 17px 0 9px;
+    font-weight: 600
+}
+
+.landing-products-heading h2 em {
+    color: #7c8b50;
+    font-weight: 500
+}
+
+.landing-products-heading p {
+    font-size: 14px;
+    color: #748075;
+    margin: 0;
+    line-height: 1.7
+}
+
+.landing-products-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #60784a;
+    font-size: 11px;
+    white-space: nowrap;
+    padding-bottom: 5px
+}
+
+.landing-product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px
+}
+
+.landing-product-card {
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e5eadd;
+    border-radius: 13px;
+    box-shadow: 0 5px 18px rgba(28, 57, 38, .055);
+    transition: transform .2s, box-shadow .2s
+}
+
+.landing-product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 27px rgba(28, 57, 38, .11)
+}
+
+.landing-product-image-wrap {
+    height: 218px;
+    position: relative;
+    overflow: hidden;
+    background: #e9eddf
+}
+
+.landing-product-image-wrap img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform .35s
+}
+
+.landing-product-card:hover .landing-product-image-wrap img {
+    transform: scale(1.035)
+}
+
+.landing-product-badge {
+    position: absolute;
+    left: 13px;
+    top: 13px;
+    padding: 6px 11px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, .94);
+    color: #286047;
+    font-size: 10px;
+    font-weight: 700;
+    box-shadow: 0 2px 8px #173f3012
+}
+
+.landing-product-info {
+    padding: 17px 18px 18px
+}
+
+.landing-product-category {
+    font-size: 11px;
+    color: #84916f;
+    letter-spacing: .025em
+}
+
+.landing-product-info h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #203c2d;
+    margin: 7px 0 13px
+}
+
+.landing-product-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px
+}
+
+.landing-product-meta strong {
+    font-size: 15px;
+    color: #173f30
+}
+
+.landing-product-meta span {
+    font-size: 10px;
+    color: #829071
+}
+
+.landing-product-button {
+    width: 100%;
+    height: 39px;
+    border: 1px solid #dce5d8;
+    border-radius: 25px;
+    background: #fff;
+    color: #24563c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    transition: background .2s, border-color .2s
+}
+
+.landing-product-button:hover {
+    background: #eff4e8;
+    border-color: #b8c9a8
+}
+
+.landing-products-disclaimer {
+    margin: 19px 0 0;
+    text-align: center;
+    color: #929b8e;
+    font-size: 10px;
+    line-height: 1.6
+}
+
+.landing-product-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: rgba(12, thirty, 22, .58);
+    background: rgba(13, 35, 25, .62);
+    display: grid;
+    place-items: center;
+    padding: 22px;
+    overflow-y: auto
+}
+
+.landing-product-modal {
+    position: relative;
+    width: min(760px, 100%);
+    max-height: min(88vh, 760px);
+    overflow: auto;
+    display: grid;
+    grid-template-columns: .9fr 1.1fr;
+    background: #fffefa;
+    border-radius: 16px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, .24)
+}
+
+.landing-product-modal-close {
+    position: absolute;
+    right: 13px;
+    top: 13px;
+    z-index: 2;
+    width: 38px;
+    height: 38px;
+    border: 1px solid #e3e9df;
+    border-radius: 50%;
+    background: #fffefa;
+    color: #315b42;
+    display: grid;
+    place-items: center
+}
+
+.landing-product-modal-image {
+    min-height: 430px;
+    background: #edf0e5
+}
+
+.landing-product-modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block
+}
+
+.landing-product-modal-content {
+    padding: 45px 34px 32px
+}
+
+.landing-product-modal-content h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 39px;
+    line-height: 1;
+    color: #1a4734;
+    margin: 9px 0 12px
+}
+
+.landing-product-modal-price {
+    display: block;
+    font-size: 17px;
+    color: #24563c;
+    margin-bottom: 18px
+}
+
+.landing-product-modal-content>p {
+    font-size: 13px;
+    line-height: 1.8;
+    color: #68776b
+}
+
+.landing-product-detail {
+    padding: 13px 0;
+    border-top: 1px solid #e8ece3
+}
+
+.landing-product-detail>span {
+    font-size: 10px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #7d8b67
+}
+
+.landing-product-detail p {
+    font-size: 12px;
+    line-height: 1.65;
+    color: #59695d;
+    margin: 5px 0 0
+}
+
+.landing-product-modal-note {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    padding: 12px;
+    margin: 8px 0 17px;
+    background: #f0f4e9;
+    color: #6c7a62;
+    font-size: 10px;
+    line-height: 1.6
+}
+
+.landing-product-modal-note svg {
+    flex: 0 0 auto;
+    color: #64834d
+}
+
+@media(max-width:900px) {
+    .landing-products {
+        padding: 85px 30px
+    }
+
+    .landing-product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+}
+
+@media(max-width:680px) {
+    .landing-products {
+        padding: 76px 20px
+    }
+
+    .landing-products-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 27px
+    }
+
+    .landing-products-note {
+        white-space: normal
+    }
+
+    .landing-product-grid {
+        grid-template-columns: 1fr;
+        gap: 15px
+    }
+
+    .landing-product-image-wrap {
+        height: 220px
+    }
+
+    .landing-product-modal {
+        grid-template-columns: 1fr;
+        max-height: 90vh
+    }
+
+    .landing-product-modal-image {
+        min-height: 210px;
+        height: 210px
+    }
+
+    .landing-product-modal-content {
+        padding: 27px 23px 24px
+    }
+
+    .landing-product-modal-content h2 {
+        font-size: 34px
+    }
+}

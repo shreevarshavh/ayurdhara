@@ -1,10 +1,81 @@
 import React, { useState } from "react";
 import {
   ArrowRight, CalendarDays, ClipboardCheck, HeartPulse, Menu,
-  ShieldCheck, Sprout, Activity, Users, X, CheckCircle2
+  ShieldCheck, Sprout, Activity, Users, X, CheckCircle2, Leaf, ShoppingBag,
+  ChevronRight
 } from "lucide-react";
 import AyurDharaLogo from "./AyurDharaLogo";
 import "../styles/landing-page.css";
+
+
+const products = [
+  {
+    id: "triphala",
+    badge: "Bestseller",
+    category: "Digestive wellness",
+    name: "Triphala Churna",
+    price: "₹349",
+    image: "/products/triphala.jpg",
+    description: "A traditional blend of three fruits, commonly included in Ayurvedic wellness routines.",
+    ingredients: "Amalaki, Bibhitaki and Haritaki.",
+    benefit: "Traditionally used to support digestive wellness."
+  },
+  {
+    id: "ashwagandha",
+    badge: "Daily wellness",
+    category: "Stress & balance",
+    name: "Ashwagandha Tablets",
+    price: "₹499",
+    image: "/products/ashwagandha.jpg",
+    description: "An herbal supplement inspired by a long-standing ingredient in Ayurvedic traditions.",
+    ingredients: "Ashwagandha root extract.",
+    benefit: "Traditionally used as part of stress and vitality routines."
+  },
+  {
+    id: "brahmi",
+    badge: "Classic",
+    category: "Mind & focus",
+    name: "Brahmi Capsules",
+    price: "₹399",
+    image: "/products/brahmi.png",
+    description: "A convenient capsule format featuring Brahmi, an herb used in traditional Ayurvedic practice.",
+    ingredients: "Brahmi (Bacopa monnieri).",
+    benefit: "Traditionally associated with memory and concentration support."
+  },
+  {
+    id: "neem",
+    badge: "Herbal care",
+    category: "Skin & daily care",
+    name: "Neem & Turmeric Blend",
+    price: "₹299",
+    image: "/products/neem-turmeric.jpg",
+    description: "A botanical blend featuring two familiar ingredients in traditional personal-care routines.",
+    ingredients: "Neem and turmeric.",
+    benefit: "A traditional botanical addition to everyday wellness care."
+  },
+  {
+    id: "kadha",
+    badge: "Seasonal pick",
+    category: "Herbal infusion",
+    name: "Herbal Kadha Mix",
+    price: "₹259",
+    image: "/products/kadha.jpg",
+    description: "A warming herbal infusion blend for a comforting daily beverage ritual.",
+    ingredients: "A blend of traditional warming herbs and spices.",
+    benefit: "Enjoy as part of a mindful beverage routine."
+  },
+  {
+    id: "hair-oil",
+    badge: "Traditional care",
+    category: "Hair & scalp care",
+    name: "Ayurvedic Hair Oil",
+    price: "₹549",
+    image: "/products/hair-oil.jpg",
+    description: "A traditional-style hair oil for a relaxing scalp massage and hair-care ritual.",
+    ingredients: "Herbal extracts infused in a nourishing oil base.",
+    benefit: "Designed for external hair and scalp care."
+  }
+];
 
 const features = [
   {
@@ -31,6 +102,7 @@ const features = [
 
 export default function LandingPage({ onLogin, onSignUp }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const closeMenu = () => setMenuOpen(false);
 
   return (
@@ -52,6 +124,7 @@ export default function LandingPage({ onLogin, onSignUp }) {
         <nav className={`landing-nav ${menuOpen ? "is-open" : ""}`}>
           <a href="#home" onClick={closeMenu}>Home</a>
           <a href="#about" onClick={closeMenu}>About</a>
+          <a href="#products" onClick={closeMenu}>Products</a>
           <a href="#features" onClick={closeMenu}>Features</a>
           <a href="#journey" onClick={closeMenu}>How it works</a>
           <button className="landing-login-link" type="button" onClick={() => { closeMenu(); onLogin(); }}>Log in</button>
@@ -88,6 +161,36 @@ export default function LandingPage({ onLogin, onSignUp }) {
         </div>
       </section>
 
+
+      <section className="landing-products" id="products">
+        <div className="landing-products-heading">
+          <div>
+            <div className="landing-section-label">A THOUGHTFUL SELECTION</div>
+            <h2>Explore Ayurvedic <em>essentials.</em></h2>
+            <p>Discover familiar herbs and traditional wellness favourites.</p>
+          </div>
+          <span className="landing-products-note"><Leaf size={16} /> Inspired by traditional Ayurveda</span>
+        </div>
+
+        <div className="landing-product-grid">
+          {products.map(product => (
+            <article className="landing-product-card" key={product.id}>
+              <div className="landing-product-image-wrap">
+                <img src={product.image} alt={product.name} loading="lazy" />
+                <span className="landing-product-badge">{product.badge}</span>
+              </div>
+              <div className="landing-product-info">
+                <span className="landing-product-category">{product.category}</span>
+                <h3>{product.name}</h3>
+                <div className="landing-product-meta"><strong>{product.price}</strong><span>Explore details</span></div>
+                <button type="button" className="landing-product-button" onClick={() => setSelectedProduct(product)}>View details <ChevronRight size={16} /></button>
+              </div>
+            </article>
+          ))}
+        </div>
+        <p className="landing-products-disclaimer">Illustrative product selections for the AyurDhara landing page. Product details and prices can be updated when a catalogue is finalised.</p>
+      </section>
+
       <section className="landing-features" id="features">
         <div className="landing-section-heading">
           <div className="landing-section-label">ONE CONNECTED CARE WORKSPACE</div>
@@ -118,7 +221,7 @@ export default function LandingPage({ onLogin, onSignUp }) {
             [Users, "Patient profile", "Capture essential patient details and care information."],
             [ClipboardCheck, "Assessment & plan", "Document assessments and practitioner-prescribed therapies."],
             [CalendarDays, "Therapy scheduling", "Coordinate sessions with available care resources."],
-            [CheckCircle2, "Progress review", "Track sessions, observations and follow-up." ]
+            [CheckCircle2, "Progress review", "Track sessions, observations and follow-up."]
           ].map(([Icon, title, text], index) => (
             <div className="landing-step" key={title}>
               <div className="landing-step-icon"><Icon size={20} /></div>
@@ -133,6 +236,26 @@ export default function LandingPage({ onLogin, onSignUp }) {
         <div><span>YOUR CARE JOURNEY, IN ONE PLACE</span><h2>Bring clarity to every step.</h2><p>Discover a more organised way to coordinate Panchakarma care.</p></div>
         <button className="landing-cta-button" type="button" onClick={onSignUp}>Create an account <ArrowRight size={18} /></button>
       </section>
+
+
+      {selectedProduct && (
+        <div className="landing-product-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedProduct(null); }}>
+          <section className="landing-product-modal" role="dialog" aria-modal="true" aria-labelledby="landing-product-modal-title">
+            <button type="button" className="landing-product-modal-close" onClick={() => setSelectedProduct(null)} aria-label="Close product details"><X size={21} /></button>
+            <div className="landing-product-modal-image"><img src={selectedProduct.image} alt={selectedProduct.name} /></div>
+            <div className="landing-product-modal-content">
+              <span className="landing-product-category">{selectedProduct.category}</span>
+              <h2 id="landing-product-modal-title">{selectedProduct.name}</h2>
+              <strong className="landing-product-modal-price">{selectedProduct.price}</strong>
+              <p>{selectedProduct.description}</p>
+              <div className="landing-product-detail"><span>Key ingredients</span><p>{selectedProduct.ingredients}</p></div>
+              <div className="landing-product-detail"><span>Traditional use</span><p>{selectedProduct.benefit}</p></div>
+              <div className="landing-product-modal-note"><ShieldCheck size={16} /> Product information is illustrative. Consult a qualified healthcare professional before using supplements.</div>
+              <button type="button" className="landing-primary-btn" onClick={() => setSelectedProduct(null)}>Close details <X size={16} /></button>
+            </div>
+          </section>
+        </div>
+      )}
 
       <footer className="landing-footer">
         <AyurDharaLogo size={38} variant="dark" withText />

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import "./styles/therapist-theme.css";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import api from "./services/api";
@@ -34,13 +34,29 @@ function App() {
     }
   });
 
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  const page = location.pathname.replace("/", "") || "dashboard";
+  const pathSegments = location.pathname
+    .split("/")
+    .filter(Boolean);
+
+  const page =
+    pathSegments.length > 1
+      ? pathSegments[1]
+      : pathSegments[0] || "dashboard";
+
+  const pathRole =
+    pathSegments.length > 1
+      ? pathSegments[0]
+      : null;
 
   const setPage = (nextPage) => {
-    navigate(`/${nextPage}`);
+    const currentRole = normalizeRole(user?.role);
+    const targetUrl = `/${currentRole}/${nextPage}`;
+
+    navigate(targetUrl);
   };
   const [patients, setPatients] = useState([]);
   const [treatments, setTreatments] = useState([]);
@@ -96,6 +112,7 @@ function App() {
 
   const [sessionNotes, setSessionNotes] = useState({});
   const [sessionStatuses, setSessionStatuses] = useState({});
+  const [sessionOutcomes, setSessionOutcomes] = useState({});
   const [busy, setBusy] = useState(false);
 
   const flash = (type, message) => {
@@ -200,20 +217,37 @@ function App() {
   // =====================================================
 
   const roleKey = normalizeRole(user?.role);
+
   const allowedPageIds = [
     ...getRolePageIds(roleKey),
     ...(roleKey === "doctor" ? ["schedule"] : []),
-    ...(["admin", "doctor"].includes(roleKey) ? ["patient-profile"] : [])
+    ...(["admin", "doctor"].includes(roleKey)
+      ? ["patient-profile"]
+      : [])
   ];
 
   const activeNav = allowedPageIds.includes(page)
     ? page
     : "dashboard";
+
   useEffect(() => {
-    if (user && !allowedPageIds.includes(page)) {
-      navigate("/dashboard", { replace: true });
+    if (!user) return;
+
+    const validRole = ["patient", "therapist", "doctor", "admin"].includes(roleKey)
+      ? roleKey
+      : "patient";
+
+    const isCorrectRolePath = pathRole === validRole;
+    const isAllowedPage = allowedPageIds.includes(page);
+
+    if (!isCorrectRolePath || !isAllowedPage) {
+      const destination = isAllowedPage ? page : "dashboard";
+
+      navigate(`/${validRole}/${destination}`, {
+        replace: true
+      });
     }
-  }, [user, page, roleKey, navigate]);
+  }, [user, page, pathRole, roleKey, allowedPageIds, navigate]);
 
   const isPatient = roleKey === "patient";
 
@@ -447,7 +481,7 @@ function App() {
           uuid: treatment.uuid,
           therapist_id: scheduleForm.therapist_id || treatment.therapist_id,
           appointment_start: requestedDate.toISOString(),
-          duration_minutes: Number(scheduleForm.duration_minutes),
+          duration_minutes: Number(treatment.duration_minutes || 60),
           priority: Number(scheduleForm.priority)
         })
       });
@@ -650,7 +684,10 @@ function App() {
         <Login
           onLogin={(loggedInUser) => {
             setUser(loggedInUser);
-            navigate("/dashboard", { replace: true });
+            navigate(
+              `/${normalizeRole(loggedInUser.role)}/dashboard`,
+              { replace: true }
+            );
           }}
         />
       );
@@ -668,10 +705,11 @@ function App() {
     );
   }
 
+  // Do not call navigate() while App is rendering.
+  // Navigate renders a declarative redirect without updating Router during render.
   if (["/", "/login", "/register"].includes(location.pathname)) {
-    navigate("/dashboard", { replace: true });
+    return <Navigate to={`/${roleKey}/dashboard`} replace />;
   }
-
   // =====================================================
   // PATIENT DATA
   // =====================================================
@@ -736,6 +774,7 @@ function App() {
           setPage("schedule");
         }}
         onNavigate={nextPage => {
+          console.log("APP RECEIVED NAVIGATION:", nextPage);
           setPage(nextPage);
           setSearch("");
         }}
@@ -971,6 +1010,7 @@ function App() {
             patients={filteredPatients}
             search={search}
             setSearch={setSearch}
+            role={roleKey}
             onAdd={() => setModal("patient")}
             onSelect={(patient) => {
               setSelectedPatient(patient);
@@ -1050,6 +1090,10 @@ function App() {
             treatments={scheduled}
             notes={sessionNotes}
             setNotes={setSessionNotes}
+            statuses={sessionStatuses}
+            setStatuses={setSessionStatuses}
+            outcomes={sessionOutcomes}
+            setOutcomes={setSessionOutcomes}
             onUpdate={updateSession}
           />
         )

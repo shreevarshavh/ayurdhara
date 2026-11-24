@@ -205,6 +205,7 @@ export default function PatientDashboard({
                                     key={label}
                                     className={`patient-nav-item ${activePage === navPage ? "active" : ""}`}
                                     onClick={() => {
+                                        console.log("PATIENT SIDEBAR CLICKED:", navPage);
                                         onNavigate(navPage);
                                         setMobileNavOpen(false);
                                     }}
@@ -671,7 +672,13 @@ export default function PatientDashboard({
                             </section>
                         </>
                     ) : activePage === "treatments" ? (
-                        <Treatments treatments={patientTreatments} search={search} setSearch={setSearch} readOnly onSchedule={onSchedule} />
+                        < Treatments
+                            treatments={patientTreatments}
+                            search={search}
+                            setSearch={setSearch}
+                            role="patient"
+                            readOnly
+                        />
                     ) : activePage === "sessions" ? (
                         <Sessions treatments={patientTreatments.filter(t => t.appointment_start)} notes={sessionNotes} setNotes={setSessionNotes} onUpdate={onUpdateSession} readOnly />
                     ) : activePage === "progress" ? (

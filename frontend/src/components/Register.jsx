@@ -33,13 +33,14 @@ const initialForm = {
 
 function Field({ label, icon: Icon, children, required = false, className = '' }) {
     return (
-        <label className={`flex flex-col gap-[5px] min-w-0 ${className}`}>
+        <label className={`flex flex-col gap-[7px] min-w-0 ${className}`}>
             <span className="text-[13px] font-bold text-[#15231c]">
                 {label}
                 {required && <b className="text-[#df2626]"> *</b>}
             </span>
 
             <span className="h-[39px] max-[1500px]:h-[42px] border border-[#b9c5d0] rounded-[10px] bg-white flex items-center gap-[10px] px-[12px] text-[#08703b] shadow-[0_1px_2px_#173c2510] min-w-0 focus-within:border-[#6da84c] focus-within:ring-3 focus-within:ring-[#8cbd63]/30">
+
                 {Icon && <Icon size={18} strokeWidth={1.8} className="shrink-0" />}
                 {children}
             </span>
@@ -237,7 +238,7 @@ export default function Register({ onBackToLogin }) {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-[10px] text-[#9ac64c] my-[20px_24px]">
+                <div className="flex items-center gap-[10px] text-[#9ac64c] my-[16px_20px]">
                     <i className="h-px bg-[#a5c56e] flex-1 not-italic" />
                     <Leaf size={22} />
                     <i className="h-px bg-[#a5c56e] flex-1 not-italic" />
@@ -256,35 +257,36 @@ export default function Register({ onBackToLogin }) {
                     </h1>
 
                     <p className="text-[clamp(13px,1vw,17px)] max-[1100px]:text-[13px] leading-[1.55] text-[#edf5e9] max-w-[390px] m-0">
+
                         Create your patient profile to keep your Panchakarma care, treatment schedule and progress together in one place.
                     </p>
                 </div>
 
-                <div className="grid gap-[13px] mt-[26px] relative z-2">
+                <div className="grid gap-[11px] mt-[22px] relative z-2">
                     <div className="flex items-center gap-[13px] text-[14px] max-[1100px]:text-[12px] leading-[1.35]">
-                        <span className="w-[43px] h-[43px] rounded-[12px] bg-[linear-gradient(145deg,#4e9b31,#236d32)] grid place-items-center shrink-0 shadow-[0_5px_14px_#001f173b]">
-                            <Heart className="w-[25px] h-[25px]" />
+                        <span className="w-[40px] h-[40px] rounded-[11px] bg-[linear-gradient(145deg,#4e9b31,#236d32)] grid place-items-center shrink-0 shadow-[0_5px_14px_#001f173b]">
+                            <Heart className="w-[22px] h-[22px]" />
                         </span>
                         Personalized care &amp; tracking
                     </div>
 
                     <div className="flex items-center gap-[13px] text-[14px] max-[1100px]:text-[12px] leading-[1.35]">
-                        <span className="w-[43px] h-[43px] rounded-[12px] bg-[linear-gradient(145deg,#4e9b31,#236d32)] grid place-items-center shrink-0 shadow-[0_5px_14px_#001f173b]">
-                            <CalendarDays className="w-[25px] h-[25px]" />
+                        <span className="w-[40px] h-[40px] rounded-[11px] bg-[linear-gradient(145deg,#4e9b31,#236d32)] grid place-items-center shrink-0 shadow-[0_5px_14px_#001f173b]">
+                            <CalendarDays className="w-[22px] h-[22px]" />
                         </span>
                         Your treatment journey<br /> in one place
                     </div>
 
                     <div className="flex items-center gap-[13px] text-[14px] max-[1100px]:text-[12px] leading-[1.35]">
-                        <span className="w-[43px] h-[43px] rounded-[12px] bg-[linear-gradient(145deg,#4e9b31,#236d32)] grid place-items-center shrink-0 shadow-[0_5px_14px_#001f173b]">
-                            <ShieldCheck className="w-[25px] h-[25px]" />
+                        <span className="w-[40px] h-[40px] rounded-[11px] bg-[linear-gradient(145deg,#4e9b31,#236d32)] grid place-items-center shrink-0 shadow-[0_5px_14px_#001f173b]">
+                            <ShieldCheck className="w-[22px] h-[22px]" />
                         </span>
                         Safe, secure and private
                     </div>
                 </div>
 
                 <img
-                    className="absolute z-1 left-0 bottom-0 block w-full h-[29%] object-cover object-[center_bottom] opacity-96 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.08)_18%,rgba(0,0,0,0.45)_38%,#000_62%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.08)_18%,rgba(0,0,0,0.45)_38%,#000_62%)]"
+                    className="absolute z-1 left-0 bottom-0 block w-full h-[25%] object-cover object-[center_bottom] opacity-96 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.08)_18%,rgba(0,0,0,0.45)_38%,#000_62%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.08)_18%,rgba(0,0,0,0.45)_38%,#000_62%)]"
                     src="/ayurdhara-panchakarma-hero.png"
                     alt="Traditional Ayurvedic wellness arrangement"
                 />
@@ -321,6 +323,7 @@ export default function Register({ onBackToLogin }) {
                     <div className="relative max-w-[1120px] min-h-full max-[760px]:min-h-0 max-[760px]:h-auto mx-auto p-[20px_clamp(22px,2.5vw,42px)_25px] max-[1500px]:pt-[26px] max-[1100px]:p-[18px_20px] max-[760px]:p-[17px_15px] bg-[#fffefa] border border-[#edf0e6] rounded-[26px] max-[760px]:rounded-[18px] shadow-[0_10px_30px_#24452b12] overflow-hidden max-[760px]:overflow-visible">
 
                         <div className="flex items-center gap-[17px] relative mb-[14px]">
+
                             <div className="w-[62px] h-[62px] rounded-[16px] bg-[#edf5d9] text-[#064e32] grid place-items-center relative shrink-0">
                                 <UserRound size={32} />
                                 <span className="absolute right-[5px] bottom-[5px] bg-[#edf5d9] rounded-full p-[2px] leading-none text-[#064e32]">
@@ -363,6 +366,7 @@ export default function Register({ onBackToLogin }) {
                                         onClick={() => fileRef.current?.click()}
                                         className="absolute -right-[1px] -bottom-[1px] w-[29px] h-[29px] rounded-full border-2 border-white bg-[#005333] text-white grid place-items-center cursor-pointer"
                                     >
+
                                         <Camera size={17} />
                                     </button>
                                 </div>
@@ -375,6 +379,7 @@ export default function Register({ onBackToLogin }) {
                                     <small className="text-[12px] max-[430px]:text-[10px] text-[#4e5a65]">
                                         Upload a clear photo (JPG, PNG) · Max 2 MB
                                     </small>
+
 
                                     <div className="flex gap-[10px] mt-[5px]">
                                         <button
@@ -413,6 +418,7 @@ export default function Register({ onBackToLogin }) {
 
                             {/* PERSONAL DETAILS */}
                             <div className="h-[35px] flex items-center gap-[12px] px-[14px] my-[12px_8px] max-[1500px]:mt-[15px] rounded-[14px] bg-[linear-gradient(90deg,#e8f3cc,#eff5d9)] text-[#063b27]">
+
                                 <UserRound className="w-[21px] h-[21px]" />
                                 <span className="h-[29px] min-w-[43px] px-[10px] rounded-[18px] bg-[linear-gradient(135deg,#78ae32,#4e8d1f)] text-white text-center font-['Cormorant_Garamond',serif] font-bold text-[17px] grid place-items-center">
                                     01
@@ -423,6 +429,7 @@ export default function Register({ onBackToLogin }) {
                             </div>
 
                             <div className="grid grid-cols-2 max-[430px]:grid-cols-1 [column-gap:28px] max-[1100px]:[column-gap:14px] row-gap-[9px] max-[1500px]:row-gap-[12px] p-[0_10px_3px]">
+
 
                                 <Field label="Full Name" icon={UserRound} required className="col-span-2 max-[430px]:col-span-1">
                                     <input
@@ -495,6 +502,7 @@ export default function Register({ onBackToLogin }) {
 
                             {/* ACCOUNT DETAILS */}
                             <div className="h-[35px] flex items-center gap-[12px] px-[14px] my-[12px_8px] max-[1500px]:mt-[15px] rounded-[14px] bg-[linear-gradient(90deg,#e8f3cc,#eff5d9)] text-[#063b27]">
+
                                 <LockKeyhole className="w-[21px] h-[21px]" />
                                 <span className="h-[29px] min-w-[43px] px-[10px] rounded-[18px] bg-[linear-gradient(135deg,#78ae32,#4e8d1f)] text-white text-center font-['Cormorant_Garamond',serif] font-bold text-[17px] grid place-items-center">
                                     02
@@ -505,6 +513,7 @@ export default function Register({ onBackToLogin }) {
                             </div>
 
                             <div className="grid grid-cols-2 max-[430px]:grid-cols-1 [column-gap:28px] max-[1100px]:[column-gap:14px] row-gap-[9px] max-[1500px]:row-gap-[12px] p-[0_10px_3px]">
+
 
                                 <Field label="Password" icon={LockKeyhole} required>
                                     <input
@@ -573,15 +582,15 @@ export default function Register({ onBackToLogin }) {
                                         }
                                     </b>
 
+
                                     <div className="flex gap-[4px] flex-1 max-w-[185px]">
                                         {[1, 2, 3, 4].map(level => (
                                             <i
                                                 key={level}
-                                                className={`h-[5px] rounded-[5px] flex-1 not-italic ${
-                                                    strength >= level
+                                                className={`h-[5px] rounded-[5px] flex-1 not-italic ${strength >= level
                                                         ? 'bg-[linear-gradient(90deg,#0a653c,#22a34c)]'
                                                         : 'bg-[#dfe4dd]'
-                                                }`}
+                                                    }`}
                                             />
                                         ))}
                                     </div>
@@ -594,6 +603,7 @@ export default function Register({ onBackToLogin }) {
                                         ['number', 'One number'],
                                         ['special', 'One special character']
                                     ].map(([key, label]) => (
+
                                         <li className="flex items-center gap-[6px] text-[#344050]" key={key}>
                                             <CheckCircle2
                                                 size={14}
@@ -605,11 +615,10 @@ export default function Register({ onBackToLogin }) {
                                 </ul>
 
                                 {form.confirmPassword && (
-                                    <p className={`col-span-2 max-[430px]:col-span-1 m-[3px_0] font-semibold flex items-center gap-1 ${
-                                        form.password === form.confirmPassword
+                                    <p className={`col-span-2 max-[430px]:col-span-1 m-[3px_0] font-semibold flex items-center gap-1 ${form.password === form.confirmPassword
                                             ? 'text-[#14833c]'
                                             : 'text-[#bd302b]'
-                                    }`}>
+                                        }`}>
                                         {form.password === form.confirmPassword ? (
                                             <>
                                                 <Check size={14} strokeWidth={2.5} />
@@ -640,6 +649,7 @@ export default function Register({ onBackToLogin }) {
                             </div>
 
                             <div className="grid grid-cols-2 max-[430px]:grid-cols-1 [column-gap:28px] max-[1100px]:[column-gap:14px] row-gap-[9px] max-[1500px]:row-gap-[12px] p-[0_10px_3px]">
+
 
                                 <Field label="Height (cm)" icon={Ruler}>
                                     <input
@@ -705,6 +715,7 @@ export default function Register({ onBackToLogin }) {
                                 <span>
                                     {busy ? 'Creating Account…' : 'Create Patient Account'}
                                 </span>
+
                                 <ArrowRight size={18} strokeWidth={2.2} />
                             </button>
                         </form>
@@ -720,6 +731,7 @@ export default function Register({ onBackToLogin }) {
                                 Sign In
                             </button>
                         </div>
+
                     </div>
                 </div>
             </section>

@@ -30,9 +30,27 @@ export function Dashboard({
   onNavigate
 }) {
   const role = String(user?.role || "").toLowerCase();
-  const pending = scheduled.filter(t =>
-    !["Completed", "Missed"].includes(t.session_status || "Scheduled")
-  );
+  const getStatus = (session) =>
+    String(session.session_status || "Scheduled").trim().toLowerCase();
+
+  const statusCounts = {
+    completed: scheduled.filter(t => getStatus(t) === "completed").length,
+    ongoing: scheduled.filter(t => getStatus(t) === "ongoing").length,
+    scheduled: scheduled.filter(t => getStatus(t) === "scheduled").length,
+    missed: scheduled.filter(t => getStatus(t) === "missed").length,
+    interrupted: scheduled.filter(t => getStatus(t) === "interrupted").length
+  };
+
+  const pending = statusCounts.scheduled + statusCounts.ongoing;
+
+  const totalSessions = scheduled.length;
+
+  const completionPercentage = totalSessions
+    ? Math.round((statusCounts.completed / totalSessions) * 100)
+    : 0;
+
+  const getPercentage = (count) =>
+    totalSessions ? (count / totalSessions) * 100 : 0;
 
   const today = new Date().toDateString();
   const todays = scheduled.filter(
@@ -130,7 +148,7 @@ export function Dashboard({
     },
     {
       label: "Upcoming sessions",
-      value: pending.length,
+      value: pending,
       detail: "Sessions awaiting completion",
       icon: "◷",
       tone: "gold"
@@ -438,47 +456,54 @@ export function Dashboard({
           </div>
 
           <div className="patient-progress-content">
+
             <div
               className="patient-donut"
               style={{
-                "--progress": `${scheduled.length
-                  ? Math.round(
-                    completed.length / scheduled.length * 100
-                  )
-                  : 0
-                  }%`
+                background: totalSessions
+                  ? `conic-gradient(
+            #278653 0% ${getPercentage(statusCounts.completed)}%,
+            #4f83d9 ${getPercentage(statusCounts.completed)}% ${getPercentage(statusCounts.completed) + getPercentage(statusCounts.ongoing)}%,
+            #e5ae50 ${getPercentage(statusCounts.completed) + getPercentage(statusCounts.ongoing)}% ${getPercentage(statusCounts.completed) + getPercentage(statusCounts.ongoing) + getPercentage(statusCounts.scheduled)}%,
+            #d36c64 ${getPercentage(statusCounts.completed) + getPercentage(statusCounts.ongoing) + getPercentage(statusCounts.scheduled)}% ${getPercentage(statusCounts.completed) + getPercentage(statusCounts.ongoing) + getPercentage(statusCounts.scheduled) + getPercentage(statusCounts.missed)}%,
+            #a6aaa6 ${getPercentage(statusCounts.completed) + getPercentage(statusCounts.ongoing) + getPercentage(statusCounts.scheduled) + getPercentage(statusCounts.missed)}% 100%
+          )`
+                  : "#e2e8df"
               }}
             >
               <div>
-                <b>
-                  {scheduled.length
-                    ? Math.round(
-                      completed.length / scheduled.length * 100
-                    )
-                    : 0}%
-                </b>
-
+                <b>{completionPercentage}%</b>
                 <span>Completed</span>
               </div>
             </div>
 
             <div className="patient-progress-legend">
+
               <p>
                 <i className="green-dot" />
-                Completed <b>{completed.length}</b>
+                Completed <b>{statusCounts.completed}</b>
               </p>
 
               <p>
                 <i className="blue-dot" />
-                Scheduled / ongoing <b>{pending.length}</b>
+                Ongoing <b>{statusCounts.ongoing}</b>
               </p>
 
-              {!isPatient && (
-                <p>
-                  <i className="gray-dot" />
-                  Open alerts <b>{alerts.length}</b>
-                </p>
-              )}
+              <p>
+                <i className="gold-dot" />
+                Scheduled <b>{statusCounts.scheduled}</b>
+              </p>
+
+              <p>
+                <i className="red-dot" />
+                Missed <b>{statusCounts.missed}</b>
+              </p>
+
+              <p>
+                <i className="gray-dot" />
+                Interrupted <b>{statusCounts.interrupted}</b>
+              </p>
+
             </div>
           </div>
 
@@ -599,7 +624,8 @@ export function Patients({
   search,
   setSearch,
   onAdd,
-  onSelect
+  onSelect,
+  role
 }) {
   return (
     <>
@@ -623,9 +649,11 @@ export function Patients({
         </div>
 
         <div className="toolbar-actions">
-          <button className="primary-btn" onClick={onAdd}>
-            ＋ Add patient
-          </button>
+          {role === "admin" && (
+            <button className="primary-btn" onClick={onAdd}>
+              ＋ Add patient
+            </button>
+          )}
         </div>
       </div>
 
@@ -966,7 +994,7 @@ export function Treatments({
 
 export function Sessions({
   treatments = [],
-  notes,
+  notes = {},
   setNotes,
   outcomes = {},
   setOutcomes,
@@ -1011,126 +1039,143 @@ export function Sessions({
             </thead>
 
             <tbody>
-              {treatments.map((t, index) => (
-                <tr key={t.session_id ?? t.uuid ?? `${t.treatment_uuid}-${index}`}>
-                  <td>
-                    <b>
-                      {t.treatment_name || t.p1 || "Panchakarma session"}
-                    </b>
+              {treatments.map((t, index) => {
+                // Prefer a real appointment/session ID. The composite fallback
+                // keeps rows independent even when session_id is missing.
+                const sessionKey =
+                  t.session_id ??
+                  t.session_uuid ??
+                  t.appointment_id ??
+                  [
+                    t.uuid || t.treatment_uuid || "session",
+                    t.appointment_start || "no-time",
+                    t.patient_id || "no-patient",
+                    index
+                  ].join("-");
 
-                    <small className="cell-sub">
-                      Session #{t.session_id}
-                    </small>
+                return (
+                  <tr key={sessionKey}>
+                    <td>
+                      <b>
+                        {t.treatment_name || t.p1 || "Panchakarma session"}
+                      </b>
 
-                    <small className="cell-sub">
-                      Plan {shortId(t.treatment_uuid)}
-                    </small>
-                  </td>
+                      <small className="cell-sub">
+                        Session #{t.session_id || "—"}
+                      </small>
 
-                  <td>{t.patient_name || "—"}</td>
+                      <small className="cell-sub">
+                        Plan {shortId(t.treatment_uuid)}
+                      </small>
+                    </td>
 
-                  <td>
-                    {fmtDate(t.appointment_start)}
+                    <td>{t.patient_name || "—"}</td>
 
-                    <small className="cell-sub">
-                      {fmtTime(t.appointment_start)} · {t.duration_minutes || 60} min
-                    </small>
-                  </td>
+                    <td>
+                      {fmtDate(t.appointment_start)}
 
-                  <td>{t.therapist_name || "—"}</td>
+                      <small className="cell-sub">
+                        {fmtTime(t.appointment_start)} · {t.duration_minutes || 60} min
+                      </small>
+                    </td>
 
-                  <td>
-                    {readOnly ? (
-                      <Status value={t.session_status || "Scheduled"} />
-                    ) : (
-                      <select
-                        className="inline-select"
-                        value={
-                          statuses[t.session_id] ||
-                          t.session_status ||
-                          "Scheduled"
-                        }
-                        onChange={e =>
-                          setStatuses({
-                            ...statuses,
-                            [t.session_id]: e.target.value
-                          })
-                        }
-                      >
-                        <option>Scheduled</option>
-                        <option>Ongoing</option>
-                        <option>Completed</option>
-                        <option>Missed</option>
-                        <option>Interrupted</option>
-                      </select>
-                    )}
-                  </td>
+                    <td>{t.therapist_name || "—"}</td>
 
-                  <td>
-                    {readOnly
-                      ? (t.session_notes || "—")
-                      : (
+                    <td>
+                      {readOnly ? (
+                        <Status value={t.session_status || "Scheduled"} />
+                      ) : (
+                        <select
+                          className="inline-select"
+                          value={
+                            statuses[sessionKey] ??
+                            t.session_status ??
+                            "Scheduled"
+                          }
+                          onChange={e =>
+                            setStatuses(prev => ({
+                              ...prev,
+                              [sessionKey]: e.target.value
+                            }))
+                          }
+                        >
+                          <option>Scheduled</option>
+                          <option>Ongoing</option>
+                          <option>Completed</option>
+                          <option>Missed</option>
+                          <option>Interrupted</option>
+                        </select>
+                      )}
+                    </td>
+
+                    <td>
+                      {readOnly ? (
+                        t.session_notes || "—"
+                      ) : (
                         <input
                           className="notes-input"
                           value={
-                            notes[t.session_id] ??
+                            notes[sessionKey] ??
                             t.session_notes ??
                             ""
                           }
                           onChange={e =>
-                            setNotes({
-                              ...notes,
-                              [t.session_id]: e.target.value
-                            })
+                            setNotes(prev => ({
+                              ...prev,
+                              [sessionKey]: e.target.value
+                            }))
                           }
                           placeholder="Add observation…"
                         />
                       )}
-                  </td>
+                    </td>
 
-                  <td>
-                    {readOnly
-                      ? (t.outcome || "—")
-                      : (
+                    <td>
+                      {readOnly ? (
+                        t.outcome || "—"
+                      ) : (
                         <input
                           className="notes-input"
                           value={
-                            outcomes[t.session_id] ??
+                            outcomes[sessionKey] ??
                             t.outcome ??
                             ""
                           }
                           onChange={e =>
-                            setOutcomes({
-                              ...outcomes,
-                              [t.session_id]: e.target.value
-                            })
+                            setOutcomes(prev => ({
+                              ...prev,
+                              [sessionKey]: e.target.value
+                            }))
                           }
                           placeholder="Record outcome…"
                         />
                       )}
-                  </td>
+                    </td>
 
-                  <td>
-                    {readOnly
-                      ? "View only"
-                      : (
+                    <td>
+                      {readOnly ? (
+                        "View only"
+                      ) : (
                         <button
                           className="small-btn"
                           onClick={() =>
                             onUpdate(
                               t,
-                              statuses[t.session_id] ||
-                              t.session_status ||
-                              "Scheduled"
+                              statuses[sessionKey] ??
+                              t.session_status ??
+                              "Scheduled",
+                              notes[sessionKey] ?? t.session_notes ?? "",
+                              outcomes[sessionKey] ?? t.outcome ?? ""
                             )
                           }
                         >
                           Save
                         </button>
                       )}
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
